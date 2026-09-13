@@ -11,7 +11,7 @@ from models.enums import ProjectLifecycleState, ProjectOperationalState, Project
 from models.lifecycle import ProjectLifecycleTransition
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
-from models.release import Release
+from models.release import Release, ReleaseTarget
 from models.task import Task, WorkflowRun
 from persistence.base import PersistenceStore
 
@@ -29,6 +29,7 @@ class ProjectRecoverySnapshot(BaseModel):
     agent_runs: tuple[AgentRunResult, ...]
     artifacts: tuple[ArtifactReference, ...]
     releases: tuple[Release, ...]
+    release_targets: tuple[ReleaseTarget, ...] = ()
 
 
 class ProjectRegistry:
@@ -139,6 +140,7 @@ class ProjectRegistry:
             agent_runs=self.store.list_agent_runs(project_id),
             artifacts=self.store.list_artifacts(project_id),
             releases=self.store.list_releases(project_id),
+            release_targets=self.store.list_release_targets(project_id),
         )
 
     def _require(self, project_id: str) -> Project:
