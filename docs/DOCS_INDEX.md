@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 0.8
+Version: 0.9
 Status: ACTIVE
 
 ## Reading Order
@@ -17,8 +17,9 @@ Status: ACTIVE
 9. `PERSISTENCE.md` - Phase 2 persistence, Project Registry, isolation, and recovery semantics.
 10. `NOTIFICATIONS.md` - Phase 3 Human Intervention and email-first notification architecture.
 11. `REGISTRIES.md` - Phase 4 Agent Registry, Capability Registry, availability, versioning, and provider discovery.
-12. `ROADMAP.md` - phased implementation plan starting from Phase 0.
-13. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
+12. `SUPERVISOR_KERNEL.md` - Phase 5 task-level orchestration, routing, dispatch, result validation, and retry boundary.
+13. `ROADMAP.md` - phased implementation plan starting from Phase 0.
+14. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
 
 ## Current Concept Baseline
 
@@ -44,14 +45,15 @@ Phase 1: COMPLETE
 Phase 2: COMPLETE
 Phase 3: COMPLETE
 Phase 4: COMPLETE
-Next: Phase 5 - Supervisor Orchestration Kernel
+Phase 5: COMPLETE
+Next: Phase 6 - Project Factory and Repository Bootstrap
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-25 tests PASS
+27 tests PASS
 ```
 
 Checkpoints:
@@ -62,6 +64,7 @@ PROJECT_CHECKPOINT_PHASE_2_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_3_IMPLEMENTATION_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_3_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_4_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_5_COMPLETE.md
 ```
 
 ## External References
