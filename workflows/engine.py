@@ -131,12 +131,28 @@ class WorkflowEngine:
             )
             if not resuming_gate:
                 if steps >= definition.max_steps:
-                    return self._fail(task, run, definition, current, context, visits, steps,
-                                      "workflow max_steps exceeded")
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        "workflow max_steps exceeded",
+                    )
                 visits[current] = visits.get(current, 0) + 1
                 if visits[current] > node.max_visits:
-                    return self._fail(task, run, definition, current, context, visits, steps,
-                                      f"node max_visits exceeded: {current}")
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        f"node max_visits exceeded: {current}",
+                    )
                 steps += 1
 
             if node.node_type == WorkflowNodeType.END:
@@ -160,10 +176,18 @@ class WorkflowEngine:
                 )
 
             if node.node_type == WorkflowNodeType.CAPABILITY:
-                value = context.get(node.input_key)
+                value = self._resolve_path(context, node.input_key)
                 if not isinstance(value, dict):
-                    return self._fail(task, run, definition, current, context, visits, steps,
-                                      f"capability input is not an object: {node.input_key}")
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        f"capability input is not an object: {node.input_key}",
+                    )
                 try:
                     result = self.kernel.run_task(
                         task.project_id,
@@ -177,18 +201,44 @@ class WorkflowEngine:
                         },
                     )
                 except Exception as exc:
-                    return self._fail(task, run, definition, current, context, visits, steps, str(exc))
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        str(exc),
+                    )
                 if result.status != ExecutionStatus.SUCCEEDED:
                     message = result.error.message if result.error else "capability execution failed"
-                    return self._fail(task, run, definition, current, context, visits, steps, message)
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        message,
+                    )
                 context[node.output_key or node.node_id] = result.output
                 current = node.next_node_id or ""
 
             elif node.node_type == WorkflowNodeType.CONDITION:
-                value = context.get(node.condition_key or "")
+                value = self._resolve_path(context, node.condition_key or "")
                 if not isinstance(value, bool):
-                    return self._fail(task, run, definition, current, context, visits, steps,
-                                      f"condition value must be boolean: {node.condition_key}")
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        f"condition value must be boolean: {node.condition_key}",
+                    )
                 current = node.true_node_id if value else node.false_node_id
                 current = current or ""
 
@@ -224,8 +274,16 @@ class WorkflowEngine:
                     )
                 decision = approvals[key]
                 if not isinstance(decision, bool):
-                    return self._fail(task, run, definition, current, context, visits, steps,
-                                      f"approval decision must be boolean: {key}")
+                    return self._fail(
+                        task,
+                        run,
+                        definition,
+                        current,
+                        context,
+                        visits,
+                        steps,
+                        f"approval decision must be boolean: {key}",
+                    )
                 current = node.approved_node_id if decision else node.rejected_node_id
                 current = current or ""
 
@@ -276,6 +334,15 @@ class WorkflowEngine:
             if run.workflow_run_id == workflow_run_id:
                 return run
         raise KeyError(workflow_run_id)
+
+    @staticmethod
+    def _resolve_path(context: dict, path: str):
+        value = context
+        for part in path.split("."):
+            if not part or not isinstance(value, dict) or part not in value:
+                return None
+            value = value[part]
+        return value
 
     @staticmethod
     def _metadata(
