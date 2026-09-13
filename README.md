@@ -64,6 +64,8 @@ Phase 1 - Machine Contracts and Core State Models - COMPLETE.
 
 Phase 2 - Persistence and Project Registry - COMPLETE.
 
+Phase 3 - Human Intervention and Email Notification Baseline - IN_PROGRESS.
+
 Current implementation baseline:
 
 ```text
@@ -71,7 +73,8 @@ Python >= 3.13
 Pydantic v2
 JSON Schema 2020-12
 SQLite local persistence baseline
+SMTP email provider baseline
 pytest
 ```
 
-Next roadmap phase: Phase 3 - Human Intervention and Email Notification Baseline.
+Phase 3 implementation is present in the repository and is awaiting final verification and checkpoint closure.
