@@ -1,31 +1,33 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.5
+Version: 1.6
 Status: ACTIVE
 
 ## Reading Order
 
 1. `VISION.md` - product direction and scope.
-2. `PROJECT_CONTRACT.md` - ProjectSpec and approval contract.
-3. `PROJECT_LIFECYCLE.md` - lifecycle and operational states.
-4. `PROJECT_CONTROL_PLANE.md` - factory, registry, scheduler, intervention, notifications, secrets, release.
-5. `ARCHITECTURE.md` - control plane and multi-agent core.
-6. `AGENT_CONTRACT.md` - common agent execution contract.
-7. `CAPABILITY_MODEL.md` - capability discovery and routing.
-8. `MACHINE_CONTRACTS.md` - machine-readable baseline.
-9. `PERSISTENCE.md` - durable project state and recovery.
-10. `NOTIFICATIONS.md` - intervention and email notifications.
-11. `REGISTRIES.md` - agent and capability registries.
-12. `SUPERVISOR_KERNEL.md` - task orchestration and routing.
-13. `PROJECT_FACTORY.md` - repository bootstrap.
-14. `WORKFLOW_ENGINE.md` - multi-agent workflow composition.
-15. `AGENT_RUNTIME.md` - runtime execution control.
-16. `PROJECT_SCHEDULER.md` - parallel project execution.
-17. `INTEGRATIONS.md` - tools, providers, protected access, provisioning, and model-selection hooks.
-18. `POLICY_AND_PERMISSIONS.md` - Phase 11 policy decisions, risk, side effects, least privilege, approvals, and audit.
-19. `ROADMAP.md` - phased implementation plan.
-20. `PROJECT_FILE_STANDARD.md` - repository file standard.
+2. `PROJECT_STATE.md` - canonical current implementation snapshot and known limits.
+3. `PROJECT_CONTRACT.md` - ProjectSpec and approval contract.
+4. `PROJECT_LIFECYCLE.md` - lifecycle and operational states.
+5. `PROJECT_CONTROL_PLANE.md` - factory, registry, scheduler, intervention, notifications, secrets, release.
+6. `ARCHITECTURE.md` - control plane and multi-agent core.
+7. `AGENT_CONTRACT.md` - common agent execution contract.
+8. `CAPABILITY_MODEL.md` - capability discovery and routing.
+9. `MACHINE_CONTRACTS.md` - machine-readable baseline.
+10. `PERSISTENCE.md` - durable project state and recovery.
+11. `NOTIFICATIONS.md` - intervention and email notifications.
+12. `REGISTRIES.md` - agent and capability registries.
+13. `SUPERVISOR_KERNEL.md` - task orchestration and routing.
+14. `PROJECT_FACTORY.md` - repository bootstrap.
+15. `WORKFLOW_ENGINE.md` - multi-agent workflow composition.
+16. `AGENT_RUNTIME.md` - runtime execution control.
+17. `PROJECT_SCHEDULER.md` - parallel project execution.
+18. `INTEGRATIONS.md` - tools, providers, protected access, provisioning, and model-selection hooks.
+19. `POLICY_AND_PERMISSIONS.md` - policy decisions, risk, side effects, least privilege, approvals, and audit.
+20. `ROADMAP.md` - phased implementation plan.
+21. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
+22. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
