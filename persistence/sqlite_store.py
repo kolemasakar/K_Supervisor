@@ -5,6 +5,7 @@ from typing import TypeVar
 from pydantic import BaseModel
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
+from models.intervention import HumanActionRequest, NotificationDeliveryAttempt, NotificationEvent
 from models.lifecycle import ProjectLifecycleTransition
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
@@ -114,3 +115,16 @@ class SQLitePersistenceStore(PersistenceStore):
     def list_artifacts(self, project_id): return self._list("artifact", project_id, ArtifactReference)
     def save_release(self, value): self._save("release", value.release_id, value.project_id, value)
     def list_releases(self, project_id): return self._list("release", project_id, Release)
+    def save_human_action(self, value): self._save("human_action", value.human_action_id, value.project_id, value)
+    def get_human_action(self, human_action_id): return self._get("human_action", human_action_id, HumanActionRequest)
+    def list_human_actions(self, project_id): return self._list("human_action", project_id, HumanActionRequest)
+    def save_notification(self, value): self._save("notification", value.notification_id, value.project_id, value, True)
+    def get_notification(self, notification_id): return self._get("notification", notification_id, NotificationEvent)
+    def list_notifications(self, project_id): return self._list("notification", project_id, NotificationEvent)
+    def append_notification_delivery_attempt(self, value): self._event("notification_delivery_attempt", value.project_id, value.created_at.isoformat(), value)
+    def list_notification_delivery_attempts(self, project_id): return self._events("notification_delivery_attempt", project_id, NotificationDeliveryAttempt)
+    def apply_human_action_operational_transition(self, action, project, transition):
+        with self.conn:
+            self._save("human_action", action.human_action_id, action.project_id, action, commit=False)
+            self._event("operational_transition", transition.project_id, transition.timestamp.isoformat(), transition, False)
+            self._save("project", project.project_id, project.project_id, project, commit=False)
