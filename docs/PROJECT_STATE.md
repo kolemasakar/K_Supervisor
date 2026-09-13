@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Канонічний знімок поточного стану реалізації K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 Date: 2026-09-13
 
@@ -46,6 +46,10 @@ Project / Workflow
 
 Policy decisions are resolved before downstream execution. Material permission expansion requires an explicit owner approval record. Raw credentials are not part of normal project documentation, notifications or agent descriptors.
 
+## Documentation Consistency
+
+`PROJECT_CONTRACT.md` version 0.2 is aligned with the immutable ProjectSpec persistence model: a newly approved specification links the prior immutable record through `supersedes_spec_id`, while `Project.active_project_spec_id` identifies the authoritative specification. Existing approved historical records are not rewritten merely to mark them superseded.
+
 ## Known Baseline Limits
 
 - SQLite remains the initial persistence backend, not a permanent storage architecture.
@@ -55,7 +59,6 @@ Policy decisions are resolved before downstream execution. Material permission e
 - Approval expiry and revocation are not implemented.
 - SMTP transport does not provide exactly-once delivery guarantees.
 - `ProjectRecoverySnapshot` does not yet aggregate all Phase 3+ intervention/notification/policy resources into one recovery object; records remain individually durable through persistence APIs.
-- `PROJECT_CONTRACT.md` contains legacy wording about superseded approved ProjectSpec records that should be reconciled with the immutable-record implementation model.
 
 ## Phase Gate
 
