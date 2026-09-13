@@ -27,13 +27,14 @@ def test_workflow_policy_can_only_narrow_project_permissions(tmp_path):
     calls = []
     register_success(delegate, calls)
 
+    workflow_constraints = {
+        "agent_tool_permissions": {"agent.policy": {"repo.read": ["read"]}},
+        "allowed_access_refs": ["secret://project/P11/read"],
+    }
     run_policy = {
         "tools": {"repo.read": ["read"]},
         "access_refs": ["secret://project/P11/read"],
-        "workflow_constraints": {
-            "agent_tool_permissions": {"agent.policy": {"repo.read": ["read"]}},
-            "allowed_access_refs": ["secret://project/P11/read"],
-        },
+        "workflow_constraints": workflow_constraints,
     }
     result = kernel.run_task("P11", "least privilege", requirement, {}, policy=run_policy)
     assert result.status == ExecutionStatus.SUCCEEDED
@@ -48,4 +49,18 @@ def test_workflow_policy_can_only_narrow_project_permissions(tmp_path):
     require_access_reference(context, AccessReference(uri="secret://project/P11/read"))
     with pytest.raises(PermissionError):
         require_access_reference(context, AccessReference(uri="secret://project/P11/write"))
+
+    denied = kernel.run_task(
+        "P11",
+        "workflow expansion denied",
+        requirement,
+        {},
+        policy={
+            "tools": {"repo.write": ["write"]},
+            "workflow_constraints": workflow_constraints,
+        },
+    )
+    assert denied.status == ExecutionStatus.BLOCKED
+    assert denied.error.code == "TOOL_PERMISSION_DENIED"
+    assert len(calls) == 1
     store.close()
