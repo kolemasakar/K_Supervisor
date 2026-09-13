@@ -1,7 +1,7 @@
 # PROJECT_CONTRACT
 Контракт ProjectSpec для формалізації вступного обговорення, меж, доступів і цілей кожного проєкту K_Supervisor.
 
-Version: 0.1
+Version: 0.2
 Status: ACTIVE
 Phase: 0
 
@@ -54,6 +54,8 @@ SUPERSEDED
 ```
 
 Only an `APPROVED` ProjectSpec may authorize normal automated project provisioning and bootstrap.
+
+`SUPERSEDED` remains a logical status available to future migration or materialized-view mechanisms. The current immutable persistence model does not rewrite an already stored approved ProjectSpec merely to change its status.
 
 ## 4. ProjectSpec Identity
 
@@ -360,7 +362,7 @@ Material changes include:
 - significant budget change;
 - autonomy or permission expansion.
 
-The previous approved ProjectSpec remains an immutable historical record and is marked `SUPERSEDED` only after the new version is approved.
+The previous approved ProjectSpec remains an immutable historical record. The newly approved ProjectSpec points to the previous record through `supersedes_spec_id`, and `Project.active_project_spec_id` selects the currently authoritative specification. The current persistence implementation does not mutate the old approved record to `SUPERSEDED`.
 
 ## 20. Relationship to Other Contracts
 
@@ -384,4 +386,4 @@ Project Contract does not replace Agent Contract or Capability Model.
 
 Phase 0 defines the logical contract.
 
-Phase 1 must convert this document into validated machine models and schemas together with the other core platform contracts.
+Phase 1 converts this document into validated machine models and schemas together with the other core platform contracts. Later phases may extend enforcement around the stable ProjectSpec boundary without silently rewriting approved historical records.
