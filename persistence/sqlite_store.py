@@ -11,6 +11,7 @@ from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release
 from models.task import Task, WorkflowRun
+from policy.contracts import ApprovalRecord, PolicyDecision
 from .base import PersistenceConflictError, PersistenceStore
 
 T = TypeVar("T", bound=BaseModel)
@@ -128,3 +129,8 @@ class SQLitePersistenceStore(PersistenceStore):
             self._save("human_action", action.human_action_id, action.project_id, action, commit=False)
             self._event("operational_transition", transition.project_id, transition.timestamp.isoformat(), transition, False)
             self._save("project", project.project_id, project.project_id, project, commit=False)
+    def save_approval(self, value): self._save("approval", value.approval_id, value.project_id, value)
+    def get_approval(self, approval_id): return self._get("approval", approval_id, ApprovalRecord)
+    def list_approvals(self, project_id): return self._list("approval", project_id, ApprovalRecord)
+    def append_policy_decision(self, value): self._event("policy_decision", value.project_id, value.evaluated_at.isoformat(), value)
+    def list_policy_decisions(self, project_id): return self._events("policy_decision", project_id, PolicyDecision)
