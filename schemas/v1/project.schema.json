@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","properties":{"project_id":{"type":"string"},"name":{"type":"string"},"lifecycle_state":{"type":"string"},"operational_state":{"type":"string"}},"required":["project_id","name","lifecycle_state","operational_state"]}
