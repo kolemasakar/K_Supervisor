@@ -1,17 +1,18 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
-Звірка фактичної реалізації K_Supervisor з ROADMAP перед початком Phase 12.
+Звірка фактичної реалізації K_Supervisor з ROADMAP після завершення Phase 12.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 Date: 2026-09-13
-Scope: Phase 0-11
+Scope: Phase 0-12
 
 ## Result
 
 ```text
-Roadmap phases reviewed: 0-11
+Roadmap phases reviewed: 0-12
 Phases with unmet published exit criteria: 0
-Current phase gate: Phase 12 may proceed
+Current phase gate: Phase 13 may proceed
+Core Validation baseline: 66 tests PASS
 ```
 
 The audit compares the published `docs/ROADMAP.md` goals and exit criteria with committed implementation, phase completion checkpoints, regression tests, and the current platform structure. The roadmap remains the planning baseline; implementation status is maintained in README, DOCS_INDEX, PROJECT_STATE, and phase checkpoints.
@@ -32,6 +33,7 @@ The audit compares the published `docs/ROADMAP.md` goals and exit criteria with 
 | 9 | parallel Project Scheduler | priorities, global/per-project/provider limits, shared locks, budgets, WAITING_FOR_OWNER isolation | PASS |
 | 10 | tools/providers/provisioning/secrets | stable Tool/Provider/Provisioning interfaces, registries, secret references/backend, model-selection hooks | PASS |
 | 11 | policy/permissions/risk/approval | PolicyEngine, risk/side effects, least privilege, explicit approval, durable policy audit, pre-dispatch blocking | PASS |
+| 12 | Reference Agents and Agent Factory | AgentBlueprint/CapabilityBlueprint, AgentFactory, scaffolder, five reference types, two research providers, custom-agent integration test | PASS |
 
 ## Documentation Reconciliation Performed
 
@@ -48,9 +50,39 @@ Project.active_project_spec_id
 
 The old approved record is not rewritten merely to set `SUPERSEDED`.
 
+## Phase 12 ROADMAP Verification
+
+Planned work and implementation mapping:
+
+```text
+reusable agent template/scaffolder      -> AgentScaffolder
+AgentDescriptor generation              -> AgentFactory.build()
+capability declaration generation       -> CapabilityBlueprint -> CapabilityDescriptor
+validation and test template            -> scaffold validate() + generated test_agent.py
+automatic registry integration          -> AgentFactory.register()
+reference agents                         -> Research/Critic/Report/DataAnalysis/FactCheck
+```
+
+Published exit criteria:
+
+```text
+at least three agent types use the same Agent Contract: PASS
+at least one capability has two interchangeable providers: PASS
+a new compliant agent can be scaffolded and validated with minimal manual work: PASS
+```
+
+Validation evidence:
+
+```text
+Core Validation run: 34777776903
+head SHA: 7cdf8fc42eb976a0537036f6db819d75766b57d3
+Python: 3.13.15
+pytest: 66 passed
+```
+
 ## Deliberate Baseline Limits
 
-The following are real implementation limits, but they do not violate the published exit criteria for Phase 0-11:
+The following are real implementation limits, but they do not violate the published exit criteria for Phase 0-12:
 
 - SQLite is the initial backend and not a permanent storage commitment;
 - `ProjectRecoverySnapshot` does not aggregate every post-Phase-2 resource into one object;
@@ -59,27 +91,12 @@ The following are real implementation limits, but they do not violate the publis
 - runtime idempotency storage is process-local;
 - policy provides tool/access enforcement helpers but not a universal centralized Tool Gateway;
 - approval expiry/revocation is not yet implemented;
+- reference agents are deterministic contract examples, not production-grade AI domain implementations;
+- AgentScaffolder generates a minimum compliant starting point and does not infer domain-specific prompts, schemas, tools or evaluations;
 - editable Python package installation is not yet the packaging baseline for the flat repository layout.
 
 These limits must not be silently upgraded to guarantees in later documentation.
 
-## Phase 12 Gate
+## Next Gate
 
-Phase 12 must satisfy the ROADMAP requirements:
-
-- reusable agent template/scaffolder;
-- AgentDescriptor generation;
-- capability declaration generation;
-- validation and test template;
-- automatic registry integration;
-- reference agents such as ResearchAgent, CriticAgent, ReportAgent, DataAnalysisAgent, and FactCheckAgent.
-
-Exit criteria to prove before completion:
-
-```text
-at least three agent types use the same Agent Contract
-at least one capability has two interchangeable providers
-a new compliant agent can be scaffolded and validated with minimal manual work
-```
-
-Phase 13 remains gated until those criteria pass regression CI and a Phase 12 completion checkpoint is committed.
+Phase 13 - Release Manager and Publication Readiness may proceed from this baseline. It must not be marked complete until its published exit criteria are validated by Core Validation and a dedicated phase checkpoint is committed.
