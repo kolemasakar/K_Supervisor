@@ -10,6 +10,7 @@ on:
       - "persistence/**"
       - "providers/**"
       - "registry/**"
+      - "runtime/**"
       - "supervisor/**"
       - "workflows/**"
       - "tests/**"
