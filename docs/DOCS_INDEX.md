@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
 
 ## Reading Order
@@ -20,8 +20,9 @@ Status: ACTIVE
 12. `SUPERVISOR_KERNEL.md` - Phase 5 task-level orchestration, routing, dispatch, result validation, and retry boundary.
 13. `PROJECT_FACTORY.md` - Phase 6 onboarding handoff, repository bootstrap, templates, validation, and explicit owner boundaries.
 14. `WORKFLOW_ENGINE.md` - Phase 7 workflow definitions, capability composition, branching, bounded loops, approval gates, and resume semantics.
-15. `ROADMAP.md` - phased implementation plan starting from Phase 0.
-16. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
+15. `AGENT_RUNTIME.md` - Phase 8 runtime adapters, execution control, timeout/cancellation, limits, idempotency, and health.
+16. `ROADMAP.md` - phased implementation plan starting from Phase 0.
+17. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
 
 ## Current Concept Baseline
 
@@ -50,14 +51,15 @@ Phase 4: COMPLETE
 Phase 5: COMPLETE
 Phase 6: COMPLETE
 Phase 7: COMPLETE
-Next: Phase 8 - Agent Runtime and Execution Control
+Phase 8: COMPLETE
+Next: Phase 9 - Project Scheduler and Parallel Execution
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-36 tests PASS
+46 tests PASS
 ```
 
 Checkpoints:
@@ -71,6 +73,7 @@ PROJECT_CHECKPOINT_PHASE_4_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_5_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_6_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_7_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_8_COMPLETE.md
 ```
 
 ## External References
