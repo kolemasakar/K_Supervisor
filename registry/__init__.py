@@ -1,3 +1,16 @@
+from .agent_registry import AgentAvailability, AgentRegistry, CapabilityProvider
+from .capability_registry import CapabilityRegistry
+from .errors import CapabilityResolutionError, DuplicateRegistrationError, RegistryConflictError
 from .project_registry import ProjectRecoverySnapshot, ProjectRegistry
 
-__all__ = ["ProjectRecoverySnapshot", "ProjectRegistry"]
+__all__ = [
+    "AgentAvailability",
+    "AgentRegistry",
+    "CapabilityProvider",
+    "CapabilityRegistry",
+    "CapabilityResolutionError",
+    "DuplicateRegistrationError",
+    "ProjectRecoverySnapshot",
+    "ProjectRegistry",
+    "RegistryConflictError",
+]
