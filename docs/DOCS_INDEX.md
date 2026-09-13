@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.8
+Version: 1.9
 Status: ACTIVE
 
 ## Reading Order
@@ -27,9 +27,10 @@ Status: ACTIVE
 19. `POLICY_AND_PERMISSIONS.md` - policy decisions, risk, side effects, least privilege, approvals, and audit.
 20. `AGENT_FACTORY.md` - agent blueprints, scaffolding, registry/runtime binding, and reference agents.
 21. `RELEASE_MANAGER.md` - release state, readiness, GPT Store preparation, and publication handoff.
-22. `ROADMAP.md` - phased implementation plan.
-23. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
-24. `PROJECT_FILE_STANDARD.md` - repository file standard.
+22. `REFERENCE_RESEARCH_CRITIC_WORKFLOW.md` - Phase 14 reference behavior mapping and capability composition.
+23. `ROADMAP.md` - phased implementation plan.
+24. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
+25. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
@@ -48,23 +49,24 @@ Phase 10: COMPLETE
 Phase 11: COMPLETE
 Phase 12: COMPLETE
 Phase 13: COMPLETE
-Next: Phase 14 - Reference Research-Critic Workflow
+Phase 14: COMPLETE
+Next: Phase 15 - Observability, Reliability, CI, and Test Matrix
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-70 tests PASS
+75 tests PASS
 ```
 
 Latest checkpoints:
 
 ```text
-PROJECT_CHECKPOINT_PHASE_10_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_11_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_12_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_13_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_14_COMPLETE.md
 ```
 
 ## External References
@@ -73,9 +75,10 @@ PROJECT_CHECKPOINT_PHASE_13_COMPLETE.md
 Production reference product:
 kolemasakar/K_Research_Critic
 Release baseline: v1.0.0
+Reference commit: 815ddc35ea2c90304119fb3f7d5e8741848cc88b
 
 Canonical shared file standard:
 kolemasakar/AI_general
 ```
 
-External references are not implementation dependencies unless a later architecture decision explicitly creates one.
+External references are not implementation dependencies unless an explicit architecture decision creates one. Phase 14 studies K-Research & Critic behavior as a reference but does not import or depend on its runtime.
