@@ -1,12 +1,8 @@
 from __future__ import annotations
-
-import json
-import sqlite3
+import json, sqlite3
 from pathlib import Path
 from typing import TypeVar
-
 from pydantic import BaseModel
-
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.lifecycle import ProjectLifecycleTransition
@@ -58,7 +54,7 @@ class SQLitePersistenceStore(PersistenceStore):
     def _json(value: BaseModel):
         return json.dumps(value.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
 
-    def _save(self, kind, resource_id, project_id, value, immutable=False):
+    def _save(self, kind, resource_id, project_id, value, immutable=False, commit=True):
         payload = self._json(value)
         row = self.conn.execute("SELECT payload FROM resources WHERE kind=? AND resource_id=?", (kind, resource_id)).fetchone()
         if row is not None and immutable:
@@ -67,7 +63,8 @@ class SQLitePersistenceStore(PersistenceStore):
             return
         stamp = str(getattr(value, "updated_at", getattr(value, "created_at", "")))
         self.conn.execute("INSERT INTO resources VALUES(?,?,?,?,?) ON CONFLICT(kind,resource_id) DO UPDATE SET project_id=excluded.project_id,payload=excluded.payload,updated_at=excluded.updated_at", (kind, resource_id, project_id, payload, stamp))
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
 
     def _get(self, kind, resource_id, cls: type[T]) -> T | None:
         row = self.conn.execute("SELECT payload FROM resources WHERE kind=? AND resource_id=?", (kind, resource_id)).fetchone()
@@ -77,9 +74,10 @@ class SQLitePersistenceStore(PersistenceStore):
         rows = self.conn.execute("SELECT payload FROM resources WHERE kind=? AND project_id=? ORDER BY rowid", (kind, project_id)).fetchall()
         return tuple(cls.model_validate_json(row["payload"]) for row in rows)
 
-    def _event(self, kind, project_id, occurred_at, value):
+    def _event(self, kind, project_id, occurred_at, value, commit=True):
         self.conn.execute("INSERT INTO events(kind,project_id,occurred_at,payload) VALUES(?,?,?,?)", (kind, project_id, occurred_at, self._json(value)))
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
 
     def _events(self, kind, project_id, cls: type[T]) -> tuple[T, ...]:
         rows = self.conn.execute("SELECT payload FROM events WHERE kind=? AND project_id=? ORDER BY event_id", (kind, project_id)).fetchall()
@@ -94,8 +92,16 @@ class SQLitePersistenceStore(PersistenceStore):
     def get_project_spec(self, project_spec_id): return self._get("project_spec", project_spec_id, ProjectSpec)
     def list_project_specs(self, project_id): return self._list("project_spec", project_id, ProjectSpec)
     def append_lifecycle_transition(self, value): self._event("lifecycle_transition", value.project_id, value.timestamp.isoformat(), value)
+    def apply_lifecycle_transition(self, project, value):
+        with self.conn:
+            self._event("lifecycle_transition", value.project_id, value.timestamp.isoformat(), value, False)
+            self._save("project", project.project_id, project.project_id, project, commit=False)
     def list_lifecycle_transitions(self, project_id): return self._events("lifecycle_transition", project_id, ProjectLifecycleTransition)
     def append_operational_transition(self, value): self._event("operational_transition", value.project_id, value.timestamp.isoformat(), value)
+    def apply_operational_transition(self, project, value):
+        with self.conn:
+            self._event("operational_transition", value.project_id, value.timestamp.isoformat(), value, False)
+            self._save("project", project.project_id, project.project_id, project, commit=False)
     def list_operational_transitions(self, project_id): return self._events("operational_transition", project_id, ProjectOperationalTransition)
     def save_task(self, value): self._save("task", value.task_id, value.project_id, value)
     def get_task(self, task_id): return self._get("task", task_id, Task)
