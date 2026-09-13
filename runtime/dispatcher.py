@@ -51,6 +51,7 @@ class AgentRuntimeDispatcher:
 
         try:
             result = self.adapter.execute(request, control)
+            self._validate_result(request, result)
         except Exception as exc:
             result = self._error(request, exc)
         finally:
@@ -68,6 +69,24 @@ class AgentRuntimeDispatcher:
                 result = self._error(request, exc)
         self.health.record(result)
         return result
+
+    @staticmethod
+    def _validate_result(request: AgentRunRequest, result: AgentRunResult) -> None:
+        fields = (
+            "request_id",
+            "project_id",
+            "task_id",
+            "workflow_run_id",
+            "run_id",
+            "agent_id",
+            "capability_id",
+            "capability_version",
+        )
+        mismatched = [name for name in fields if getattr(request, name) != getattr(result, name)]
+        if mismatched:
+            raise RuntimeValidationError(
+                f"runtime result correlation mismatch: {', '.join(mismatched)}"
+            )
 
     @staticmethod
     def _blocked(request: AgentRunRequest, message: str) -> AgentRunResult:
