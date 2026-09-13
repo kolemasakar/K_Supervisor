@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict
 
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
+from models.base import ensure_tz
 from models.enums import ProjectLifecycleState, ProjectOperationalState, ProjectSpecStatus
 from models.lifecycle import ProjectLifecycleTransition
 from models.operational import ProjectOperationalTransition
@@ -63,6 +64,7 @@ class ProjectRegistry:
 
     def activate_spec(self, project_id: str, spec: ProjectSpec, at: datetime) -> Project:
         project = self._require(project_id)
+        at = ensure_tz(at)
         if spec.project_id != project_id:
             raise ValueError("ProjectSpec project_id does not match Project")
         if spec.status != ProjectSpecStatus.APPROVED:
@@ -83,6 +85,7 @@ class ProjectRegistry:
         at: datetime,
     ) -> Project:
         project = self._require(project_id)
+        at = ensure_tz(at)
         transition = ProjectLifecycleTransition(
             project_id=project_id,
             from_state=project.lifecycle_state,
@@ -94,8 +97,7 @@ class ProjectRegistry:
         updated = project.model_copy(
             update={"lifecycle_state": to_state, "updated_at": at}
         )
-        self.store.append_lifecycle_transition(transition)
-        self.store.save_project(updated)
+        self.store.apply_lifecycle_transition(updated, transition)
         return updated
 
     def transition_operational(
@@ -105,6 +107,7 @@ class ProjectRegistry:
         at: datetime,
     ) -> Project:
         project = self._require(project_id)
+        at = ensure_tz(at)
         transition = ProjectOperationalTransition(
             project_id=project_id,
             from_state=project.operational_state,
@@ -114,8 +117,7 @@ class ProjectRegistry:
         updated = project.model_copy(
             update={"operational_state": to_state, "updated_at": at}
         )
-        self.store.append_operational_transition(transition)
-        self.store.save_project(updated)
+        self.store.apply_operational_transition(updated, transition)
         return updated
 
     def recover(self, project_id: str) -> ProjectRecoverySnapshot:
