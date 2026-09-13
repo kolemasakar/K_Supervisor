@@ -1,0 +1,110 @@
+from __future__ import annotations
+
+import json
+import sqlite3
+from pathlib import Path
+from typing import TypeVar
+
+from pydantic import BaseModel
+
+from models.agent import AgentRunResult
+from models.artifact import ArtifactReference
+from models.lifecycle import ProjectLifecycleTransition
+from models.operational import ProjectOperationalTransition
+from models.project import Project, ProjectSpec
+from models.release import Release
+from models.task import Task, WorkflowRun
+from .base import PersistenceConflictError, PersistenceStore
+
+T = TypeVar("T", bound=BaseModel)
+
+
+class SQLitePersistenceStore(PersistenceStore):
+    SCHEMA_VERSION = "1"
+
+    def __init__(self, path: str | Path):
+        self.path = Path(path)
+        self._conn = None
+
+    @property
+    def conn(self):
+        if self._conn is None:
+            raise RuntimeError("persistence store is not initialized")
+        return self._conn
+
+    def initialize(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._conn = sqlite3.connect(self.path)
+        self._conn.row_factory = sqlite3.Row
+        self.conn.execute("PRAGMA journal_mode=WAL")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS schema_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS resources(kind TEXT NOT NULL,resource_id TEXT NOT NULL,project_id TEXT NOT NULL,payload TEXT NOT NULL,updated_at TEXT NOT NULL,PRIMARY KEY(kind,resource_id))")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS idx_resources_project_kind ON resources(project_id,kind)")
+        self.conn.execute("CREATE TABLE IF NOT EXISTS events(event_id INTEGER PRIMARY KEY AUTOINCREMENT,kind TEXT NOT NULL,project_id TEXT NOT NULL,occurred_at TEXT NOT NULL,payload TEXT NOT NULL)")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS idx_events_project_kind ON events(project_id,kind,event_id)")
+        row = self.conn.execute("SELECT value FROM schema_meta WHERE key='schema_version'").fetchone()
+        if row is None:
+            self.conn.execute("INSERT INTO schema_meta VALUES('schema_version',?)", (self.SCHEMA_VERSION,))
+        elif row["value"] != self.SCHEMA_VERSION:
+            raise RuntimeError(f"unsupported schema version: {row['value']}")
+        self.conn.commit()
+
+    def close(self):
+        if self._conn is not None:
+            self._conn.close()
+            self._conn = None
+
+    @staticmethod
+    def _json(value: BaseModel):
+        return json.dumps(value.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+
+    def _save(self, kind, resource_id, project_id, value, immutable=False):
+        payload = self._json(value)
+        row = self.conn.execute("SELECT payload FROM resources WHERE kind=? AND resource_id=?", (kind, resource_id)).fetchone()
+        if row is not None and immutable:
+            if row["payload"] != payload:
+                raise PersistenceConflictError(f"immutable {kind} already exists: {resource_id}")
+            return
+        stamp = str(getattr(value, "updated_at", getattr(value, "created_at", "")))
+        self.conn.execute("INSERT INTO resources VALUES(?,?,?,?,?) ON CONFLICT(kind,resource_id) DO UPDATE SET project_id=excluded.project_id,payload=excluded.payload,updated_at=excluded.updated_at", (kind, resource_id, project_id, payload, stamp))
+        self.conn.commit()
+
+    def _get(self, kind, resource_id, cls: type[T]) -> T | None:
+        row = self.conn.execute("SELECT payload FROM resources WHERE kind=? AND resource_id=?", (kind, resource_id)).fetchone()
+        return None if row is None else cls.model_validate_json(row["payload"])
+
+    def _list(self, kind, project_id, cls: type[T]) -> tuple[T, ...]:
+        rows = self.conn.execute("SELECT payload FROM resources WHERE kind=? AND project_id=? ORDER BY rowid", (kind, project_id)).fetchall()
+        return tuple(cls.model_validate_json(row["payload"]) for row in rows)
+
+    def _event(self, kind, project_id, occurred_at, value):
+        self.conn.execute("INSERT INTO events(kind,project_id,occurred_at,payload) VALUES(?,?,?,?)", (kind, project_id, occurred_at, self._json(value)))
+        self.conn.commit()
+
+    def _events(self, kind, project_id, cls: type[T]) -> tuple[T, ...]:
+        rows = self.conn.execute("SELECT payload FROM events WHERE kind=? AND project_id=? ORDER BY event_id", (kind, project_id)).fetchall()
+        return tuple(cls.model_validate_json(row["payload"]) for row in rows)
+
+    def save_project(self, value): self._save("project", value.project_id, value.project_id, value)
+    def get_project(self, project_id): return self._get("project", project_id, Project)
+    def list_projects(self):
+        rows = self.conn.execute("SELECT payload FROM resources WHERE kind='project' ORDER BY rowid").fetchall()
+        return tuple(Project.model_validate_json(row["payload"]) for row in rows)
+    def save_project_spec(self, value): self._save("project_spec", value.project_spec_id, value.project_id, value, True)
+    def get_project_spec(self, project_spec_id): return self._get("project_spec", project_spec_id, ProjectSpec)
+    def list_project_specs(self, project_id): return self._list("project_spec", project_id, ProjectSpec)
+    def append_lifecycle_transition(self, value): self._event("lifecycle_transition", value.project_id, value.timestamp.isoformat(), value)
+    def list_lifecycle_transitions(self, project_id): return self._events("lifecycle_transition", project_id, ProjectLifecycleTransition)
+    def append_operational_transition(self, value): self._event("operational_transition", value.project_id, value.timestamp.isoformat(), value)
+    def list_operational_transitions(self, project_id): return self._events("operational_transition", project_id, ProjectOperationalTransition)
+    def save_task(self, value): self._save("task", value.task_id, value.project_id, value)
+    def get_task(self, task_id): return self._get("task", task_id, Task)
+    def list_tasks(self, project_id): return self._list("task", project_id, Task)
+    def save_workflow_run(self, value): self._save("workflow_run", value.workflow_run_id, value.project_id, value)
+    def list_workflow_runs(self, project_id): return self._list("workflow_run", project_id, WorkflowRun)
+    def save_agent_run(self, value): self._save("agent_run", value.run_id, value.project_id, value)
+    def list_agent_runs(self, project_id): return self._list("agent_run", project_id, AgentRunResult)
+    def save_artifact(self, value): self._save("artifact", value.artifact_id, value.project_id, value, True)
+    def list_artifacts(self, project_id): return self._list("artifact", project_id, ArtifactReference)
+    def save_release(self, value): self._save("release", value.release_id, value.project_id, value)
+    def list_releases(self, project_id): return self._list("release", project_id, Release)
