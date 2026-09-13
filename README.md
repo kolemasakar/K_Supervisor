@@ -3,12 +3,12 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 11
+Roadmap baseline: Phase 12
 Repository: `kolemasakar/K_Supervisor`
 
 ## Purpose
 
-K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, and release preparation.
+K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, and release preparation.
 
 K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a reference product only.
 
@@ -31,6 +31,7 @@ K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a referen
 - `docs/AGENT_RUNTIME.md`
 - `docs/PROJECT_SCHEDULER.md`
 - `docs/INTEGRATIONS.md`
+- `docs/POLICY_AND_PERMISSIONS.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
@@ -48,7 +49,8 @@ Phase 7   Workflow Engine / Multi-Agent Composition   COMPLETE
 Phase 8   Agent Runtime / Execution Control           COMPLETE
 Phase 9   Project Scheduler / Parallel Execution      COMPLETE
 Phase 10  Tools / Providers / Provisioning / Secrets  COMPLETE
-Phase 11  Policy / Permissions / Risk / Approval      NEXT
+Phase 11  Policy / Permissions / Risk / Approval      COMPLETE
+Phase 12  Reference Agents / Agent Factory            NEXT
 ```
 
 Validation baseline:
@@ -56,8 +58,8 @@ Validation baseline:
 ```text
 Core Validation: PASS
 Python: 3.13.15
-pytest: 59 passed
+pytest: 63 passed
 live owner mailbox delivery: PASS
 ```
 
-Current integration baseline includes replaceable Tool/Provider contracts and registries, protected `secret://` access references, environment-backed secret resolution, provisioning adapters, provider-independent model selection hooks, and ProjectSpec rejection of raw credential-like values.
+Current controlled-autonomy baseline includes deterministic policy decisions, capability risk and side-effect classes, per-agent tool permissions, protected-access scoping, restrictive workflow policy overlays, least-privilege execution context, explicit permission approval through Human Intervention, and durable policy audit events.
