@@ -46,8 +46,24 @@ class ExecutionStatus(StrEnum):
     BLOCKED = "BLOCKED"
 
 
+class HumanActionStatus(StrEnum):
+    OPEN = "OPEN"
+    NOTIFIED = "NOTIFIED"
+    WAITING_FOR_OWNER = "WAITING_FOR_OWNER"
+    VERIFYING = "VERIFYING"
+    VERIFIED = "VERIFIED"
+    CANCELLED = "CANCELLED"
+    FAILED = "FAILED"
+
+
 class NotificationChannel(StrEnum):
     EMAIL = "EMAIL"
+
+
+class DeliveryStatus(StrEnum):
+    PENDING = "PENDING"
+    SENT = "SENT"
+    FAILED = "FAILED"
 
 
 class ReleaseStatus(StrEnum):
