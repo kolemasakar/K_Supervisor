@@ -7,3 +7,4 @@ from .operational import ProjectOperationalTransition
 from .project import Project, ProjectSpec
 from .release import Release
 from .task import Task, WorkflowRun
+from .workflow import WorkflowDefinition, WorkflowNode, WorkflowNodeType
