@@ -3,7 +3,7 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 1
+Roadmap baseline: Phase 2
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
@@ -57,6 +57,17 @@ Its validated patterns may inform K_Supervisor design, but its runtime is not th
 
 ## Current Phase
 
-Phase 0 architecture baseline is complete.
+Phase 0 - Foundation and Architecture Baseline - COMPLETE.
 
-Phase 1 - Machine Contracts and Core State Models - is IN_PROGRESS. The first Python/Pydantic contract implementation has been prepared and locally validated, while source-code commit is pending because the current GitHub write channel rejected executable-code writes.
+Phase 1 - Machine Contracts and Core State Models - COMPLETE.
+
+Current implementation baseline:
+
+```text
+Python >= 3.13
+Pydantic v2
+JSON Schema 2020-12
+pytest
+```
+
+Next roadmap phase: Phase 2 - Persistence and Project Registry.
