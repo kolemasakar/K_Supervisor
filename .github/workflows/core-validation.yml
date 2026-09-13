@@ -16,6 +16,7 @@ on:
       - "providers/**"
       - "provisioning/**"
       - "registry/**"
+      - "release_manager/**"
       - "runtime/**"
       - "scheduler/**"
       - "supervisor/**"
