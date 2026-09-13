@@ -6,7 +6,7 @@ from enum import StrEnum
 from models.agent import AgentDescriptor
 from models.capability import CapabilityDescriptor, CapabilityRequirement
 
-from .capability_registry import CapabilityRegistry
+from .capability_registry import CapabilityRegistry, constraints_match
 from .errors import CapabilityResolutionError, DuplicateRegistrationError
 from .versioning import matches_version, parse_version
 
@@ -104,6 +104,8 @@ class AgentRegistry:
                     reference.capability_id, reference.capability_version
                 )
                 if capability is None or requirement.operation not in capability.operations:
+                    continue
+                if not constraints_match(capability.constraints, requirement.hard_constraints):
                     continue
                 candidates.append(
                     CapabilityProvider(
