@@ -1,5 +1,7 @@
 from typing import Protocol
 
+from integrations import AvailabilityState
+
 
 class ModelSelectionHook(Protocol):
     def select_model(self, candidates: tuple[dict, ...], requirements: dict) -> dict | None: ...
@@ -8,6 +10,8 @@ class ModelSelectionHook(Protocol):
 def model_candidates(registry) -> tuple[dict, ...]:
     items = []
     for provider in registry.list("MODEL"):
+        if provider.check_availability().state == AvailabilityState.UNAVAILABLE:
+            continue
         for model in provider.descriptor.models:
             items.append(
                 {
