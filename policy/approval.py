@@ -36,10 +36,7 @@ class PolicyApprovalBroker:
         scope_hash = permission_scope_hash(request, grant, risk)
 
         for current in self.store.list_approvals(request.project_id):
-            if current.scope_hash == scope_hash and current.status in {
-                ApprovalStatus.PENDING,
-                ApprovalStatus.APPROVED,
-            }:
+            if current.scope_hash == scope_hash:
                 return current
 
         approval_id = f"APPROVAL_{uuid4().hex}"
