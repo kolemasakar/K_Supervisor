@@ -10,6 +10,7 @@ on:
       - "integrations/**"
       - "models/**"
       - "persistence/**"
+      - "policy/**"
       - "providers/**"
       - "provisioning/**"
       - "registry/**"
