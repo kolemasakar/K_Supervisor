@@ -3,7 +3,7 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 2
+Roadmap baseline: Phase 3
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
@@ -42,6 +42,7 @@ GPT Store preparation should be automated where feasible. Publication remains a 
 - `docs/AGENT_CONTRACT.md`
 - `docs/CAPABILITY_MODEL.md`
 - `docs/MACHINE_CONTRACTS.md`
+- `docs/PERSISTENCE.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
@@ -61,13 +62,16 @@ Phase 0 - Foundation and Architecture Baseline - COMPLETE.
 
 Phase 1 - Machine Contracts and Core State Models - COMPLETE.
 
+Phase 2 - Persistence and Project Registry - COMPLETE.
+
 Current implementation baseline:
 
 ```text
 Python >= 3.13
 Pydantic v2
 JSON Schema 2020-12
+SQLite local persistence baseline
 pytest
 ```
 
-Next roadmap phase: Phase 2 - Persistence and Project Registry.
+Next roadmap phase: Phase 3 - Human Intervention and Email Notification Baseline.
