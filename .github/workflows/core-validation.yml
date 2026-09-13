@@ -1,0 +1,26 @@
+name: Core Validation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/core-validation.yml"
+      - "models/**"
+      - "persistence/**"
+      - "providers/**"
+      - "registry/**"
+      - "supervisor/**"
+      - "tests/**"
+      - "pyproject.toml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install "pydantic>=2.10,<3" "pytest>=8.3,<10" "jsonschema>=4.23,<5"
+      - run: python -m pytest -q
