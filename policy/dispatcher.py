@@ -5,7 +5,7 @@ from models.enums import ExecutionStatus
 from supervisor.dispatch import AgentDispatcher
 
 from .approval import PolicyApprovalBroker
-from .contracts import ApprovalStatus, PolicyEffect
+from .contracts import PolicyEffect
 from .engine import PolicyEngine
 
 
@@ -27,10 +27,7 @@ class PolicyEnforcedDispatcher:
             request = request.model_copy(
                 update={"policy": {**request.policy, "approval_id": approval.approval_id}}
             )
-            if approval.status in {ApprovalStatus.APPROVED, ApprovalStatus.REJECTED}:
-                decision = self.engine.evaluate(request)
-            else:
-                decision = decision.model_copy(update={"approval_id": approval.approval_id})
+            decision = self.engine.evaluate(request)
 
         if decision.effect != PolicyEffect.ALLOW:
             return AgentRunResult(
