@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 
 ## Reading Order
@@ -19,8 +19,9 @@ Status: ACTIVE
 11. `REGISTRIES.md` - Phase 4 Agent Registry, Capability Registry, availability, versioning, and provider discovery.
 12. `SUPERVISOR_KERNEL.md` - Phase 5 task-level orchestration, routing, dispatch, result validation, and retry boundary.
 13. `PROJECT_FACTORY.md` - Phase 6 onboarding handoff, repository bootstrap, templates, validation, and explicit owner boundaries.
-14. `ROADMAP.md` - phased implementation plan starting from Phase 0.
-15. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
+14. `WORKFLOW_ENGINE.md` - Phase 7 workflow definitions, capability composition, branching, bounded loops, approval gates, and resume semantics.
+15. `ROADMAP.md` - phased implementation plan starting from Phase 0.
+16. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
 
 ## Current Concept Baseline
 
@@ -48,14 +49,15 @@ Phase 3: COMPLETE
 Phase 4: COMPLETE
 Phase 5: COMPLETE
 Phase 6: COMPLETE
-Next: Phase 7 - Workflow Engine and Multi-Agent Composition
+Phase 7: COMPLETE
+Next: Phase 8 - Agent Runtime and Execution Control
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-31 tests PASS
+36 tests PASS
 ```
 
 Checkpoints:
@@ -68,6 +70,7 @@ PROJECT_CHECKPOINT_PHASE_3_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_4_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_5_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_6_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_7_COMPLETE.md
 ```
 
 ## External References
