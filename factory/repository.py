@@ -29,6 +29,9 @@ class FilesystemRepositoryAdapter:
             raise RepositoryUnavailableError("repository path escapes managed root")
 
         created = not path.exists()
+        if created and target.provisioning != "AUTOMATABLE":
+            raise RepositoryUnavailableError("repository creation requires owner action")
+
         if created:
             path.mkdir(parents=True)
             try:
