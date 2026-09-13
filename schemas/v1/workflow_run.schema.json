@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","properties":{"workflow_run_id":{"type":"string"},"project_id":{"type":"string"},"task_id":{"type":"string"},"workflow_id":{"type":"string"},"status":{"type":"string"}},"required":["workflow_run_id","project_id","task_id","workflow_id","status"]}
