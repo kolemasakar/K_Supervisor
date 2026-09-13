@@ -23,6 +23,10 @@ def test_project_spec_rejects_raw_access_data_and_accepts_reference():
     with pytest.raises(ValueError):
         ProjectSpec.model_validate(raw)
 
+    raw["integrations"] = {"credentials": {"github": "plain-value"}}
+    with pytest.raises(ValueError):
+        ProjectSpec.model_validate(raw)
+
     raw["integrations"] = {"api_key": "secret://project/P6/provider"}
     validated = ProjectSpec.model_validate(raw)
     assert validated.integrations["api_key"].startswith("secret://")
