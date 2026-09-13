@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 0.5
+Version: 0.6
 Status: ACTIVE
 
 ## Reading Order
@@ -15,8 +15,9 @@ Status: ACTIVE
 7. `CAPABILITY_MODEL.md` - capability discovery, compatibility, and routing model.
 8. `MACHINE_CONTRACTS.md` - Phase 1 machine-readable contract baseline.
 9. `PERSISTENCE.md` - Phase 2 persistence, Project Registry, isolation, and recovery semantics.
-10. `ROADMAP.md` - phased implementation plan starting from Phase 0.
-11. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
+10. `NOTIFICATIONS.md` - Phase 3 Human Intervention and email-first notification architecture.
+11. `ROADMAP.md` - phased implementation plan starting from Phase 0.
+12. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
 
 ## Current Concept Baseline
 
@@ -40,14 +41,20 @@ Additional messaging transports are deferred extension points.
 Phase 0: COMPLETE
 Phase 1: COMPLETE
 Phase 2: COMPLETE
-Next: Phase 3 - Human Intervention and Email Notification Baseline
+Phase 3 implementation: COMPLETE
+Phase 3 automated validation: PASS
+Phase 3 live owner mailbox delivery: PENDING
+Phase 3 overall: LIVE_DELIVERY_VALIDATION_PENDING
 ```
 
-Completion checkpoints:
+Phase 4 is not active until the Phase 3 live delivery criterion is passed or explicitly waived.
+
+Checkpoints:
 
 ```text
 PROJECT_CHECKPOINT_PHASE_1_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_2_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_3_IMPLEMENTATION_COMPLETE.md
 ```
 
 ## External References
