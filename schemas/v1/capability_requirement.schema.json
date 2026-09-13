@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","properties":{"capability_id":{"type":"string"},"version_constraint":{"type":"string"},"operation":{"type":"string"},"hard_constraints":{"type":"object"},"preferences":{"type":"object"}},"required":["capability_id","version_constraint","operation"]}
