@@ -3,7 +3,7 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 4
+Roadmap baseline: Phase 5
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
@@ -44,6 +44,7 @@ GPT Store preparation should be automated where feasible. Publication remains a 
 - `docs/MACHINE_CONTRACTS.md`
 - `docs/PERSISTENCE.md`
 - `docs/NOTIFICATIONS.md`
+- `docs/REGISTRIES.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
@@ -67,11 +68,14 @@ Phase 2 - Persistence and Project Registry - COMPLETE.
 
 Phase 3 - Human Intervention and Email Notification Baseline - COMPLETE.
 
+Phase 4 - Agent and Capability Registries - COMPLETE.
+
 Validation baseline:
 
 ```text
-implementation: COMPLETE
-automated validation: PASS (16 tests)
+GitHub Actions: PASS
+Python: 3.13.15
+pytest: 25 passed
 live owner mailbox delivery: PASS
 ```
 
@@ -84,7 +88,11 @@ JSON Schema 2020-12
 SQLite local persistence baseline
 EmailProvider abstraction
 SMTP relay email transport
+AgentRegistry
+CapabilityRegistry
+capability version resolution
+provider discovery and availability
 GitHub Actions / pytest validation
 ```
 
-Next roadmap phase: Phase 4 - Agent and Capability Registries.
+Next roadmap phase: Phase 5 - Supervisor Orchestration Kernel.
