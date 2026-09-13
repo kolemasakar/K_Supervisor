@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.7
+Version: 1.8
 Status: ACTIVE
 
 ## Reading Order
@@ -25,10 +25,11 @@ Status: ACTIVE
 17. `PROJECT_SCHEDULER.md` - parallel project execution.
 18. `INTEGRATIONS.md` - tools, providers, protected access, provisioning, and model-selection hooks.
 19. `POLICY_AND_PERMISSIONS.md` - policy decisions, risk, side effects, least privilege, approvals, and audit.
-20. `AGENT_FACTORY.md` - Phase 12 agent blueprints, scaffolding, registry/runtime binding, and reference agents.
-21. `ROADMAP.md` - phased implementation plan.
-22. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
-23. `PROJECT_FILE_STANDARD.md` - repository file standard.
+20. `AGENT_FACTORY.md` - agent blueprints, scaffolding, registry/runtime binding, and reference agents.
+21. `RELEASE_MANAGER.md` - release state, readiness, GPT Store preparation, and publication handoff.
+22. `ROADMAP.md` - phased implementation plan.
+23. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
+24. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
@@ -46,23 +47,24 @@ Phase 9: COMPLETE
 Phase 10: COMPLETE
 Phase 11: COMPLETE
 Phase 12: COMPLETE
-Next: Phase 13 - Release Manager and Publication Readiness
+Phase 13: COMPLETE
+Next: Phase 14 - Reference Research-Critic Workflow
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-66 tests PASS
+70 tests PASS
 ```
 
 Latest checkpoints:
 
 ```text
-PROJECT_CHECKPOINT_PHASE_9_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_10_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_11_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_12_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_13_COMPLETE.md
 ```
 
 ## External References
