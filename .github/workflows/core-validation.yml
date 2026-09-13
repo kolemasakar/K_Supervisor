@@ -5,14 +5,18 @@ on:
   push:
     paths:
       - ".github/workflows/core-validation.yml"
+      - "access/**"
       - "factory/**"
+      - "integrations/**"
       - "models/**"
       - "persistence/**"
       - "providers/**"
+      - "provisioning/**"
       - "registry/**"
       - "runtime/**"
       - "scheduler/**"
       - "supervisor/**"
+      - "tools/**"
       - "workflows/**"
       - "tests/**"
       - "pyproject.toml"
