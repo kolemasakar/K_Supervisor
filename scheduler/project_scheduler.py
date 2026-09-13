@@ -25,6 +25,7 @@ class ProjectScheduler:
         self.projects = projects
         self.limits = limits or SchedulerLimits()
         self._policies: dict[str, ProjectSchedulePolicy] = {}
+        self._project_states: dict[str, ProjectOperationalState] = {}
         self._pending: list[_PendingWork] = []
         self._work_ids: set[str] = set()
         self._running_by_project: dict[str, int] = {}
@@ -56,6 +57,7 @@ class ProjectScheduler:
             )
         with self._condition:
             self._policies[project_id] = policy
+            self._project_states[project_id] = project.operational_state
             self._budget_used.setdefault(project_id, 0.0)
             self._condition.notify_all()
         return policy
@@ -85,8 +87,21 @@ class ProjectScheduler:
             self._condition.notify_all()
             return future
 
-    def notify_state_changed(self) -> None:
+    def notify_state_changed(self, project_id: str | None = None) -> None:
         with self._condition:
+            project_ids = (
+                (project_id,)
+                if project_id is not None
+                else tuple(self._policies)
+            )
+        states: dict[str, ProjectOperationalState] = {}
+        for current_id in project_ids:
+            project = self.projects.get(current_id)
+            if project is None:
+                raise KeyError(current_id)
+            states[current_id] = project.operational_state
+        with self._condition:
+            self._project_states.update(states)
             self._condition.notify_all()
 
     def snapshot(self) -> SchedulerSnapshot:
@@ -150,9 +165,8 @@ class ProjectScheduler:
                 cancelled.append(item)
                 continue
             job = item.job
-            project = self.projects.get(job.project_id)
             policy = self._policies[job.project_id]
-            if project is None or project.operational_state != ProjectOperationalState.ACTIVE:
+            if self._project_states.get(job.project_id) != ProjectOperationalState.ACTIVE:
                 continue
             if self._running_by_project.get(job.project_id, 0) >= policy.max_concurrency:
                 continue
