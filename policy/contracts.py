@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 
 from models.base import ContractModel, JsonObject, ensure_tz
 
@@ -107,3 +107,11 @@ class ApprovalRecord(ContractModel):
     @classmethod
     def validate_datetime(cls, value: datetime | None) -> datetime | None:
         return None if value is None else ensure_tz(value)
+
+    @model_validator(mode="after")
+    def validate_state(self):
+        if self.status == ApprovalStatus.PENDING and self.decided_at is not None:
+            raise ValueError("pending approval must not have decided_at")
+        if self.status in {ApprovalStatus.APPROVED, ApprovalStatus.REJECTED} and self.decided_at is None:
+            raise ValueError("resolved approval requires decided_at")
+        return self
