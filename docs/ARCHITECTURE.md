@@ -1,103 +1,62 @@
 # ARCHITECTURE
-Архітектурні принципи, компоненти та межі модульної мультиагентної платформи K_Supervisor.
+Архітектура K_Supervisor як керуючого рівня AI-проєктів поверх модульного мультиагентного ядра.
 
-Version: 0.1
+Version: 0.2
 Status: ACTIVE
 Phase: 0
 
-## 1. Architectural Objective
+## 1. Objective
 
-K_Supervisor is a domain-neutral orchestration platform built around explicit contracts and capability-based composition.
-
-The architecture separates:
+K_Supervisor has two architectural layers:
 
 ```text
-orchestration
-agent execution
-capability description
-workflow definition
-policy and permissions
-state and persistence
-tools and providers
-observability
+PROJECT LIFECYCLE CONTROL PLANE
+              |
+              v
+MODULAR MULTI-AGENT EXECUTION CORE
 ```
 
-No single specialized workflow defines the platform architecture.
+The Control Plane manages long-lived projects. The Multi-Agent Core performs project work.
 
-## 2. Architectural Principles
+## 2. Core Principles
 
-### 2.1 Platform first, workflows second
-
-The core must remain reusable across domains. Research, critique, planning, analysis, and other workflows are compositions built on the platform.
-
-### 2.2 Contract-driven interaction
-
-All executable agents communicate through a versioned Agent Contract. Supervisor must not depend on private agent implementation details.
-
-### 2.3 Capability-based discovery
-
-Supervisor selects eligible executors using declared capabilities and constraints rather than hard-coded imports or agent names.
-
-### 2.4 Supervisor orchestrates, agents execute
-
-Supervisor owns task decomposition, routing, workflow control, approval boundaries, retries, and final execution status. Specialized domain work belongs to agents.
-
-### 2.5 Domain-neutral core
-
-Domain rules must be supplied through capabilities, profiles, policies, workflow definitions, or specialized agents. They must not be embedded in the core unless universally required.
-
-### 2.6 Replaceable agents
-
-Any agent should be replaceable by another compatible implementation that satisfies the required contract and capability constraints.
-
-### 2.7 Capabilities are separate from agents
-
-An agent is an execution entity. A capability is a declarative statement of work that an executor can perform. One agent may expose many capabilities, and one capability may have many providers.
-
-### 2.8 Mediated collaboration
-
-Agents should not directly depend on each other. Cross-agent work is mediated through Supervisor, workflow state, events, or task envelopes so routing remains observable and replaceable.
-
-### 2.9 Explicit state
-
-Task state, workflow state, agent run state, approval state, and domain result status are separate concepts.
-
-### 2.10 Controlled autonomy
-
-Autonomous execution is allowed only inside explicit policy, permission, resource, and approval boundaries.
-
-### 2.11 Provider isolation
-
-LLM providers, external APIs, tools, storage, and execution backends are adapters behind platform interfaces.
-
-### 2.12 Deterministic boundaries
-
-Non-deterministic AI work is wrapped by deterministic validation of envelopes, schemas, permissions, state transitions, limits, and persistence operations.
-
-### 2.13 Idempotency and retries
-
-Operations that can cause duplicate side effects must define idempotency semantics before automatic retry is allowed.
-
-### 2.14 Auditability by default
-
-Important routing decisions, approvals, tool calls, state transitions, failures, and final outputs must be representable as audit records without storing hidden chain-of-thought.
-
-### 2.15 Versioned evolution
-
-Contracts and capability descriptors evolve through explicit versions. Breaking changes require deliberate migration rather than silent mutation.
+- Project is the top-level managed unit; Task is a unit of work inside a Project.
+- Project behavior follows Project Contract and Project Lifecycle.
+- Agent execution follows Agent Contract.
+- Work is selected by capability rather than concrete agent name where practical.
+- Supervisor orchestrates; agents execute specialized work.
+- Agent implementations remain replaceable.
+- Project lifecycle state and project operational state are separate.
+- Task, workflow, agent-run, approval, release, and domain-result states are also separate.
+- Human intervention is explicit and resumable.
+- Email is the initial owner notification channel.
+- Other messaging channels are deferred adapters.
+- Independent projects may progress concurrently.
+- Important decisions and transitions are auditable without hidden chain-of-thought.
 
 ## 3. Logical Architecture
 
 ```text
-USER / CALLER
-     |
-     v
+OWNER / ONBOARDING
+        |
+        v
 +---------------------------+
-|       SUPERVISOR CORE     |
-| task control              |
-| workflow control          |
-| policy gates              |
-| routing decisions         |
+| PROJECT CONTROL PLANE     |
+| Project Factory           |
+| Project Registry          |
+| Project Scheduler         |
+| Human Intervention Broker |
+| Notification Broker       |
+| Secret Manager            |
+| Release Manager           |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| PROJECT SUPERVISOR        |
+| task/workflow control     |
+| approvals and policy      |
+| capability requirements   |
 +-------------+-------------+
               |
        +------+------+
@@ -111,145 +70,120 @@ USER / CALLER
        +--------+--------+
                 |
                 v
-       +-----------------+
-       | ROUTER / MATCHER|
-       +--------+--------+
+          ROUTER / MATCHER
                 |
                 v
-       +-----------------+
-       | AGENT RUNTIME   |
-       +--------+--------+
-                |
-      +---------+----------+
-      |                    |
-      v                    v
-+-----------+        +-------------+
-| TOOLS /   |        | PROVIDERS / |
-| SERVICES  |        | MODELS      |
-+-----------+        +-------------+
-
-Shared platform services:
-- workflow definitions
-- context/state
-- persistence
-- policy/permissions
-- schemas/validation
-- observability/audit
+           AGENT RUNTIME
+             /      \
+            v        v
+          TOOLS   PROVIDERS
 ```
 
-## 4. Core Components
+## 4. Control Plane Components
 
-### 4.1 Supervisor Core
+### Project Factory
 
-Responsibilities:
+Creates or connects the project repository and bootstraps documentation, roadmap, architecture, initial automation, and project scaffolding from an approved ProjectSpec.
 
-- accept tasks;
-- create task identity;
-- resolve workflow requirements;
-- request capabilities;
-- enforce approval and policy gates;
-- dispatch agent runs;
-- process results;
-- manage retries and escalation;
-- finalize task status.
+### Project Registry
 
-Supervisor must not become a universal domain agent.
+Maintains the authoritative index of managed projects and their current specification, state, repository reference, roadmap phase, blockers, and release targets.
 
-### 4.2 Agent Registry
+### Project Scheduler
 
-Stores executable agent descriptors and current availability.
+Coordinates concurrent project work under project and global limits. A project waiting for owner action does not block unrelated projects.
 
-Primary operations:
+### Human Intervention Broker
+
+Creates structured HumanActionRequests with a clear required action, blocking status, and resume condition.
+
+### Notification Broker
+
+Consumes transport-neutral NotificationEvents.
+
+Initial baseline:
 
 ```text
-register
-unregister
-get
-list
-find_by_type
-find_by_capability
-health
+primary channel: EMAIL
+required initial channels: EMAIL only
 ```
 
-### 4.3 Capability Registry
+WhatsApp, Viber, and other messaging transports are future extension points.
 
-Stores normalized capability descriptors independently of agent implementation details.
+### Secret Manager
 
-Primary operations:
+Provides a replaceable protected reference boundary for integration access data. Normal project documentation and notifications use references rather than embedded values.
+
+### Release Manager
+
+Prepares and validates release targets and performs publication handoff. GPT Store preparation should be automated where feasible; publication remains a per-project owner action.
+
+## 5. Multi-Agent Core
+
+### Supervisor Core
+
+Supervisor accepts project tasks, creates execution identities, resolves workflow requirements, requests capabilities, applies policy and approvals, dispatches agent runs, processes normalized results, and manages retries and escalation.
+
+### Agent Registry
+
+Stores executable agent descriptors and availability.
+
+### Capability Registry
+
+Stores capability descriptors independently of concrete agent implementations.
+
+### Router / Matcher
+
+Selects eligible agents from capability requirements and compatibility constraints.
+
+### Agent Runtime
+
+Executes AgentRunRequest and returns normalized AgentRunResult with timeout, cancellation, limit, error, and telemetry boundaries.
+
+### Workflow Engine
+
+Represents multi-step work as explicit workflow definitions. Workflow nodes normally request capabilities rather than concrete agents.
+
+## 6. Project Initiation
 
 ```text
-register
-resolve
-find_candidates
-validate_compatibility
-list_versions
+Onboarding chat
+-> Draft ProjectSpec
+-> owner review
+-> ProjectSpec APPROVED
+-> Project Factory
+-> project execution
 ```
 
-### 4.4 Router / Matcher
+Material scope changes require a new ProjectSpec version.
 
-Converts workflow requirements into eligible agent candidates.
-
-Routing must separate hard constraints from preference scoring.
-
-Hard constraints may include:
-
-- capability identifier;
-- compatible version;
-- required input/output schema;
-- policy permission;
-- tool availability;
-- trust/risk requirements;
-- provider restrictions;
-- execution environment.
-
-Preference scoring may include:
-
-- cost;
-- latency;
-- quality profile;
-- locality;
-- historical reliability;
-- user preference.
-
-### 4.5 Agent Runtime
-
-Executes one AgentRunRequest and returns one AgentRunResult under the Agent Contract.
-
-The runtime owns timeout, cancellation, exception normalization, resource limits, and execution telemetry.
-
-### 4.6 Workflow Engine
-
-Represents multi-step collaboration as explicit workflow definitions or task graphs.
-
-A workflow node requests capabilities. It should not require one concrete agent implementation unless explicitly pinned.
-
-### 4.7 State and Persistence
-
-Stores task, workflow, run, approval, artifact, and audit state.
-
-Persistence implementation is replaceable. Core semantics must not depend on one database engine.
-
-### 4.8 Policy and Permission Layer
-
-Defines what each task, workflow, agent, capability, and tool is allowed to do.
-
-Permission checks occur before execution, not after side effects.
-
-### 4.9 Tool and Provider Adapters
-
-External dependencies remain behind stable interfaces. Agents declare dependencies without embedding platform-global provider assumptions.
-
-### 4.10 Observability and Audit
-
-Records execution metadata needed to understand what ran, why it was selected, what boundaries were applied, what failed, and what artifact was produced.
-
-Hidden chain-of-thought is not an audit artifact.
-
-## 5. Primary Domain Objects
-
-The initial platform object model includes:
+## 7. Human Intervention
 
 ```text
+Project work
+-> HumanActionRequest
+-> NotificationEvent
+-> Email
+-> owner action
+-> verification when possible
+-> resume
+```
+
+The project keeps its lifecycle stage while its operational state changes to reflect waiting or blocking.
+
+## 8. Parallel Projects
+
+Each project isolates its specification, lifecycle and operational state, workspace, repository references, project access references, budgets, tasks, runs, artifacts, logs, and releases.
+
+Shared resources are controlled through scheduler limits and explicit locking.
+
+## 9. Primary Platform Objects
+
+```text
+Project
+ProjectSpec
+ProjectLifecycleState
+ProjectOperationalState
 Task
 WorkflowDefinition
 WorkflowRun
@@ -259,42 +193,34 @@ AgentDescriptor
 AgentRunRequest
 AgentRunResult
 ApprovalRecord
-PolicyDecision
+HumanActionRequest
+NotificationEvent
+NotificationDelivery
+SecretReference
+Release
+ReleaseTarget
 ArtifactReference
 AuditEvent
 ```
 
 Machine schemas are scheduled for Phase 1.
 
-## 6. Interaction Rule
+## 10. Persistence and Resume
 
-The preferred collaboration pattern is:
+Project, workflow, run, intervention, notification, release, artifact, and audit state must be durable enough for safe reconstruction without hidden in-memory state.
 
-```text
-Workflow requests capability
--> Supervisor resolves candidates
--> Router selects eligible agent
--> Supervisor creates AgentRunRequest
--> Runtime invokes agent
--> Agent returns AgentRunResult
--> Supervisor validates and records result
--> Workflow continues
-```
+## 11. First Working and Release Boundary
 
-An agent that needs additional work should request another capability through the platform rather than importing or directly calling another agent implementation.
+FIRST_WORKING is a project milestone defined by ProjectSpec.
 
-## 7. Reference Product Boundary
+RELEASE_READY is a target-specific readiness state.
 
-K-Research & Critic v1.0.0 is an external reference source.
+Publication is a separate action and may remain owner-controlled.
 
-The new platform may learn from its validated patterns, including explicit profile approval, independent critique, evidence handling, state separation, and auditable workflow transitions.
+## 12. Reference Product Boundary
 
-K_Supervisor does not preserve K-Research & Critic internal structure as a compatibility requirement.
+K-Research & Critic v1.0.0 remains a production reference source only. Its validated patterns may inform K_Supervisor, but its runtime structure is not inherited as the platform architecture.
 
-A future Research-Critic workflow should be re-composed from K_Supervisor capabilities and contracts instead of copied as a legacy subsystem.
+## 13. Phase 0 Boundary
 
-## 8. Repository Bootstrap Boundaries
-
-Phase 0 creates documentation and structural placeholders only. Runtime behavior begins in Phase 1 and later phases.
-
-This prevents premature coupling before contracts are approved.
+Phase 0 defines architecture and logical contracts. Runtime implementation begins in Phase 1.
