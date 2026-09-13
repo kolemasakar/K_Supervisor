@@ -3,18 +3,19 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 12
+Roadmap baseline: Phase 13
 Repository: `kolemasakar/K_Supervisor`
 
 ## Purpose
 
-K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, and release preparation.
+K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, and release preparation.
 
 K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a reference product only.
 
 ## Core Documents
 
 - `docs/VISION.md`
+- `docs/PROJECT_STATE.md`
 - `docs/PROJECT_CONTRACT.md`
 - `docs/PROJECT_LIFECYCLE.md`
 - `docs/PROJECT_CONTROL_PLANE.md`
@@ -32,7 +33,9 @@ K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a referen
 - `docs/PROJECT_SCHEDULER.md`
 - `docs/INTEGRATIONS.md`
 - `docs/POLICY_AND_PERMISSIONS.md`
+- `docs/AGENT_FACTORY.md`
 - `docs/ROADMAP.md`
+- `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`
 - `docs/DOCS_INDEX.md`
 
 ## Implementation Status
@@ -50,7 +53,8 @@ Phase 8   Agent Runtime / Execution Control           COMPLETE
 Phase 9   Project Scheduler / Parallel Execution      COMPLETE
 Phase 10  Tools / Providers / Provisioning / Secrets  COMPLETE
 Phase 11  Policy / Permissions / Risk / Approval      COMPLETE
-Phase 12  Reference Agents / Agent Factory            NEXT
+Phase 12  Reference Agents / Agent Factory            COMPLETE
+Phase 13  Release Manager / Publication Readiness     NEXT
 ```
 
 Validation baseline:
@@ -58,8 +62,8 @@ Validation baseline:
 ```text
 Core Validation: PASS
 Python: 3.13.15
-pytest: 63 passed
+pytest: 66 passed
 live owner mailbox delivery: PASS
 ```
 
-Current controlled-autonomy baseline includes deterministic policy decisions, capability risk and side-effect classes, per-agent tool permissions, protected-access scoping, restrictive workflow policy overlays, least-privilege execution context, explicit permission approval through Human Intervention, and durable policy audit events.
+Current modular-agent baseline includes declarative AgentBlueprint/CapabilityBlueprint contracts, automatic registry/runtime binding, reusable scaffold generation, five deterministic reference agent types, and two interchangeable providers for `research.reference@1.0.0`.
