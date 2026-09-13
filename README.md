@@ -3,7 +3,7 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 3
+Roadmap baseline: Phase 4
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
@@ -65,13 +65,14 @@ Phase 1 - Machine Contracts and Core State Models - COMPLETE.
 
 Phase 2 - Persistence and Project Registry - COMPLETE.
 
-Phase 3 - Human Intervention and Email Notification Baseline:
+Phase 3 - Human Intervention and Email Notification Baseline - COMPLETE.
+
+Validation baseline:
 
 ```text
 implementation: COMPLETE
 automated validation: PASS (16 tests)
-live owner mailbox delivery: PENDING
-phase status: LIVE_DELIVERY_VALIDATION_PENDING
+live owner mailbox delivery: PASS
 ```
 
 Current implementation baseline:
@@ -86,4 +87,4 @@ SMTP relay email transport
 GitHub Actions / pytest validation
 ```
 
-Phase 4 is not considered active until the Phase 3 live email exit criterion is passed or explicitly waived by the owner.
+Next roadmap phase: Phase 4 - Agent and Capability Registries.
