@@ -1,0 +1,11 @@
+[project]
+name = "k-supervisor"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = ["pydantic>=2.10,<3"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<10", "jsonschema>=4.23,<5"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
