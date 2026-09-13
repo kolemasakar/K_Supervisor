@@ -1,1 +1,23 @@
-{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","additionalProperties":false,"properties":{"notification_id":{"type":"string"},"project_id":{"type":"string"},"channel":{"const":"EMAIL"},"event_type":{"type":"string"},"severity":{"type":"string"},"title":{"type":"string"},"summary":{"type":"string"},"action_required":{"type":"boolean"},"required_action":{"type":["string","null"]},"blocking":{"type":"boolean"},"created_at":{"type":"string","format":"date-time"}},"required":["notification_id","project_id","channel","event_type","title","summary","created_at"]}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema://k-supervisor/notification-event/1.0",
+  "title": "NotificationEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["notification_id", "project_id", "channel", "event_type", "severity", "title", "summary", "action_required", "blocking", "created_at", "metadata"],
+  "properties": {
+    "notification_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "channel": {"const": "EMAIL"},
+    "event_type": {"type": "string", "minLength": 1},
+    "severity": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "summary": {"type": "string"},
+    "action_required": {"type": "boolean"},
+    "required_action": {"type": ["string", "null"]},
+    "human_action_id": {"type": ["string", "null"]},
+    "blocking": {"type": "boolean"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "metadata": {"type": "object"}
+  }
+}
