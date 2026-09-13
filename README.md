@@ -43,6 +43,7 @@ GPT Store preparation should be automated where feasible. Publication remains a 
 - `docs/CAPABILITY_MODEL.md`
 - `docs/MACHINE_CONTRACTS.md`
 - `docs/PERSISTENCE.md`
+- `docs/NOTIFICATIONS.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
@@ -64,7 +65,14 @@ Phase 1 - Machine Contracts and Core State Models - COMPLETE.
 
 Phase 2 - Persistence and Project Registry - COMPLETE.
 
-Phase 3 - Human Intervention and Email Notification Baseline - IN_PROGRESS.
+Phase 3 - Human Intervention and Email Notification Baseline:
+
+```text
+implementation: COMPLETE
+automated validation: PASS (16 tests)
+live owner mailbox delivery: PENDING
+phase status: LIVE_DELIVERY_VALIDATION_PENDING
+```
 
 Current implementation baseline:
 
@@ -73,8 +81,9 @@ Python >= 3.13
 Pydantic v2
 JSON Schema 2020-12
 SQLite local persistence baseline
-SMTP email provider baseline
-pytest
+EmailProvider abstraction
+SMTP relay email transport
+GitHub Actions / pytest validation
 ```
 
-Phase 3 implementation is present in the repository and is awaiting final verification and checkpoint closure.
+Phase 4 is not considered active until the Phase 3 live email exit criterion is passed or explicitly waived by the owner.
