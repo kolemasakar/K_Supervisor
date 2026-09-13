@@ -8,6 +8,7 @@ from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release
 from models.task import Task, WorkflowRun
+from policy.contracts import ApprovalRecord, PolicyDecision
 
 
 class PersistenceConflictError(RuntimeError):
@@ -88,3 +89,13 @@ class PersistenceStore(ABC):
         project: Project,
         transition: ProjectOperationalTransition,
     ) -> None: ...
+    @abstractmethod
+    def save_approval(self, value: ApprovalRecord) -> None: ...
+    @abstractmethod
+    def get_approval(self, approval_id: str) -> ApprovalRecord | None: ...
+    @abstractmethod
+    def list_approvals(self, project_id: str) -> tuple[ApprovalRecord, ...]: ...
+    @abstractmethod
+    def append_policy_decision(self, value: PolicyDecision) -> None: ...
+    @abstractmethod
+    def list_policy_decisions(self, project_id: str) -> tuple[PolicyDecision, ...]: ...
