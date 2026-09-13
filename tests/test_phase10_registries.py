@@ -39,12 +39,16 @@ def test_tool_and_provider_registries_resolve_versions_and_dependencies():
 
 def test_availability_and_model_candidates_stay_provider_independent():
     providers = ProviderRegistry()
-    unavailable = FakeProvider(
-        ProviderDescriptor(provider_id="offline", version="1.0", provider_type="SERVICE"),
+    offline = FakeProvider(
+        ProviderDescriptor(
+            provider_id="models.offline",
+            version="1.0",
+            provider_type="MODEL",
+            models=(ModelProfile(model_id="offline-model"),),
+        ),
         state=AvailabilityState.UNAVAILABLE,
     )
-    providers.register(unavailable)
-    assert unavailable.check_availability().state == AvailabilityState.UNAVAILABLE
+    providers.register(offline)
 
     model_provider = FakeProvider(
         ProviderDescriptor(
