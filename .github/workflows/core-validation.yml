@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/core-validation.yml"
       - "access/**"
+      - "agent_factory/**"
+      - "agents/**"
       - "factory/**"
       - "integrations/**"
       - "models/**"
