@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 0.4
+Version: 0.5
 Status: ACTIVE
 
 ## Reading Order
@@ -13,9 +13,10 @@ Status: ACTIVE
 5. `ARCHITECTURE.md` - Control Plane and Multi-Agent Core architecture.
 6. `AGENT_CONTRACT.md` - common agent execution contract.
 7. `CAPABILITY_MODEL.md` - capability discovery, compatibility, and routing model.
-8. `MACHINE_CONTRACTS.md` - active Phase 1 machine-readable contract baseline.
-9. `ROADMAP.md` - phased implementation plan starting from Phase 0.
-10. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
+8. `MACHINE_CONTRACTS.md` - Phase 1 machine-readable contract baseline.
+9. `PERSISTENCE.md` - Phase 2 persistence, Project Registry, isolation, and recovery semantics.
+10. `ROADMAP.md` - phased implementation plan starting from Phase 0.
+11. `PROJECT_FILE_STANDARD.md` - repository file and documentation standard.
 
 ## Current Concept Baseline
 
@@ -38,13 +39,15 @@ Additional messaging transports are deferred extension points.
 ```text
 Phase 0: COMPLETE
 Phase 1: COMPLETE
-Next: Phase 2 - Persistence and Project Registry
+Phase 2: COMPLETE
+Next: Phase 3 - Human Intervention and Email Notification Baseline
 ```
 
-Phase 1 completion checkpoint:
+Completion checkpoints:
 
 ```text
 PROJECT_CHECKPOINT_PHASE_1_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_2_COMPLETE.md
 ```
 
 ## External References
