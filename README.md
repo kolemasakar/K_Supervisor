@@ -3,12 +3,12 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 14
+Roadmap baseline: Phase 15
 Repository: `kolemasakar/K_Supervisor`
 
 ## Purpose
 
-K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, and owner-controlled publication handoff.
+K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, and reference multi-agent compositions.
 
 K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a reference product only.
 
@@ -35,6 +35,7 @@ K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a referen
 - `docs/POLICY_AND_PERMISSIONS.md`
 - `docs/AGENT_FACTORY.md`
 - `docs/RELEASE_MANAGER.md`
+- `docs/REFERENCE_RESEARCH_CRITIC_WORKFLOW.md`
 - `docs/ROADMAP.md`
 - `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`
 - `docs/DOCS_INDEX.md`
@@ -56,7 +57,8 @@ Phase 10  Tools / Providers / Provisioning / Secrets  COMPLETE
 Phase 11  Policy / Permissions / Risk / Approval      COMPLETE
 Phase 12  Reference Agents / Agent Factory            COMPLETE
 Phase 13  Release Manager / Publication Readiness     COMPLETE
-Phase 14  Reference Research-Critic Workflow          NEXT
+Phase 14  Reference Research-Critic Workflow          COMPLETE
+Phase 15  Observability / Reliability / CI            NEXT
 ```
 
 Validation baseline:
@@ -64,8 +66,8 @@ Validation baseline:
 ```text
 Core Validation: PASS
 Python: 3.13.15
-pytest: 70 passed
+pytest: 75 passed
 live owner mailbox delivery: PASS
 ```
 
-Current release baseline includes durable Release/ReleaseTarget states, generic readiness checks, GPT Store asset generation and validation, FIRST_WORKING/RELEASE_READY events, explicit HumanAction publication handoff, and owner confirmation before `PUBLISHED`.
+The current reference workflow baseline reproduces the mandatory task-specific review-profile approval gate, autonomous capability-based research/independent-review revision loop, bounded iteration behavior, and final report/review protocol generation without importing the K-Research & Critic legacy runtime.
