@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 0.6
+Version: 0.7
 Status: ACTIVE
 
 ## Reading Order
@@ -41,13 +41,16 @@ Additional messaging transports are deferred extension points.
 Phase 0: COMPLETE
 Phase 1: COMPLETE
 Phase 2: COMPLETE
-Phase 3 implementation: COMPLETE
-Phase 3 automated validation: PASS
-Phase 3 live owner mailbox delivery: PENDING
-Phase 3 overall: LIVE_DELIVERY_VALIDATION_PENDING
+Phase 3: COMPLETE
+Next: Phase 4 - Agent and Capability Registries
 ```
 
-Phase 4 is not active until the Phase 3 live delivery criterion is passed or explicitly waived.
+Phase 3 validation:
+
+```text
+automated tests: PASS (16)
+live owner mailbox delivery: PASS
+```
 
 Checkpoints:
 
@@ -55,6 +58,7 @@ Checkpoints:
 PROJECT_CHECKPOINT_PHASE_1_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_2_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_3_IMPLEMENTATION_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_3_COMPLETE.md
 ```
 
 ## External References
