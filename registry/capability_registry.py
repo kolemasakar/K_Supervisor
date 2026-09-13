@@ -1,9 +1,27 @@
 from __future__ import annotations
 
+from typing import Any
+
 from models.capability import CapabilityDescriptor, CapabilityRequirement
 
 from .errors import CapabilityResolutionError, RegistryConflictError
 from .versioning import matches_version, parse_version
+
+
+def constraints_match(provided: dict[str, Any], required: dict[str, Any]) -> bool:
+    for key, expected in required.items():
+        if key not in provided:
+            return False
+        actual = provided[key]
+        if isinstance(actual, (list, tuple, set)):
+            if isinstance(expected, (list, tuple, set)):
+                if not set(expected).issubset(set(actual)):
+                    return False
+            elif expected not in actual:
+                return False
+        elif actual != expected:
+            return False
+    return True
 
 
 class CapabilityRegistry:
@@ -48,13 +66,16 @@ class CapabilityRegistry:
         capability_id: str,
         version_constraint: str = "*",
         operation: str | None = None,
+        hard_constraints: dict[str, Any] | None = None,
     ) -> CapabilityDescriptor:
+        required_constraints = hard_constraints or {}
         candidates = [
             item
             for item in self._descriptors.values()
             if item.capability_id == capability_id
             and matches_version(item.capability_version, version_constraint)
             and (operation is None or operation in item.operations)
+            and constraints_match(item.constraints, required_constraints)
         ]
         if not candidates:
             raise CapabilityResolutionError(
@@ -67,4 +88,5 @@ class CapabilityRegistry:
             requirement.capability_id,
             requirement.version_constraint,
             requirement.operation,
+            requirement.hard_constraints,
         )
