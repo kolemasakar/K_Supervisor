@@ -33,6 +33,7 @@ def build_release_stack(tmp_path, *, readiness=("release tests pass",)):
         first_working_criteria=("working path exists",),
         documentation={"required_documents": ["README.md", "ARCHITECTURE.md", "ROADMAP.md"]},
         repository={"repository_provider": "FILESYSTEM"},
+        architecture={"architecture_style": "MODULAR"},
         notifications={"primary_channel": "EMAIL"},
         release={
             "release_targets": ["GPT_STORE"],
