@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import field_validator, model_validator
 
+from access.validation import validate_access_references
+
 from .base import ContractModel, JsonObject, ensure_tz
 from .enums import ProjectLifecycleState, ProjectOperationalState, ProjectSpecStatus
 
@@ -39,6 +41,12 @@ class ProjectSpec(ContractModel):
     @classmethod
     def validate_datetime(cls, value: datetime | None) -> datetime | None:
         return None if value is None else ensure_tz(value)
+
+    @field_validator("repository", "integrations", "notifications", "release")
+    @classmethod
+    def validate_access_config(cls, value: JsonObject) -> JsonObject:
+        validate_access_references(value)
+        return value
 
     @model_validator(mode="after")
     def validate_approval(self) -> "ProjectSpec":
