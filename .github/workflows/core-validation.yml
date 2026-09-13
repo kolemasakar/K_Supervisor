@@ -19,6 +19,7 @@ on:
       - "release_manager/**"
       - "runtime/**"
       - "scheduler/**"
+      - "schemas/**"
       - "supervisor/**"
       - "tools/**"
       - "workflows/**"
