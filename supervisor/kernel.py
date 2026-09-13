@@ -175,6 +175,13 @@ class SupervisorKernel:
             break
 
         assert last_result is not None
+        if last_result.status == ExecutionStatus.BLOCKED:
+            self._save_task_state(task, TaskStatus.BLOCKED)
+            self.store.save_workflow_run(
+                workflow.model_copy(update={"status": "BLOCKED", "updated_at": self._now()})
+            )
+            return last_result
+
         task = self._save_task_state(task, TaskStatus.FAILED)
         self.store.save_workflow_run(
             workflow.model_copy(update={"status": "FAILED", "updated_at": self._now()})
