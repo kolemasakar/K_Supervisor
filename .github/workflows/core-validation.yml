@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - ".github/workflows/core-validation.yml"
+      - "factory/**"
       - "models/**"
       - "persistence/**"
       - "providers/**"
