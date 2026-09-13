@@ -13,7 +13,7 @@ from registry import (
 from registry.versioning import matches_version
 
 
-def capability(version="1.0.0", operations=("run",), description="Test"):
+def capability(version="1.0.0", operations=("run",), description="Test", constraints=None):
     return CapabilityDescriptor(
         capability_id="analysis.test",
         capability_version=version,
@@ -21,6 +21,7 @@ def capability(version="1.0.0", operations=("run",), description="Test"):
         operations=operations,
         input_schema="schema://input",
         output_schema="schema://output",
+        constraints=constraints or {},
     )
 
 
@@ -40,11 +41,12 @@ def agent(agent_id, version="1.0.0", status="AVAILABLE"):
     )
 
 
-def requirement(constraint="^1.0.0", operation="run"):
+def requirement(constraint="^1.0.0", operation="run", hard_constraints=None):
     return CapabilityRequirement(
         capability_id="analysis.test",
         version_constraint=constraint,
         operation=operation,
+        hard_constraints=hard_constraints or {},
     )
 
 
@@ -92,12 +94,7 @@ def test_duplicate_agent_id_conflict_is_rejected():
                 agent_type="OTHER",
                 agent_version="1.0.0",
                 display_name="Changed",
-                capabilities=(
-                    CapabilityRef(
-                        capability_id="analysis.test",
-                        capability_version="1.0.0",
-                    ),
-                ),
+                capabilities=(CapabilityRef(capability_id="analysis.test", capability_version="1.0.0"),),
                 status="AVAILABLE",
             )
         )
@@ -119,6 +116,22 @@ def test_provider_resolution_honors_availability_version_and_operation():
 
     agents.set_availability("agent.best", AgentAvailability.UNAVAILABLE)
     assert [item.agent.agent_id for item in agents.find_providers(requirement("^1.0.0"))] == ["agent.old"]
+
+
+def test_hard_constraints_filter_capabilities_and_providers():
+    capabilities = CapabilityRegistry()
+    capabilities.register(capability(constraints={"languages": ["en", "uk"], "mode": "online"}))
+    agents = AgentRegistry(capabilities)
+    agents.register(agent("agent.compatible"))
+
+    matching = requirement(hard_constraints={"languages": ["uk"], "mode": "online"})
+    incompatible = requirement(hard_constraints={"languages": ["de"]})
+
+    assert capabilities.resolve_requirement(matching).capability_id == "analysis.test"
+    assert len(agents.find_providers(matching)) == 1
+    with pytest.raises(CapabilityResolutionError):
+        capabilities.resolve_requirement(incompatible)
+    assert agents.find_providers(incompatible) == ()
 
 
 def test_degraded_provider_is_opt_in():
