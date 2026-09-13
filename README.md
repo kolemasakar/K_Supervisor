@@ -3,7 +3,7 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 7
+Roadmap baseline: Phase 8
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
@@ -47,6 +47,7 @@ GPT Store preparation should be automated where feasible. Publication remains a 
 - `docs/REGISTRIES.md`
 - `docs/SUPERVISOR_KERNEL.md`
 - `docs/PROJECT_FACTORY.md`
+- `docs/WORKFLOW_ENGINE.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
@@ -76,12 +77,14 @@ Phase 5 - Supervisor Orchestration Kernel - COMPLETE.
 
 Phase 6 - Project Factory and Repository Bootstrap - COMPLETE.
 
+Phase 7 - Workflow Engine and Multi-Agent Composition - COMPLETE.
+
 Validation baseline:
 
 ```text
 Core Validation: PASS
 Python: 3.13.15
-pytest: 31 passed
+pytest: 36 passed
 live owner mailbox delivery: PASS
 ```
 
@@ -105,7 +108,13 @@ RepositoryAdapter boundary
 FilesystemRepositoryAdapter
 ProjectSpec-driven bootstrap templates
 bootstrap validation and conflict protection
+WorkflowDefinition
+WorkflowEngine
+capability-based workflow composition
+conditional nodes
+bounded workflow loops
+approval pause/resume
 GitHub Actions / pytest validation
 ```
 
-Next roadmap phase: Phase 7 - Workflow Engine and Multi-Agent Composition.
+Next roadmap phase: Phase 8 - Agent Runtime and Execution Control.
