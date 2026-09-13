@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.6
+Version: 1.7
 Status: ACTIVE
 
 ## Reading Order
@@ -25,9 +25,10 @@ Status: ACTIVE
 17. `PROJECT_SCHEDULER.md` - parallel project execution.
 18. `INTEGRATIONS.md` - tools, providers, protected access, provisioning, and model-selection hooks.
 19. `POLICY_AND_PERMISSIONS.md` - policy decisions, risk, side effects, least privilege, approvals, and audit.
-20. `ROADMAP.md` - phased implementation plan.
-21. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
-22. `PROJECT_FILE_STANDARD.md` - repository file standard.
+20. `AGENT_FACTORY.md` - Phase 12 agent blueprints, scaffolding, registry/runtime binding, and reference agents.
+21. `ROADMAP.md` - phased implementation plan.
+22. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
+23. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
@@ -44,23 +45,24 @@ Phase 8: COMPLETE
 Phase 9: COMPLETE
 Phase 10: COMPLETE
 Phase 11: COMPLETE
-Next: Phase 12 - Reference Agents and Agent Factory
+Phase 12: COMPLETE
+Next: Phase 13 - Release Manager and Publication Readiness
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-63 tests PASS
+66 tests PASS
 ```
 
 Latest checkpoints:
 
 ```text
-PROJECT_CHECKPOINT_PHASE_8_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_9_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_10_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_11_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_12_COMPLETE.md
 ```
 
 ## External References
