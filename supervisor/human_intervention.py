@@ -45,21 +45,42 @@ class HumanInterventionBroker:
             raise KeyError(human_action_id)
         if action.status == HumanActionStatus.VERIFIED or not ok:
             return action
-
         resolved = action.model_copy(
             update={"status": HumanActionStatus.VERIFIED, "resolved_at": at}
         )
+        return self._resolve(action, resolved, at)
+
+    def cancel(self, human_action_id: str, at: datetime) -> HumanActionRequest:
+        at = ensure_tz(at)
+        action = self.store.get_human_action(human_action_id)
+        if action is None:
+            raise KeyError(human_action_id)
+        if action.status == HumanActionStatus.CANCELLED:
+            return action
+        if action.status == HumanActionStatus.VERIFIED:
+            raise ValueError("verified human action cannot be cancelled")
+        resolved = action.model_copy(
+            update={"status": HumanActionStatus.CANCELLED, "resolved_at": at}
+        )
+        return self._resolve(action, resolved, at)
+
+    def _resolve(
+        self,
+        original: HumanActionRequest,
+        resolved: HumanActionRequest,
+        at: datetime,
+    ) -> HumanActionRequest:
         blockers = [
             item
-            for item in self.store.list_human_actions(action.project_id)
-            if item.human_action_id != human_action_id
+            for item in self.store.list_human_actions(original.project_id)
+            if item.human_action_id != original.human_action_id
             and item.blocking
             and item.status not in {HumanActionStatus.VERIFIED, HumanActionStatus.CANCELLED}
         ]
-        project = self.registry.get(action.project_id)
+        project = self.registry.get(original.project_id)
         if project is None:
-            raise KeyError(action.project_id)
-        if action.blocking and not blockers and project.operational_state == ProjectOperationalState.WAITING_FOR_OWNER:
+            raise KeyError(original.project_id)
+        if original.blocking and not blockers and project.operational_state == ProjectOperationalState.WAITING_FOR_OWNER:
             transition = ProjectOperationalTransition(
                 project_id=project.project_id,
                 from_state=ProjectOperationalState.WAITING_FOR_OWNER,
