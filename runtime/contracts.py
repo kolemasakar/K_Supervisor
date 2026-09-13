@@ -35,13 +35,19 @@ class RuntimeLimits:
             )
 
         timeout = values.get("timeout_seconds")
-        if timeout is not None and (not isinstance(timeout, (int, float)) or timeout <= 0):
+        if timeout is not None and (
+            not isinstance(timeout, (int, float))
+            or isinstance(timeout, bool)
+            or timeout <= 0
+        ):
             raise RuntimeValidationError("timeout_seconds must be > 0")
 
         parsed: dict[str, int | float | None] = {"timeout_seconds": timeout}
         for name in ("max_tool_calls", "max_tokens", "max_sources", "max_retries"):
             value = values.get(name)
-            if value is not None and (not isinstance(value, int) or isinstance(value, bool) or value < 0):
+            if value is not None and (
+                not isinstance(value, int) or isinstance(value, bool) or value < 0
+            ):
                 raise RuntimeValidationError(f"{name} must be a non-negative integer")
             parsed[name] = value
 
@@ -69,8 +75,8 @@ class ExecutionControl:
 
     def consume(self, resource: str, amount: int | float = 1) -> None:
         self.check_cancelled()
-        if amount < 0:
-            raise RuntimeValidationError("resource consumption must be non-negative")
+        if isinstance(amount, bool) or not isinstance(amount, (int, float)) or amount < 0:
+            raise RuntimeValidationError("resource consumption must be non-negative numeric")
         limit_name = {
             "tool_calls": "max_tool_calls",
             "tokens": "max_tokens",
