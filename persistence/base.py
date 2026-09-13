@@ -6,7 +6,7 @@ from models.intervention import HumanActionRequest, NotificationDeliveryAttempt,
 from models.lifecycle import ProjectLifecycleTransition
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
-from models.release import Release
+from models.release import Release, ReleaseTarget
 from models.task import Task, WorkflowRun
 from policy.contracts import ApprovalRecord, PolicyDecision
 
@@ -65,7 +65,15 @@ class PersistenceStore(ABC):
     @abstractmethod
     def save_release(self, value: Release) -> None: ...
     @abstractmethod
+    def get_release(self, release_id: str) -> Release | None: ...
+    @abstractmethod
     def list_releases(self, project_id: str) -> tuple[Release, ...]: ...
+    @abstractmethod
+    def save_release_target(self, value: ReleaseTarget) -> None: ...
+    @abstractmethod
+    def get_release_target(self, release_target_id: str) -> ReleaseTarget | None: ...
+    @abstractmethod
+    def list_release_targets(self, project_id: str) -> tuple[ReleaseTarget, ...]: ...
     @abstractmethod
     def save_human_action(self, value: HumanActionRequest) -> None: ...
     @abstractmethod
