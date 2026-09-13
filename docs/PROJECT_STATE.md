@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Канонічний знімок поточного стану реалізації K_Supervisor.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
 Date: 2026-09-13
 
@@ -11,11 +11,11 @@ Date: 2026-09-13
 Repository: kolemasakar/K_Supervisor
 Branch: main
 Product status: PRE-ALPHA
-Completed roadmap phases: 0-11
-Current roadmap phase: 12 - Reference Agents and Agent Factory
+Completed roadmap phases: 0-12
+Current roadmap phase: 13 - Release Manager and Publication Readiness
 Core Validation: PASS
 Python: 3.13.15
-pytest baseline: 63 passed
+pytest baseline: 66 passed
 ```
 
 ## Implemented Platform Layers
@@ -30,7 +30,8 @@ pytest baseline: 63 passed
 - Agent Runtime with execution control, timeout/cancellation and idempotency hooks;
 - Project Scheduler with parallel-project isolation and shared limits;
 - Tool/Provider/Provisioning interfaces and protected access references;
-- Policy, permissions, risk, approval and durable policy audit.
+- Policy, permissions, risk, approval and durable policy audit;
+- AgentFactory, reusable agent scaffolding and deterministic reference agent catalog.
 
 ## Controlled-Autonomy Boundary
 
@@ -46,9 +47,25 @@ Project / Workflow
 
 Policy decisions are resolved before downstream execution. Material permission expansion requires an explicit owner approval record. Raw credentials are not part of normal project documentation, notifications or agent descriptors.
 
+## Agent Creation Boundary
+
+Phase 12 adds a declarative creation path without changing Supervisor core:
+
+```text
+AgentBlueprint
+  -> AgentFactory
+  -> CapabilityRegistry + AgentRegistry
+  -> runtime binding
+  -> normal Supervisor/Runtime execution
+```
+
+`AgentScaffolder` generates a minimum `agent.py`, `test_agent.py`, and README starting point with syntax validation, idempotent writes and conflict protection.
+
 ## Documentation Consistency
 
 `PROJECT_CONTRACT.md` version 0.2 is aligned with the immutable ProjectSpec persistence model: a newly approved specification links the prior immutable record through `supersedes_spec_id`, while `Project.active_project_spec_id` identifies the authoritative specification. Existing approved historical records are not rewritten merely to mark them superseded.
+
+`ROADMAP_IMPLEMENTATION_AUDIT.md` version 1.1 verifies Phase 0-12 against the published roadmap with no unmet published exit criteria.
 
 ## Known Baseline Limits
 
@@ -59,7 +76,9 @@ Policy decisions are resolved before downstream execution. Material permission e
 - Approval expiry and revocation are not implemented.
 - SMTP transport does not provide exactly-once delivery guarantees.
 - `ProjectRecoverySnapshot` does not yet aggregate all Phase 3+ intervention/notification/policy resources into one recovery object; records remain individually durable through persistence APIs.
+- Reference agents are deterministic contract/integration examples rather than production-grade domain intelligence.
+- Agent scaffolding does not infer domain-specific tools, prompts, schemas, evaluations or permissions.
 
 ## Phase Gate
 
-Phase 12 may proceed from this baseline. Phase 13 must not be marked active until Phase 12 exit criteria are validated by Core Validation and a completion checkpoint is committed.
+Phase 13 may proceed from this baseline. Phase 14 must not be marked active until Phase 13 exit criteria are validated by Core Validation and a completion checkpoint is committed.
