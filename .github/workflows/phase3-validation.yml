@@ -1,17 +1,7 @@
-name: Phase 3 Validation
+name: Legacy Phase 3 Validation
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/phase3-validation.yml"
-      - "models/**"
-      - "persistence/**"
-      - "providers/**"
-      - "registry/**"
-      - "supervisor/**"
-      - "tests/**"
-      - "pyproject.toml"
 
 jobs:
   test:
