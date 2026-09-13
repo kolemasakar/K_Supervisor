@@ -9,7 +9,7 @@ from models.intervention import HumanActionRequest, NotificationDeliveryAttempt,
 from models.lifecycle import ProjectLifecycleTransition
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
-from models.release import Release
+from models.release import Release, ReleaseTarget
 from models.task import Task, WorkflowRun
 from policy.contracts import ApprovalRecord, PolicyDecision
 from .base import PersistenceConflictError, PersistenceStore
@@ -115,7 +115,11 @@ class SQLitePersistenceStore(PersistenceStore):
     def save_artifact(self, value): self._save("artifact", value.artifact_id, value.project_id, value, True)
     def list_artifacts(self, project_id): return self._list("artifact", project_id, ArtifactReference)
     def save_release(self, value): self._save("release", value.release_id, value.project_id, value)
+    def get_release(self, release_id): return self._get("release", release_id, Release)
     def list_releases(self, project_id): return self._list("release", project_id, Release)
+    def save_release_target(self, value): self._save("release_target", value.release_target_id, value.project_id, value)
+    def get_release_target(self, release_target_id): return self._get("release_target", release_target_id, ReleaseTarget)
+    def list_release_targets(self, project_id): return self._list("release_target", project_id, ReleaseTarget)
     def save_human_action(self, value): self._save("human_action", value.human_action_id, value.project_id, value)
     def get_human_action(self, human_action_id): return self._get("human_action", human_action_id, HumanActionRequest)
     def list_human_actions(self, project_id): return self._list("human_action", project_id, HumanActionRequest)
