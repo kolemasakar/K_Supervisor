@@ -1,39 +1,59 @@
 # K_Supervisor
-Модульна мультиагентна платформа для оркестрації, маршрутизації та контрольованої взаємодії AI-агентів.
+Система автоматизованого життєвого циклу AI-проєктів поверх модульної мультиагентної платформи.
 
 Status: PRE-ALPHA
+Concept baseline: v0.2
 Roadmap baseline: Phase 0
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
 
-K_Supervisor is a domain-neutral Modular Multi-Agent Platform.
+K_Supervisor combines:
 
-The platform provides a Supervisor orchestration kernel, explicit agent contracts, capability-based discovery and routing, composable workflows, policy boundaries, state management, and auditability.
+```text
+AI Project Lifecycle Supervisor
++
+Modular Multi-Agent Platform
+```
+
+The Project Control Plane manages onboarding, ProjectSpec approval, project bootstrap, scheduling, owner intervention, notifications, release preparation, and parallel project execution.
+
+The Multi-Agent Core provides Supervisor orchestration, agent contracts, capability-based discovery and routing, workflows, controlled execution, tools/providers, persistence, and auditability.
 
 K_Supervisor is a new project. It is not a fork, clone, or continuation branch of K-Research & Critic.
 
-## Reference Product
+## Automation Goal
 
-K-Research & Critic v1.0.0 is a completed production reference product.
+After an owner approves a ProjectSpec, K_Supervisor should automate as much of the project lifecycle as safely and technically possible, including repository/bootstrap work, documentation, roadmap execution, agent creation, validation, and release preparation.
 
-Reference repository:
+Owner intervention is explicit and resumable.
 
-```text
-kolemasakar/K_Research_Critic
-```
+The initial notification channel is email. WhatsApp, Viber, and other messaging transports are deferred extension points.
 
-It may be used to study proven patterns, contracts, workflow semantics, critique gates, evidence handling, and production lessons. Runtime code is not copied into K_Supervisor by default.
+GPT Store preparation should be automated where feasible. Publication remains a per-project owner action.
 
 ## Core Documents
 
 - `docs/VISION.md`
+- `docs/PROJECT_CONTRACT.md`
+- `docs/PROJECT_LIFECYCLE.md`
+- `docs/PROJECT_CONTROL_PLANE.md`
 - `docs/ARCHITECTURE.md`
 - `docs/AGENT_CONTRACT.md`
 - `docs/CAPABILITY_MODEL.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
+## Reference Product
+
+K-Research & Critic v1.0.0 remains a completed production reference product:
+
+```text
+kolemasakar/K_Research_Critic
+```
+
+Its validated patterns may inform K_Supervisor design, but its runtime is not the new platform architecture baseline.
+
 ## Current Phase
 
-Phase 0 establishes project identity, architectural principles, contracts, capability semantics, documentation governance, and repository bootstrap structure.
+Phase 0 establishes the v0.2 project-lifecycle and multi-agent architecture baseline. Runtime implementation begins in Phase 1.
