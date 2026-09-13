@@ -3,7 +3,7 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 0
+Roadmap baseline: Phase 1
 Repository: kolemasakar/K_Supervisor
 
 ## Purpose
@@ -41,6 +41,7 @@ GPT Store preparation should be automated where feasible. Publication remains a 
 - `docs/ARCHITECTURE.md`
 - `docs/AGENT_CONTRACT.md`
 - `docs/CAPABILITY_MODEL.md`
+- `docs/MACHINE_CONTRACTS.md`
 - `docs/ROADMAP.md`
 - `docs/DOCS_INDEX.md`
 
@@ -56,4 +57,6 @@ Its validated patterns may inform K_Supervisor design, but its runtime is not th
 
 ## Current Phase
 
-Phase 0 establishes the v0.2 project-lifecycle and multi-agent architecture baseline. Runtime implementation begins in Phase 1.
+Phase 0 architecture baseline is complete.
+
+Phase 1 - Machine Contracts and Core State Models - is IN_PROGRESS. The first Python/Pydantic contract implementation has been prepared and locally validated, while source-code commit is pending because the current GitHub write channel rejected executable-code writes.
