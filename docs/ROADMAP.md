@@ -1,76 +1,142 @@
 # ROADMAP
-Новий поетапний план розвитку K_Supervisor від Phase 0 до модульної production-ready мультиагентної платформи.
+Оновлений план розвитку K_Supervisor як системи життєвого циклу AI-проєктів і модульної мультиагентної платформи.
 
-Version: 0.1
+Version: 0.2
 Status: ACTIVE
 Roadmap start: 2026-08-14
 
 ## 1. Roadmap Rule
 
-K_Supervisor starts with a new roadmap from Phase 0.
+K_Supervisor starts from Phase 0 and does not continue the historical phase numbering of K-Research & Critic.
 
-K-Research & Critic v1.0.0 is a production reference source only. Its historical phase numbering does not continue in this repository.
+Each phase must define deliverables, tests, exit criteria, and deferred work.
 
-Each phase should have explicit deliverables, tests, exit criteria, and a checkpoint before the next phase begins.
+The v0.2 roadmap adds the Project Lifecycle Control Plane above the previously defined Multi-Agent Core.
 
 ## Phase 0 - Foundation and Architecture Baseline
 
-Goal: define the new platform before runtime implementation begins.
+Goal: freeze the product concept before runtime implementation.
 
 Scope:
 
-- establish K_Supervisor identity and boundaries;
-- define VISION;
-- define architectural principles;
+- define K_Supervisor as AI Project Lifecycle Supervisor + Modular Multi-Agent Platform;
+- define Project Control Plane;
+- define Project Contract / ProjectSpec;
+- define Project Lifecycle and operational state separation;
 - define Agent Contract;
 - define Capability Model;
-- adopt project file/documentation standard;
-- create repository bootstrap structure;
+- define email-first Notification Broker policy;
+- define parallel-project requirement;
+- define release/publication boundary;
 - define reference-product boundary;
-- create new ROADMAP.
+- create repository bootstrap structure.
 
-Deliverables:
+Primary deliverables:
 
 ```text
 README.md
 docs/VISION.md
 docs/ARCHITECTURE.md
+docs/PROJECT_CONTROL_PLANE.md
+docs/PROJECT_CONTRACT.md
+docs/PROJECT_LIFECYCLE.md
 docs/AGENT_CONTRACT.md
 docs/CAPABILITY_MODEL.md
 docs/ROADMAP.md
 docs/DOCS_INDEX.md
-bootstrap directories
 ```
 
 Exit criteria:
 
-- platform is explicitly domain-neutral;
-- Agent and Capability abstractions are separated;
-- Supervisor responsibility boundary is documented;
-- K-Research & Critic is reference-only;
-- no legacy runtime is cloned or forked;
-- repository structure exists for Phase 1.
+- Project is the top-level managed unit;
+- Project and Task are separated;
+- Agent and Capability are separated;
+- Control Plane and Multi-Agent Core boundaries are explicit;
+- email is the initial notification channel;
+- future messaging channels are deferred;
+- GPT Store preparation and publication are separate;
+- parallel project operation is an explicit requirement;
+- K-Research & Critic remains reference-only.
 
-## Phase 1 - Machine Contracts and Core Models
+## Phase 1 - Machine Contracts and Core State Models
 
-Goal: convert Phase 0 architecture into executable, validated core contracts.
+Goal: convert Phase 0 logical contracts into executable validated models.
 
 Planned work:
 
-- choose initial implementation language/runtime baseline;
-- implement Task, WorkflowRun, AgentDescriptor, CapabilityDescriptor, AgentRunRequest, and AgentRunResult models;
-- create JSON schemas where external interchange requires them;
-- implement validation and serialization;
-- freeze Agent Contract v1.0 and Capability Schema v1.0;
-- add unit tests for valid and invalid envelopes.
+- select implementation language/runtime baseline;
+- implement Project and ProjectSpec models;
+- implement lifecycle and operational state models;
+- implement Task and WorkflowRun models;
+- implement AgentDescriptor, CapabilityDescriptor, AgentRunRequest, and AgentRunResult;
+- implement HumanActionRequest and NotificationEvent;
+- implement Release and ReleaseTarget models;
+- add JSON schemas where interchange requires them;
+- add validation, serialization, compatibility, and transition tests;
+- freeze first machine-readable contract versions.
 
 Exit criteria:
 
-- all core models round-trip reliably;
-- invalid contracts fail deterministically;
-- schema/version compatibility is testable.
+- core models round-trip reliably;
+- invalid state transitions fail deterministically;
+- ProjectSpec approval state is machine-enforced;
+- contract compatibility is testable.
 
-## Phase 2 - Agent and Capability Registries
+## Phase 2 - Persistence and Project Registry
+
+Goal: establish durable project identity and resumable state early.
+
+Planned work:
+
+- persistence interface;
+- initial local persistence backend;
+- Project Registry;
+- ProjectSpec version storage;
+- lifecycle and operational transition records;
+- task/workflow/run records;
+- artifact references;
+- release records;
+- recovery and resume baseline.
+
+Exit criteria:
+
+- projects survive process restart;
+- current project state can be reconstructed without hidden memory;
+- multiple projects can be registered independently.
+
+## Phase 3 - Human Intervention and Email Notification Baseline
+
+Goal: provide the owner-control boundary required for autonomous project work.
+
+Planned work:
+
+- Human Intervention Broker;
+- HumanActionRequest state machine;
+- Notification Broker;
+- EmailAdapter / EmailProvider interface;
+- one working email transport;
+- owner email configuration;
+- delivery attempt records;
+- duplicate suppression / idempotency protection;
+- verification and resume hooks;
+- notification policy for ACTION_REQUIRED, FIRST_WORKING, RELEASE_READY, and critical failures.
+
+Deferred:
+
+```text
+WhatsApp
+Viber
+other messaging transports
+```
+
+Exit criteria:
+
+- a project can enter WAITING_FOR_OWNER;
+- owner receives an email with a structured required action;
+- the project can resume after the completion condition is verified;
+- unrelated projects remain unaffected.
+
+## Phase 4 - Agent and Capability Registries
 
 Goal: provide dynamic discovery without hard-coded Supervisor imports.
 
@@ -78,39 +144,61 @@ Planned work:
 
 - AgentRegistry;
 - CapabilityRegistry;
-- provider registration;
 - capability version resolution;
+- provider registration;
 - availability state;
-- duplicate and conflict handling;
-- registry tests.
+- duplicate/conflict handling;
+- compatibility tests.
 
 Exit criteria:
 
-- agents can be added and removed without Supervisor code changes;
-- providers can be discovered by capability requirement.
+- agents can be added or removed without Supervisor-core changes;
+- providers can be resolved by capability requirement.
 
-## Phase 3 - Supervisor Orchestration Kernel
+## Phase 5 - Supervisor Orchestration Kernel
 
-Goal: implement the smallest useful Supervisor core.
+Goal: implement the smallest useful task-level Supervisor.
 
 Planned work:
 
-- task intake;
+- task intake within a Project;
 - task/run identifiers;
 - capability requirement creation;
 - candidate resolution;
 - dispatch boundary;
 - normalized result handling;
-- failure and retry policy hooks;
+- retry and escalation hooks;
 - explicit task state machine.
 
 Exit criteria:
 
-- one task can request one capability and receive a validated result through a dynamically selected agent.
+- one project task can request one capability and receive a validated result from a dynamically selected agent.
 
-## Phase 4 - Workflow Engine and Multi-Agent Composition
+## Phase 6 - Project Factory and Repository Bootstrap
 
-Goal: orchestrate multi-step agent collaboration.
+Goal: automate creation of approved projects.
+
+Planned work:
+
+- onboarding-to-ProjectSpec handoff;
+- repository create/connect adapter;
+- reusable project templates;
+- README and baseline documentation generation;
+- roadmap generation;
+- architecture/bootstrap generation;
+- initial CI scaffolding where required;
+- initial agent/workflow scaffolding;
+- bootstrap validation;
+- Project Registry update.
+
+Exit criteria:
+
+- an approved ProjectSpec can produce a valid managed repository with minimum project documentation and structure;
+- manual owner intervention is requested only at explicit boundaries.
+
+## Phase 7 - Workflow Engine and Multi-Agent Composition
+
+Goal: orchestrate multi-step collaboration.
 
 Planned work:
 
@@ -118,56 +206,59 @@ Planned work:
 - workflow nodes and transitions;
 - sequential and conditional nodes;
 - capability-based node binding;
-- delegation through Supervisor;
 - bounded iteration loops;
 - approval gates;
+- delegation through Supervisor;
 - workflow validation.
 
 Exit criteria:
 
-- a workflow can execute multiple different capabilities without direct agent coupling.
+- a workflow can use multiple capabilities without direct agent coupling.
 
-## Phase 5 - Agent Runtime and Execution Control
+## Phase 8 - Agent Runtime and Execution Control
 
-Goal: standardize safe execution behavior across agent implementations.
+Goal: standardize safe agent execution.
 
 Planned work:
 
 - runtime adapter interface;
 - local/in-process executor;
 - timeout and cancellation;
-- normalized exceptions;
+- exception normalization;
 - resource limits;
-- idempotency hooks;
 - retry classification;
-- agent health/availability.
+- idempotency hooks;
+- agent health and availability.
 
 Exit criteria:
 
 - runtime failures are isolated and represented through Agent Contract statuses.
 
-## Phase 6 - Context, State, Persistence, and Resume
+## Phase 9 - Project Scheduler and Parallel Execution
 
-Goal: make workflows durable and resumable.
+Goal: support simultaneous work across multiple independent projects.
 
 Planned work:
 
-- task state repository;
-- workflow state repository;
-- run records;
-- artifact references;
-- approval records;
-- persistence interface;
-- initial local persistence implementation;
-- resume/recovery semantics.
+- Project Scheduler;
+- project priority;
+- per-project concurrency limits;
+- global concurrency limits;
+- shared-resource locks;
+- provider/rate-limit coordination;
+- project-level budgets;
+- blocked-project isolation;
+- parallel execution tests.
 
 Exit criteria:
 
-- interrupted workflows can be reconstructed without hidden in-memory state.
+- at least two independent projects can make progress concurrently;
+- WAITING_FOR_OWNER on one project does not stop the other;
+- shared limits are enforced deterministically.
 
-## Phase 7 - Tools and Provider Adapter Layer
+## Phase 10 - Tools, Providers, Provisioning, and Secret Backends
 
-Goal: decouple agents from external services and model providers.
+Goal: connect projects to external systems through stable adapters.
 
 Planned work:
 
@@ -175,15 +266,19 @@ Planned work:
 - Provider interface;
 - dependency declaration;
 - tool/provider registry;
-- credentials by reference;
+- protected access-reference interface;
+- initial protected storage backend;
+- repository/service provisioning adapters;
+- server/database/cloud integration patterns;
 - availability checks;
 - provider-independent model selection hooks.
 
 Exit criteria:
 
-- at least two interchangeable adapters can satisfy one abstract dependency class.
+- platform integrations can be replaced behind stable interfaces;
+- project access data is not embedded in normal documentation or notification events.
 
-## Phase 8 - Policy, Permissions, Risk, and Approval
+## Phase 11 - Policy, Permissions, Risk, and Approval
 
 Goal: enforce controlled autonomy before side effects occur.
 
@@ -194,93 +289,117 @@ Planned work:
 - side-effect permissions;
 - per-agent tool permissions;
 - approval gates;
-- user/workflow policy constraints;
-- least-privilege context and credentials;
+- project/workflow policy constraints;
+- least-privilege execution context;
 - audit of policy decisions.
 
 Exit criteria:
 
-- prohibited operations are blocked deterministically before execution.
+- prohibited operations are blocked before execution;
+- material permission expansion requires explicit approval.
 
-## Phase 9 - Reference Agents
+## Phase 12 - Reference Agents and Agent Factory
 
-Goal: validate platform neutrality with several replaceable agent types.
+Goal: validate the common contracts and automate new agent creation.
 
-Planned candidates:
+Planned work:
 
-```text
-ResearchAgent
-CriticAgent
-ReportAgent
-DataAnalysisAgent
-FactCheckAgent
-```
-
-Agents are reference implementations, not privileged Supervisor components.
+- reusable agent template/scaffolder;
+- AgentDescriptor generation;
+- capability declaration generation;
+- validation and test template;
+- automatic registry integration;
+- reference agents such as ResearchAgent, CriticAgent, ReportAgent, DataAnalysisAgent, and FactCheckAgent.
 
 Exit criteria:
 
 - at least three agent types use the same Agent Contract;
-- at least one capability has two interchangeable providers.
+- at least one capability has two interchangeable providers;
+- a new compliant agent can be scaffolded and validated with minimal manual work.
 
-## Phase 10 - Reference Research-Critic Workflow
+## Phase 13 - Release Manager and Publication Readiness
 
-Goal: prove that the completed K-Research & Critic behavior can be expressed as a K_Supervisor composition without importing its legacy runtime.
+Goal: automate release preparation after a project reaches a working state.
+
+Planned work:
+
+- Release Manager;
+- Release and ReleaseTarget state machines;
+- generic release readiness checks;
+- release artifacts and checklists;
+- FIRST_WORKING event handling;
+- RELEASE_READY event handling;
+- GPT Store preparation profile;
+- automated preparation of feasible GPT assets and validation;
+- owner publication handoff.
+
+Exit criteria:
+
+- a project can move from FIRST_WORKING to target-specific RELEASE_READY;
+- GPT Store publication requirements that can be generated or validated automatically are prepared automatically;
+- publication remains an explicit per-project owner action.
+
+## Phase 14 - Reference Research-Critic Workflow
+
+Goal: demonstrate that K-Research & Critic behavior can be re-composed on the new platform.
 
 Planned work:
 
 - study v1.0.0 reference behavior;
 - define Research-Critic workflow from capabilities;
-- implement profile approval gate as reusable workflow/policy mechanism;
-- implement independent critique loop;
+- implement profile approval as a reusable mechanism;
+- implement independent critique/revision loop;
 - compare behavior against reference expectations;
 - document intentional differences.
 
 Exit criteria:
 
-- workflow reproduces required behavior through new contracts and registries;
-- no direct clone/fork dependency exists.
+- required behavior is expressed through new contracts and registries;
+- no direct legacy runtime dependency exists.
 
-## Phase 11 - Observability, Audit, Reliability, and Test Matrix
+## Phase 15 - Observability, Reliability, CI, and Test Matrix
 
-Goal: make platform behavior diagnosable and regression-safe.
+Goal: make project and platform behavior diagnosable and regression-safe.
 
 Planned work:
 
 - structured audit events;
-- metrics;
-- routing decision records;
+- project and agent metrics;
+- routing records;
+- notification records;
+- release validation records;
 - integration tests;
 - failure injection;
 - recovery tests;
 - deterministic fixtures;
 - CI quality gates;
-- performance baseline.
+- coverage and performance baseline.
 
 Exit criteria:
 
-- major state transitions and routing decisions are testable and auditable.
+- major project transitions, routing decisions, intervention requests, notifications, and releases are testable and auditable.
 
-## Phase 12 - Interfaces, Packaging, and Extensibility
+## Phase 16 - Interfaces, Packaging, and Extensibility
 
-Goal: expose a stable platform for external use and extension.
+Goal: expose a stable platform for wider use and extension.
 
 Planned work:
 
 - CLI and/or API boundary;
 - configuration model;
-- plugin/extension discovery;
+- extension discovery;
 - packaging;
-- example workflows;
+- example project templates and workflows;
 - developer documentation;
-- compatibility policy.
+- compatibility policy;
+- future notification adapter interface documentation.
 
 Exit criteria:
 
-- an external developer can add a compliant agent and capability without changing Supervisor core code.
+- an external developer can add a compliant agent, capability, project template, or adapter without changing Supervisor core code.
 
 ## Future Direction
 
-Later phases may cover distributed execution, remote agents, event buses, multi-tenant isolation, capability marketplaces, scheduling, advanced planning, and production deployment profiles.
+Possible later work includes distributed execution, remote agents, event buses, multi-tenant isolation, advanced planning, richer scheduling, additional publication targets, and optional messaging integrations such as WhatsApp or Viber.
 
-These are intentionally deferred until the local contract-driven platform is proven.
+These are deferred until the local project-lifecycle and email-first automation baseline is proven.
