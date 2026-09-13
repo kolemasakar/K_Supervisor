@@ -4,17 +4,34 @@ from models.agent import AgentError, AgentRunRequest, AgentRunResult
 from models.enums import ExecutionStatus
 from supervisor.dispatch import AgentDispatcher
 
-from .contracts import PolicyEffect
+from .approval import PolicyApprovalBroker
+from .contracts import ApprovalStatus, PolicyEffect
 from .engine import PolicyEngine
 
 
 class PolicyEnforcedDispatcher:
-    def __init__(self, engine: PolicyEngine, delegate: AgentDispatcher):
+    def __init__(
+        self,
+        engine: PolicyEngine,
+        delegate: AgentDispatcher,
+        approval_broker: PolicyApprovalBroker | None = None,
+    ):
         self.engine = engine
         self.delegate = delegate
+        self.approval_broker = approval_broker
 
     def dispatch(self, request: AgentRunRequest) -> AgentRunResult:
         decision = self.engine.evaluate(request)
+        if decision.effect == PolicyEffect.REQUIRE_APPROVAL and self.approval_broker is not None:
+            approval = self.approval_broker.request(request, decision.evaluated_at)
+            request = request.model_copy(
+                update={"policy": {**request.policy, "approval_id": approval.approval_id}}
+            )
+            if approval.status in {ApprovalStatus.APPROVED, ApprovalStatus.REJECTED}:
+                decision = self.engine.evaluate(request)
+            else:
+                decision = decision.model_copy(update={"approval_id": approval.approval_id})
+
         if decision.effect != PolicyEffect.ALLOW:
             return AgentRunResult(
                 request_id=request.request_id,
