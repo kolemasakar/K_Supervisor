@@ -6,7 +6,7 @@ from threading import RLock
 
 from models.agent import AgentRunRequest, AgentRunResult
 from models.control import RuntimeIdempotencyRecord
-from persistence.base import PersistenceStore
+from persistence.base import PersistenceConflictError, PersistenceStore
 
 from .errors import IdempotencyConflictError
 
@@ -111,13 +111,19 @@ class PersistenceIdempotencyStore:
                     "idempotency key reused with a different input payload"
                 )
             return
-        self.store.save_runtime_idempotency(
-            RuntimeIdempotencyRecord(
-                record_id=record_id,
-                project_id=request.project_id,
-                scope=_scope(request),
-                signature=signature,
-                result=result,
-                created_at=datetime.now(timezone.utc),
-            )
+        record = RuntimeIdempotencyRecord(
+            record_id=record_id,
+            project_id=request.project_id,
+            scope=_scope(request),
+            signature=signature,
+            result=result,
+            created_at=datetime.now(timezone.utc),
         )
+        try:
+            self.store.save_runtime_idempotency(record)
+        except PersistenceConflictError as exc:
+            current = self.store.get_runtime_idempotency(record_id)
+            if current is None or current.signature != signature:
+                raise IdempotencyConflictError(
+                    "idempotency key reused concurrently with a different input payload"
+                ) from exc
