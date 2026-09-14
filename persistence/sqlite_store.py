@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
+from models.control import RuntimeIdempotencyRecord
 from models.intervention import (
     HumanActionRequest,
     NotificationDeliveryAttempt,
@@ -273,7 +274,20 @@ class SQLitePersistenceStore(PersistenceStore):
         ).fetchall()
         return tuple(cls.model_validate_json(row["payload"]) for row in rows)
 
+    def _audit(self, value: AuditEvent) -> None:
+        self._event(
+            "audit_event",
+            value.project_id,
+            value.occurred_at.isoformat(),
+            value,
+            False,
+        )
+
     def save_project(self, value): self._save("project", value.project_id, value.project_id, value)
+    def save_project_with_audit(self, value, audit):
+        with self.transaction():
+            self._save("project", value.project_id, value.project_id, value, commit=False)
+            self._audit(audit)
     def get_project(self, project_id): return self._get("project", project_id, Project)
     def list_projects(self):
         rows = self.conn.execute("SELECT payload FROM resources WHERE kind='project' ORDER BY rowid").fetchall()
@@ -282,16 +296,20 @@ class SQLitePersistenceStore(PersistenceStore):
     def get_project_spec(self, project_spec_id): return self._get("project_spec", project_spec_id, ProjectSpec)
     def list_project_specs(self, project_id): return self._list("project_spec", project_id, ProjectSpec)
     def append_lifecycle_transition(self, value): self._event("lifecycle_transition", value.project_id, value.timestamp.isoformat(), value)
-    def apply_lifecycle_transition(self, project, value):
+    def apply_lifecycle_transition(self, project, value, audit=None):
         with self.transaction():
             self._event("lifecycle_transition", value.project_id, value.timestamp.isoformat(), value, False)
             self._save("project", project.project_id, project.project_id, project, commit=False)
+            if audit is not None:
+                self._audit(audit)
     def list_lifecycle_transitions(self, project_id): return self._events("lifecycle_transition", project_id, ProjectLifecycleTransition)
     def append_operational_transition(self, value): self._event("operational_transition", value.project_id, value.timestamp.isoformat(), value)
-    def apply_operational_transition(self, project, value):
+    def apply_operational_transition(self, project, value, audit=None):
         with self.transaction():
             self._event("operational_transition", value.project_id, value.timestamp.isoformat(), value, False)
             self._save("project", project.project_id, project.project_id, project, commit=False)
+            if audit is not None:
+                self._audit(audit)
     def list_operational_transitions(self, project_id): return self._events("operational_transition", project_id, ProjectOperationalTransition)
     def save_task(self, value): self._save("task", value.task_id, value.project_id, value)
     def get_task(self, task_id): return self._get("task", task_id, Task)
@@ -308,7 +326,13 @@ class SQLitePersistenceStore(PersistenceStore):
     def save_release_target(self, value): self._save("release_target", value.release_target_id, value.project_id, value)
     def get_release_target(self, release_target_id): return self._get("release_target", release_target_id, ReleaseTarget)
     def list_release_targets(self, project_id): return self._list("release_target", project_id, ReleaseTarget)
-    def save_human_action(self, value): self._save("human_action", value.human_action_id, value.project_id, value)
+    def save_human_action(self, value, audit=None):
+        if audit is None:
+            self._save("human_action", value.human_action_id, value.project_id, value)
+            return
+        with self.transaction():
+            self._save("human_action", value.human_action_id, value.project_id, value, commit=False)
+            self._audit(audit)
     def get_human_action(self, human_action_id): return self._get("human_action", human_action_id, HumanActionRequest)
     def list_human_actions(self, project_id): return self._list("human_action", project_id, HumanActionRequest)
     def save_notification(self, value): self._save("notification", value.notification_id, value.project_id, value, True)
@@ -316,14 +340,25 @@ class SQLitePersistenceStore(PersistenceStore):
     def list_notifications(self, project_id): return self._list("notification", project_id, NotificationEvent)
     def append_notification_delivery_attempt(self, value): self._event("notification_delivery_attempt", value.project_id, value.created_at.isoformat(), value)
     def list_notification_delivery_attempts(self, project_id): return self._events("notification_delivery_attempt", project_id, NotificationDeliveryAttempt)
-    def apply_human_action_operational_transition(self, action, project, transition):
+    def apply_human_action_operational_transition(self, action, project, transition, audit=None):
         with self.transaction():
             self._save("human_action", action.human_action_id, action.project_id, action, commit=False)
             self._event("operational_transition", transition.project_id, transition.timestamp.isoformat(), transition, False)
             self._save("project", project.project_id, project.project_id, project, commit=False)
-    def save_approval(self, value): self._save("approval", value.approval_id, value.project_id, value)
+            if audit is not None:
+                self._audit(audit)
+    def save_approval(self, value, audit=None):
+        if audit is None:
+            self._save("approval", value.approval_id, value.project_id, value)
+            return
+        with self.transaction():
+            self._save("approval", value.approval_id, value.project_id, value, commit=False)
+            self._audit(audit)
     def get_approval(self, approval_id): return self._get("approval", approval_id, ApprovalRecord)
     def list_approvals(self, project_id): return self._list("approval", project_id, ApprovalRecord)
+    def save_runtime_idempotency(self, value): self._save("runtime_idempotency", value.record_id, value.project_id, value, True)
+    def get_runtime_idempotency(self, record_id): return self._get("runtime_idempotency", record_id, RuntimeIdempotencyRecord)
+    def list_runtime_idempotency(self, project_id): return self._list("runtime_idempotency", project_id, RuntimeIdempotencyRecord)
     def append_policy_decision(self, value): self._event("policy_decision", value.project_id, value.evaluated_at.isoformat(), value)
     def list_policy_decisions(self, project_id): return self._events("policy_decision", project_id, PolicyDecision)
     def append_audit_event(self, value): self._event("audit_event", value.project_id, value.occurred_at.isoformat(), value)
