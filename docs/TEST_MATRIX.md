@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 1.4
+Version: 1.5
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 1
+Current phase: v0.3 Phase 2
 
 ## v0.2 Regression Matrix
 
@@ -34,8 +34,8 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | Phase | Required verification | Status |
 | --- | --- | --- |
 | 0 | predecessor traceability, compatibility review, full v0.2 regression evidence, documentation consistency | COMPLETE |
-| 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | ACTIVE |
-| 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | PLANNED |
+| 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | COMPLETE |
+| 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | ACTIVE |
 | 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | PLANNED |
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | PLANNED |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
@@ -43,40 +43,55 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | PLANNED |
 | 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
 
-## Phase 0 Evidence
+## Phase 1 Evidence
+
+Authoritative implementation baseline:
 
 ```text
-Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
-Core Validation run: 34793901147
-pytest: 88 passed
-branch-aware coverage: 85.46%
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34804141156
+Python: 3.13.15
+pytest: 95 passed
+branch-aware coverage: 85.66%
+coverage gate: PASS
+ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public interface smoke: PASS
-runtime changes during Phase 0: none
 ```
 
-Phase 0 completion records:
+Phase 1 hardening tests:
 
-- `HARDENING_BASELINE_V0_3.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`.
+```text
+tests/test_v03_phase1_persistence_hardening.py
+```
 
-## Phase 1 Required Verification
+Verified behaviors:
 
-Phase 1 implementation must add or extend tests proving:
+- context-manager connection ownership;
+- idempotent initialize/close;
+- deterministic v1 -> v2 migration with data preservation;
+- fail-closed unsupported schema handling;
+- transaction rollback;
+- independent concurrent SQLite writers under the supported local boundary;
+- zero SQLite ResourceWarning leakage;
+- predecessor restart/recovery compatibility.
 
-- deterministic connection ownership/cleanup;
-- explicit close/reopen behavior;
-- restart recovery remains correct;
-- persistent schema versions are recognized;
-- supported forward migrations work;
-- unsupported migrations fail safely;
-- failed authoritative writes do not leave partially accepted state;
-- supported concurrent access remains deterministic;
-- known SQLite ResourceWarning leaks are eliminated;
-- all v0.2 regression tests remain green.
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
 
-Exact filenames may be introduced during implementation. The behaviors above are mandatory completion evidence.
+## Phase 2 Required Verification
+
+Phase 2 implementation must prove:
+
+- idempotency state survives process/store restart;
+- replay of the same supported command returns/reuses the authoritative outcome rather than creating an unintended duplicate operation;
+- notification/execution deduplication state is durable where required by standard platform paths;
+- approval expiry is deterministic and time-aware;
+- approval revocation is persisted, enforced and audited;
+- interrupted workflow/project control state can be reconstructed after restart;
+- richer recovery aggregation uses authoritative persistence rather than hidden process memory;
+- required control-state/audit writes respect the defined atomicity boundary;
+- all completed v0.2 + v0.3 regression tests remain green.
 
 ## Permanent Quality Gates
 
@@ -89,6 +104,7 @@ referential integrity   -> ReliabilityValidator or approved successor boundary
 metrics/telemetry       -> phase-appropriate project/agent/operational metrics
 performance             -> existing v0.2 baseline remains unless explicitly superseded
 coverage                -> branch-aware total coverage >= 80%
+resource hygiene        -> ResourceWarning is a CI error
 syntax                  -> compileall including examples
 packaging               -> isolated wheel build
 installation            -> wheel install outside source checkout
@@ -98,15 +114,14 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 
 ## Current Authoritative Runtime Baseline
 
-Until Phase 1 produces a new validated implementation checkpoint:
-
 ```text
-Core Validation run: 34793901147
-Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
+Core Validation run: 34804141156
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
 Python: 3.13.15
-pytest: 88 passed
-branch-aware coverage: 85.46%
+pytest: 95 passed
+branch-aware coverage: 85.66%
 coverage gate: PASS
+ResourceWarning gate: PASS
 wheel build/install: PASS
 public interface smoke: PASS
 ```
