@@ -13,6 +13,28 @@ EXTENSION_GROUPS = {
 }
 
 
+class NamedExtensionRegistry:
+    def __init__(self):
+        self._items: dict[str, Any] = {}
+
+    def register(self, name: str, value: Any) -> None:
+        if not name.strip():
+            raise ValueError("extension name must not be empty")
+        existing = self._items.get(name)
+        if existing is not None and existing is not value:
+            raise ValueError(f"extension already registered: {name}")
+        self._items[name] = value
+
+    def get(self, name: str) -> Any:
+        try:
+            return self._items[name]
+        except KeyError as exc:
+            raise KeyError(f"extension is not registered: {name}") from exc
+
+    def names(self) -> tuple[str, ...]:
+        return tuple(sorted(self._items))
+
+
 @dataclass(frozen=True)
 class DiscoveredExtension:
     kind: str
