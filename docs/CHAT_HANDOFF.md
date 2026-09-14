@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
 Канонічний контекст для продовження роботи над K_Supervisor у новому чаті.
 
-Version: 1.2
+Version: 1.3
 Status: ACTIVE
 Date: 2026-09-14
 
@@ -13,7 +13,8 @@ Before changing runtime code in a new conversation, read from `main`:
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
 docs/HARDENING_BASELINE_V0_3.md
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md
+docs/PERSISTENCE.md
 docs/TEST_MATRIX.md
 docs/COMPATIBILITY_POLICY.md
 docs/ROADMAP_IMPLEMENTATION_AUDIT.md
@@ -34,55 +35,69 @@ package: k-supervisor==0.1.0
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0: COMPLETE
-Current approved phase: v0.3 Phase 1 - Persistence & Resource Hygiene
-v0.3 Phase 1: ACTIVE
-v0.3 Phase 2-8: PLANNED / NOT STARTED
+v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
+Current approved phase: v0.3 Phase 2 - Durable Control State
+v0.3 Phase 2: ACTIVE
+v0.3 Phase 3-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Do not use an invented Phase 17. Work proceeds under revision-local v0.3 phase numbering.
+Work proceeds under revision-local v0.3 phase numbering.
 
 ## Current Runtime Baseline
 
-No runtime implementation change was introduced in v0.3 Phase 0. Until Phase 1 creates a new validated implementation checkpoint, the authoritative runtime baseline is:
+The authoritative validated runtime baseline is:
 
 ```text
-Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
-Core Validation run: 34793901147
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34804141156
 Python: 3.13.15
-pytest: 88 passed
-branch-aware coverage: 85.46%
+pytest: 95 passed
+branch-aware coverage: 85.66%
 coverage gate: >= 80% PASS
+ResourceWarning gate: PASS
 compileall including examples: PASS
 wheel build/install: PASS
 k-supervisor CLI outside checkout: PASS
 import ksupervisor outside checkout: PASS
 ```
 
-## Phase 0 Result
+Documentation synchronization after this SHA does not replace the runtime baseline unless a later implementation checkpoint explicitly states otherwise.
 
-Phase 0 froze the predecessor runtime/compatibility baseline, classified all known technical debt, defined migration/rollback expectations and hardening invariants, and established cumulative v0.3 validation rules.
+## Completed Phase 1
 
-Authoritative Phase 0 records:
+Phase 1 delivered:
 
-- `HARDENING_BASELINE_V0_3.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`.
+- explicit SQLite lifecycle and context-manager ownership;
+- idempotent initialize/close;
+- explicit transaction/rollback boundary;
+- schema version 2 and tested v1 -> v2 migration;
+- fail-closed unsupported schema handling;
+- WAL/busy-timeout support for local concurrent writers;
+- concurrent-writer verification;
+- permanent CI failure on `ResourceWarning`;
+- zero known SQLite ResourceWarning leaks;
+- preserved restart/recovery and public/domain compatibility.
 
-## Active Phase 1
+Authoritative records:
 
-Goal: make persistence/resource ownership reliable for long-running execution while preserving the storage abstraction.
+- `PERSISTENCE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+
+## Active Phase 2
+
+Goal: make critical control state durable across process restart.
 
 Required work includes:
 
-- explicit storage connection lifecycle/ownership;
-- transaction boundary hardening;
-- persistent schema version/migration mechanism;
-- storage abstractions independent of SQLite physical layout;
-- elimination of known SQLite ResourceWarning leaks;
-- deterministic reopen/restart recovery;
-- documented storage replacement boundary.
+- durable runtime/command idempotency;
+- durable notification/execution deduplication state for standard platform paths;
+- approval expiry and revocation lifecycle;
+- richer authoritative recovery aggregation;
+- stronger atomicity between required control state and audit records;
+- restart-safe records required to resume active workflows/projects.
 
-Required verification includes lifecycle/reopen/restart, migration, rollback, supported concurrency, zero known SQLite ResourceWarning leaks, all v0.2 regression tests and successful Core Validation on the committed Phase 1 implementation SHA.
+Required verification includes command replay across restart, durable deduplication, approval expiry/revocation, interrupted control-state recovery, aggregate reconstruction without hidden memory, atomicity tests and the full cumulative regression suite.
 
 ## Preserved Architecture
 
@@ -117,4 +132,4 @@ Entry-point groups:
 
 ## Working Rule
 
-Implement only the active roadmap phase. Do not mark Phase 1 complete until the committed implementation passes all published Phase 1 verification and permanent Core Validation gates. After completion, synchronize README, PROJECT_STATE, ROADMAP status, TEST_MATRIX, DOCS_INDEX, CHAT_HANDOFF and the phase checkpoint.
+Implement only the active roadmap phase. Do not mark Phase 2 complete until the committed implementation passes all published Phase 2 verification and permanent Core Validation gates. After completion, synchronize README, PROJECT_STATE, ROADMAP status, TEST_MATRIX, DOCS_INDEX, CHAT_HANDOFF and the phase checkpoint.
