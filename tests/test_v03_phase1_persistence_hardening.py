@@ -3,7 +3,9 @@ from __future__ import annotations
 import gc
 import sqlite3
 import warnings
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+from threading import Barrier
 
 import pytest
 
@@ -153,21 +155,25 @@ def test_failed_transaction_rolls_back_authoritative_write(tmp_path):
         assert store.get_project("ROLLBACK") is None
 
 
-def test_two_store_instances_can_write_same_database_sequentially(tmp_path):
+def test_independent_connections_support_concurrent_writers(tmp_path):
     path = tmp_path / "state.db"
-    first = SQLitePersistenceStore(path)
-    second = SQLitePersistenceStore(path)
-    try:
-        first.initialize()
-        second.initialize()
-        first.save_project(make_project("P1"))
-        second.save_project(make_project("P2"))
+    with SQLitePersistenceStore(path):
+        pass
 
-        assert {item.project_id for item in first.list_projects()} == {"P1", "P2"}
-        assert {item.project_id for item in second.list_projects()} == {"P1", "P2"}
-    finally:
-        second.close()
-        first.close()
+    barrier = Barrier(2)
+
+    def write(project_id: str) -> None:
+        with SQLitePersistenceStore(path) as store:
+            barrier.wait()
+            store.save_project(make_project(project_id))
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [executor.submit(write, "P1"), executor.submit(write, "P2")]
+        for future in futures:
+            future.result()
+
+    with SQLitePersistenceStore(path) as store:
+        assert {item.project_id for item in store.list_projects()} == {"P1", "P2"}
 
 
 def test_finalizer_prevents_unclosed_sqlite_resource_warning(tmp_path):
