@@ -1,22 +1,23 @@
 # CHAT_HANDOFF
 Канонічний контекст для продовження роботи над K_Supervisor у новому чаті.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 Date: 2026-09-14
 
 ## Start Here
 
-Before changing code in a new conversation, read these files from `main`:
+Before changing runtime code in a new conversation, read these files from `main`:
 
 ```text
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md
 docs/ROADMAP_IMPLEMENTATION_AUDIT.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md
-docs/PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md
 docs/COMPATIBILITY_POLICY.md
 docs/TEST_MATRIX.md
+docs/DOCS_INDEX.md
 ```
 
 Repository:
@@ -30,18 +31,26 @@ package: k-supervisor==0.1.0
 
 ## Current Roadmap State
 
-ROADMAP v0.2 is complete.
+ROADMAP v0.2 is complete and preserved as the predecessor baseline.
+
+ROADMAP v0.3 — Production Hardening & Service Boundary is approved and active.
 
 ```text
-Phase 0-16: COMPLETE
-Unmet published exit criteria: 0
-Current approved phase: NONE
+ROADMAP v0.2: COMPLETE
+ROADMAP v0.3: ACTIVE
+Current approved phase: v0.3 Phase 0
+v0.3 Phase 0: ACTIVE
+v0.3 Phase 1-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Do not continue implementation under an invented Phase 17. New substantial work requires an explicit new roadmap/revision first.
+ROADMAP v0.3 uses revision-local phase numbering. Do not describe new work as Phase 17.
 
-## Final Validated Implementation Baseline
+The full predecessor roadmap is preserved in `docs/ROADMAP_V0_2_ARCHIVE.md`.
+
+## Current Authoritative Runtime Baseline
+
+Until a later v0.3 implementation checkpoint explicitly replaces it:
 
 ```text
 Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
@@ -56,30 +65,36 @@ k-supervisor CLI outside checkout: PASS
 import ksupervisor outside checkout: PASS
 ```
 
-Documentation synchronization after the implementation SHA is docs-only unless a later checkpoint explicitly states otherwise.
+Documentation synchronization after this runtime implementation SHA does not itself create a new runtime baseline.
 
 ## Platform Identity
 
 K_Supervisor is an AI Project Lifecycle Supervisor plus a Modular Multi-Agent Platform.
 
-Core architecture rules that must remain preserved:
+The long-term objective is for an owner to approve a structured project concept and for the platform to bootstrap, coordinate, implement, validate and prepare the project for release while requesting owner intervention only at explicit boundaries.
 
-- Project is the top-level managed unit; Project is not Task.
-- Agent is not Capability.
+Multiple independent projects must be able to progress concurrently through the same reusable platform.
+
+## Preserved Architecture Rules
+
+- Project is the top-level managed unit; Project != Task.
+- Agent != Capability.
 - ProjectSpec approval gates material project scope.
-- workflows bind capabilities rather than concrete agents.
+- workflows bind capabilities rather than concrete agents where practical.
 - Supervisor owns routing/orchestration boundaries.
+- lifecycle state and operational state remain separate.
 - persistence is platform-owned; hidden conversational memory is not authoritative state.
 - owner-required actions use Human Intervention; notification delivery does not mean owner action completed.
-- email is the initial notification transport; future messaging transports remain optional extensions.
-- secrets are represented by protected references and must not be embedded in normal docs, notifications or audit payloads.
-- policy enforcement occurs before side effects.
+- email is the primary required owner notification transport; future messaging transports remain optional extensions.
+- access credentials are represented by protected references and are not embedded in normal docs, notifications or ordinary audit payloads.
+- policy/permission enforcement occurs before side effects.
+- RELEASE_READY remains separate from publication.
 - external publication remains an explicit owner action.
 - K-Research & Critic v1.0.0 is reference-only and is not a runtime dependency.
 
-## Implemented Layers
+## Implemented v0.2 Baseline
 
-The completed baseline includes:
+The completed predecessor includes:
 
 - Project lifecycle/control plane and ProjectSpec contracts;
 - Pydantic machine contracts and JSON schemas;
@@ -99,7 +114,7 @@ The completed baseline includes:
 - observability, metrics, reliability validation, failure injection and CI quality gates;
 - installable wheel, public `ksupervisor` facade, CLI/config and entry-point extension discovery.
 
-## Public Extension Baseline
+## Public Compatibility Baseline
 
 ```text
 Python facade: ksupervisor
@@ -112,46 +127,92 @@ Entry-point groups:
   k_supervisor.adapters
 ```
 
-An external extension is discovered without changing Supervisor core and is activated through an explicit `ExtensionContext`.
+`COMPATIBILITY_POLICY.md` remains active throughout v0.3.
 
-## Known Technical Debt / Deliberate Limits
+## ROADMAP v0.3 Phase Sequence
 
-These are not hidden completion failures; they are documented limits for a future roadmap:
+```text
+v0.3 Phase 0  Baseline Freeze & Hardening Contract
+v0.3 Phase 1  Persistence & Resource Hygiene
+v0.3 Phase 2  Durable Control State
+v0.3 Phase 3  Centralized Side-Effect Enforcement
+v0.3 Phase 4  Runtime Isolation & Cancellation
+v0.3 Phase 5  Service/API Boundary
+v0.3 Phase 6  Production Observability
+v0.3 Phase 7  Extension Trust & Platform Governance
+v0.3 Phase 8  Operational Readiness & Autonomous Lifecycle Qualification
+```
 
-- SQLite is the initial backend, not the final storage architecture.
-- in-process cancellation is cooperative;
-- runtime idempotency storage is process-local;
-- no universal centralized Tool Gateway exists;
-- approval expiry/revocation is not implemented;
-- SMTP/idempotency semantics are best-effort, not exactly-once remote delivery;
-- `ProjectRecoverySnapshot` does not aggregate every later intervention/notification/approval/policy/observability resource;
-- reference agents are deterministic contract/integration examples, not production-grade domain intelligence;
-- release readiness evidence is explicitly supplied rather than fully provider-ingested;
-- external publication and package-index publishing are not automated;
-- normalized routing records require `ObservableSupervisorKernel`; base no-provider paths remain represented by authoritative BLOCKED Task/Workflow state;
-- normalized audit appends are not one universal transaction with all authoritative writes;
-- metrics are derived snapshots, not persisted time-series telemetry;
-- no distributed tracing, OpenTelemetry/Prometheus exporter or SLO engine;
-- no HTTP/RPC API server;
-- extension packages execute as trusted Python code without sandbox/signature verification;
-- `NamedExtensionRegistry` is in-process and non-durable;
-- future non-email notification transports are documented but not implemented;
-- Core Validation reports 14 visible `ResourceWarning` warnings from temporary SQLite connections in existing tests;
-- GitHub Actions reports Node 20 deprecation warnings for checkout/setup-python while running them on Node 24.
+## Technical Debt Mapping
 
-## Recommended First Action In The New Chat
+### Phase 1
 
-Do not start coding immediately. First re-fetch the canonical state files listed in `Start Here`, verify that `main` has not changed, and decide the next approved roadmap baseline.
+- SQLite resource lifecycle and current ResourceWarning cleanup;
+- persistence migrations/transactions/replacement discipline.
 
-A likely next program may be production hardening, but its exact scope is not approved yet. Candidate themes include persistence hardening, centralized tool enforcement, stronger cancellation/isolation, durable idempotency, richer recovery, warning cleanup, external API/service boundary, secure extension execution, package publishing, and additional notification transports.
+### Phase 2
 
-Those themes are candidates only. They become planned work only after the new roadmap is explicitly defined and approved.
+- process-local idempotency;
+- approval expiry/revocation;
+- richer recovery aggregation;
+- stronger authoritative state/audit atomicity.
+
+### Phase 3
+
+- universal centralized Tool Gateway and one standard controlled side-effect path.
+
+### Phase 4
+
+- cooperative in-process cancellation and stronger worker/process isolation.
+
+### Phase 5
+
+- missing HTTP/RPC service boundary.
+
+### Phase 6
+
+- derived metrics only;
+- missing persisted telemetry/tracing/export/SLO foundation.
+
+### Phase 7
+
+- non-durable extension contribution registry;
+- trusted-code extension model without explicit trust/signature controls;
+- repository/CI governance hardening;
+- CI action deprecation cleanup where practical.
+
+### Phase 8
+
+- complete real-project end-to-end lifecycle qualification;
+- deployment/backup/restore/upgrade operational procedures;
+- release/distribution operational readiness up to owner-controlled publication.
+
+## Deliberate v0.3 Deferrals
+
+Unless separately approved, the current v0.3 roadmap does not require:
+
+- WhatsApp/Viber or other non-email notification transports;
+- automatic GPT Store publication;
+- distributed execution clusters;
+- remote agents as a mandatory baseline;
+- event bus architecture;
+- multi-tenant SaaS isolation/billing;
+- mandatory PostgreSQL or a specific observability vendor.
+
+## Current First Action
+
+Complete `v0.3 Phase 0 — Baseline Freeze & Hardening Contract` before runtime hardening begins.
+
+Phase 0 work includes documentation synchronization, predecessor baseline traceability, technical-debt classification, compatibility/migration rules and validation planning.
+
+Do not begin Phase 1 implementation until Phase 0 exit criteria are checked and recorded.
 
 ## Working Style For Continuation
 
 - preserve the existing numbered user-visible progress format;
+- verify `main` before making changes;
+- follow the active v0.3 phase and do not skip exit criteria;
 - state uncertainty and unverified claims explicitly;
-- validate implementation against the active roadmap before marking phases complete;
-- update README, PROJECT_STATE, ROADMAP audit, DOCS_INDEX and the relevant checkpoint when a future phase is completed;
-- require authoritative Core Validation before claiming runtime completion;
-- keep owner publication and owner-required actions explicit.
+- require authoritative cumulative Core Validation before claiming a runtime phase complete;
+- update ROADMAP, PROJECT_STATE, TEST_MATRIX, DOCS_INDEX, CHAT_HANDOFF and the relevant checkpoint when phase state changes;
+- preserve owner publication and owner-required action boundaries.
