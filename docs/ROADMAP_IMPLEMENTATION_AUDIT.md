@@ -1,24 +1,25 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
-Звірка фактичної реалізації K_Supervisor з ROADMAP після завершення Phase 15.
+Звірка фактичної реалізації K_Supervisor з усіма фазами ROADMAP v0.2.
 
-Version: 1.4
-Status: ACTIVE
+Version: 1.5
+Status: COMPLETE
 Date: 2026-09-14
-Scope: Phase 0-15
+Scope: Phase 0-16
 
 ## Result
 
 ```text
-Roadmap phases reviewed: 0-15
+Roadmap phases reviewed: 0-16
 Phases with unmet published exit criteria: 0
-Current phase gate: Phase 16 may proceed
-Core Validation: PASS
-pytest: 81 passed
-branch-aware coverage: 85.57%
-coverage gate: >= 80%
+Published implementation roadmap: COMPLETE
+Final implementation CI: PASS
+Python: 3.13.15
+pytest: 88 passed
+branch-aware coverage: 85.46%
+wheel build/install: PASS
 ```
 
-The audit compares `docs/ROADMAP.md` with committed implementation, phase checkpoints and regression evidence. README, DOCS_INDEX, PROJECT_STATE and phase checkpoints are the canonical implementation-status surfaces.
+The audit compares `docs/ROADMAP.md` with committed implementation, phase checkpoints and Core Validation evidence. README, PROJECT_STATE, DOCS_INDEX and phase checkpoints are the canonical implementation-status surfaces.
 
 ## Compliance Matrix
 
@@ -38,57 +39,71 @@ The audit compares `docs/ROADMAP.md` with committed implementation, phase checkp
 | 11 | policy/permissions/risk/approval | PolicyEngine, least privilege, explicit approval, audit | PASS |
 | 12 | Reference Agents and Agent Factory | scaffolder, reference catalog, interchangeable research providers | PASS |
 | 13 | Release Manager and Publication Readiness | readiness, GPT Store preparation, explicit owner publication handoff | PASS |
-| 14 | Reference Research-Critic Workflow | approved review profile, capability-based research/fact-check/critique loop, finalization, no legacy runtime | PASS |
-| 15 | Observability, Reliability, CI and Test Matrix | append-only audit/routing/release validation, metrics, reliability checks, failure injection, recovery/performance tests, coverage/compile gates | PASS |
+| 14 | Reference Research-Critic Workflow | approved profile, capability-based research/review loop, no legacy runtime | PASS |
+| 15 | observability/reliability/CI | normalized audit/routing/release validation, metrics, recovery, coverage/performance gates | PASS |
+| 16 | interfaces/packaging/extensibility | public facade, CLI/config, entry-point extensions, wheel install, developer/compatibility docs | PASS |
 
-## Phase 15 ROADMAP Verification
+## Phase 16 Verification
 
 Planned work mapping:
 
 ```text
-structured audit events       -> AuditEvent + record_audit + instrumented project/intervention/notification/release paths
-project and agent metrics     -> MetricsCollector + ProjectMetrics/AgentMetrics
-routing records               -> RoutingRecord + ObservableSupervisorKernel
-notification records          -> existing NotificationEvent/DeliveryAttempt + normalized audit events
-release validation records    -> ReleaseValidationRecord + TargetPreparer instrumentation
-integration tests             -> Phase 15 routing/intervention/release tests
-failure injection             -> DeterministicFailureInjector
-recovery tests                -> SQLite close/reopen observability test
-deterministic fixtures        -> fixed Phase 15 timestamps and deterministic reference stack
-CI quality gates              -> compileall + full pytest + coverage gate
-coverage baseline             -> branch-aware 85.57%, enforced minimum 80%
-performance baseline          -> 10,000 provider selections < 3 seconds
+CLI and/or API boundary                 -> k-supervisor CLI + ksupervisor Python facade
+configuration model                    -> PlatformConfig + JSON/TOML load_config
+extension discovery                    -> standard Python entry-point discovery/activation
+packaging                              -> setuptools wheel + console script
+example project templates/workflows   -> examples/extension_project_template.py + workflow_definition.py
+developer documentation               -> DEVELOPER_GUIDE.md + PLATFORM_INTERFACES.md
+compatibility policy                  -> COMPATIBILITY_POLICY.md
+future notification adapter docs      -> NOTIFICATION_ADAPTER_INTERFACE.md
 ```
 
 Published exit criterion:
 
 ```text
-major project transitions, routing decisions, intervention requests, notifications, and releases are testable and auditable: PASS
+an external developer can add a compliant agent, capability,
+project template, or adapter without changing Supervisor core code: PASS
 ```
+
+Evidence:
+
+- Phase 12 already proves new compliant agents/capabilities can be constructed, registered and routed without Supervisor-core edits;
+- Phase 16 publishes entry-point groups for external agents and capabilities;
+- project-template and adapter groups are separately discoverable and activatable;
+- ExtensionContext exposes only explicitly provided host services;
+- NamedExtensionRegistry provides an in-process host boundary for template/adapter contributions;
+- tests exercise discovery and activation for all four extension kinds;
+- example project-template registration and example WorkflowDefinition are validated in Core Validation;
+- CI builds a wheel, installs it, changes to `/tmp`, runs the console script and imports the public package successfully.
 
 Validation evidence:
 
 ```text
-Core Validation run: 34792502459
-head SHA: e68c7f3d61302a4b5bf494e392586cf09522e8e1
+Core Validation run: 34793901147
+head SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
 Python: 3.13.15
-pytest: 81 passed
-branch-aware coverage: 85.57%
+pytest: 88 passed
+branch-aware coverage: 85.46%
 coverage gate: 80% PASS
-compileall: PASS
-conclusion: SUCCESS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke outside checkout: PASS
 ```
 
-## Phase 15 Reliability Limits
+## Cross-Roadmap Boundaries Preserved
 
-Phase 15 deliberately preserves the stable base Supervisor API; normalized selected-route records are produced through `ObservableSupervisorKernel`. A base no-provider path remains represented by authoritative BLOCKED Task/Workflow state rather than a normalized RoutingRecord. Observability append operations are not one universal atomic transaction with all business-state writes. Metrics are derived snapshots rather than persisted time-series data. Distributed tracing, external metrics exporters, SLO management and remote event streaming are not implemented.
+- Project remains the top-level managed unit; Task is not promoted to project identity.
+- Agent and Capability remain separate; workflows bind capabilities rather than concrete agents.
+- owner publication remains explicit; transport delivery never equals owner action completion.
+- secrets remain outside normal documentation/notification/audit payloads.
+- policy enforcement remains before side effects.
+- K-Research & Critic remains reference-only with no direct runtime dependency.
+- external extensions do not require Supervisor-core imports or source modification.
 
-Core Validation reports 14 visible `ResourceWarning` warnings, primarily from existing tests whose temporary SQLite stores are not explicitly closed before garbage collection. The warnings are reliability debt but do not invalidate the successful suite. Existing GitHub Actions Node 20 deprecation warnings also remain visible while GitHub forces the affected actions to Node 24.
+## Deliberate Remaining Limits
 
-## Deliberate Platform Limits
+Roadmap completion does not imply production maturity. Known limits include the initial SQLite backend, cooperative in-process cancellation, process-local runtime idempotency, no universal Tool Gateway, no approval expiry/revocation, best-effort email idempotency, incomplete aggregate recovery coverage for some later resources, deterministic reference agents, explicit rather than provider-ingested release evidence, no external publication automation, no HTTP/RPC API, no automatic package-index publishing, trusted-code extension execution, no extension signature/sandbox layer, derived rather than time-series metrics, and the visible CI ResourceWarning/Node action-deprecation warnings documented in PROJECT_STATE.
 
-Other current limits include SQLite as the initial backend, cooperative in-process cancellation, process-local runtime idempotency, no universal Tool Gateway, no approval expiry/revocation, best-effort email idempotency, incomplete aggregate recovery snapshot coverage for some post-Phase-2 records, deterministic reference agents, explicit rather than provider-ingested release evidence, no automatic external publication, and flat-layout packaging not yet finalized.
+## Closure
 
-## Next Gate
-
-Phase 16 - Interfaces, Packaging, and Extensibility may proceed. It is the final published roadmap phase and must not be marked complete until its exit criteria are validated by Core Validation and a dedicated completion checkpoint is committed.
+All published exit criteria in ROADMAP v0.2 are satisfied. There is no Phase 17 in the published roadmap. Any further implementation program must begin with an explicit roadmap revision/new baseline and must not silently mark new work as part of completed Phase 16.
