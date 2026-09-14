@@ -1,10 +1,11 @@
 from datetime import datetime
 
+from models.audit import AuditEvent
 from models.base import ensure_tz
 from models.enums import HumanActionStatus, ProjectOperationalState
 from models.intervention import HumanActionRequest
 from models.operational import ProjectOperationalTransition
-from observability.audit import record_audit
+from observability.audit import build_audit_event
 from persistence.base import PersistenceStore
 from registry.project_registry import ProjectRegistry
 
@@ -20,9 +21,9 @@ class HumanInterventionBroker:
             raise KeyError(action.project_id)
         state = HumanActionStatus.WAITING_FOR_OWNER if action.blocking else HumanActionStatus.OPEN
         saved = action.model_copy(update={"status": state})
+        audit = self._audit_event(saved, "HUMAN_ACTION_OPENED", action.created_at)
         if not action.blocking or project.operational_state == ProjectOperationalState.WAITING_FOR_OWNER:
-            self.store.save_human_action(saved)
-            self._audit(saved, "HUMAN_ACTION_OPENED", action.created_at)
+            self.store.save_human_action(saved, audit)
             return saved
 
         transition = ProjectOperationalTransition(
@@ -37,8 +38,12 @@ class HumanInterventionBroker:
                 "updated_at": action.created_at,
             }
         )
-        self.store.apply_human_action_operational_transition(saved, updated_project, transition)
-        self._audit(saved, "HUMAN_ACTION_OPENED", action.created_at)
+        self.store.apply_human_action_operational_transition(
+            saved,
+            updated_project,
+            transition,
+            audit,
+        )
         return saved
 
     def verify(self, human_action_id: str, ok: bool, at: datetime) -> HumanActionRequest:
@@ -51,9 +56,8 @@ class HumanInterventionBroker:
         resolved = action.model_copy(
             update={"status": HumanActionStatus.VERIFIED, "resolved_at": at}
         )
-        result = self._resolve(action, resolved, at)
-        self._audit(result, "HUMAN_ACTION_VERIFIED", at)
-        return result
+        audit = self._audit_event(resolved, "HUMAN_ACTION_VERIFIED", at)
+        return self._resolve(action, resolved, at, audit)
 
     def cancel(self, human_action_id: str, at: datetime) -> HumanActionRequest:
         at = ensure_tz(at)
@@ -67,15 +71,15 @@ class HumanInterventionBroker:
         resolved = action.model_copy(
             update={"status": HumanActionStatus.CANCELLED, "resolved_at": at}
         )
-        result = self._resolve(action, resolved, at)
-        self._audit(result, "HUMAN_ACTION_CANCELLED", at)
-        return result
+        audit = self._audit_event(resolved, "HUMAN_ACTION_CANCELLED", at)
+        return self._resolve(action, resolved, at, audit)
 
     def _resolve(
         self,
         original: HumanActionRequest,
         resolved: HumanActionRequest,
         at: datetime,
+        audit: AuditEvent,
     ) -> HumanActionRequest:
         blockers = [
             item
@@ -97,14 +101,23 @@ class HumanInterventionBroker:
             updated_project = project.model_copy(
                 update={"operational_state": ProjectOperationalState.ACTIVE, "updated_at": at}
             )
-            self.store.apply_human_action_operational_transition(resolved, updated_project, transition)
+            self.store.apply_human_action_operational_transition(
+                resolved,
+                updated_project,
+                transition,
+                audit,
+            )
         else:
-            self.store.save_human_action(resolved)
+            self.store.save_human_action(resolved, audit)
         return resolved
 
-    def _audit(self, action: HumanActionRequest, event_type: str, at: datetime) -> None:
-        record_audit(
-            self.store,
+    @staticmethod
+    def _audit_event(
+        action: HumanActionRequest,
+        event_type: str,
+        at: datetime,
+    ) -> AuditEvent:
+        return build_audit_event(
             project_id=action.project_id,
             category="INTERVENTION",
             event_type=event_type,
