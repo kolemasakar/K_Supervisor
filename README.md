@@ -17,64 +17,57 @@ K_Supervisor is separate from K-Research & Critic, which remains reference-only.
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
-Current approved phase: v0.3 Phase 1 - Persistence & Resource Hygiene
-v0.3 Phase 1: ACTIVE
-v0.3 Phase 2-8: PLANNED / NOT STARTED
+v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
+Current approved phase: v0.3 Phase 2 - Durable Control State
+v0.3 Phase 2: ACTIVE
+v0.3 Phase 3-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Phase 0 froze the predecessor baseline, technical-debt assignment, compatibility/migration rules and cumulative validation gates. Phase 1 is authorized to harden persistence/resource ownership.
-
 ## Current Runtime Baseline
 
-Until Phase 1 produces a new validated implementation checkpoint:
-
 ```text
-Core Validation run: 34793901147
-Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
+Core Validation run: 34804141156
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
 Python: 3.13.15
-pytest: 88 passed
-branch-aware coverage: 85.46%
+pytest: 95 passed
+branch-aware coverage: 85.66%
 coverage gate: >= 80% PASS
+ResourceWarning gate: PASS
 compileall including examples: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
-live owner mailbox delivery: PASS
 ```
 
-## Implemented v0.2 Platform Baseline
+## Implemented Platform Baseline
 
-- Project lifecycle/control plane and ProjectSpec contracts;
-- machine contracts and JSON schemas;
-- SQLite persistence and Project Registry;
-- Human Intervention and email Notification Broker;
-- Agent/Capability registries and capability routing;
-- Supervisor orchestration kernel;
-- Project Factory and repository bootstrap;
-- Workflow Engine;
-- Agent Runtime;
-- Project Scheduler and parallel project controls;
-- Tool/Provider/Provisioning interfaces and protected access references;
-- policy/permissions/approval boundaries;
-- Agent Factory and reference agents;
-- Release Manager and owner publication handoff;
-- reference Research-Critic composition;
-- observability/reliability/CI baseline;
-- installable wheel, public `ksupervisor` facade, CLI/config and extension discovery.
+The completed v0.2 platform includes Project lifecycle/control plane, machine contracts, persistence/registry, Human Intervention and email notifications, dynamic Agent/Capability routing, Supervisor orchestration, Project Factory, Workflow Engine, Agent Runtime, Scheduler, tools/providers/provisioning boundaries, policy/approval, Agent Factory, Release Manager, reference Research-Critic composition, observability/reliability, packaging, CLI/config and extension discovery.
 
-## Active Phase 1
+ROADMAP v0.3 Phase 1 additionally hardened persistence with:
 
-Phase 1 targets:
+- explicit SQLite connection ownership and context-manager support;
+- idempotent initialize/close;
+- explicit transaction commit/rollback behavior;
+- SQLite schema version 2;
+- tested v1 -> v2 migration with data preservation;
+- fail-closed handling of unsupported schema versions;
+- WAL/busy-timeout support and concurrent-writer tests;
+- CI enforcement that treats `ResourceWarning` as an error;
+- zero known SQLite ResourceWarning leaks;
+- preserved restart/recovery and public compatibility.
 
-- explicit storage connection lifecycle and ownership;
-- transaction-boundary hardening;
-- persistent schema version/migration mechanism;
-- storage abstractions independent of SQLite physical layout;
-- cleanup of known SQLite ResourceWarning leaks;
-- deterministic reopen/restart recovery;
-- documented storage replacement boundary.
+## Active Phase 2
 
-Phase 1 completion requires phase-specific tests plus the full permanent Core Validation suite on the committed implementation baseline.
+`v0.3 Phase 2 - Durable Control State` targets:
+
+- durable runtime/command idempotency;
+- durable notification/execution deduplication state for standard platform paths;
+- approval expiry and revocation;
+- richer authoritative recovery reconstruction;
+- stronger atomicity between required control state and audit records;
+- restart-safe active workflow/project control state.
+
+Phase 2 completion requires phase-specific recovery/replay/approval/atomicity tests plus the full permanent Core Validation suite on the committed implementation baseline.
 
 ## Public Baseline
 
@@ -97,7 +90,8 @@ Start with:
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
+- `docs/PERSISTENCE.md`;
 - `docs/TEST_MATRIX.md`;
 - `docs/CHAT_HANDOFF.md`.
 
