@@ -5,8 +5,10 @@ from typing import TypeVar
 from pydantic import BaseModel
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
+from models.audit import AuditEvent
 from models.intervention import HumanActionRequest, NotificationDeliveryAttempt, NotificationEvent
 from models.lifecycle import ProjectLifecycleTransition
+from models.observability_records import RoutingRecord, ReleaseValidationRecord
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
@@ -138,3 +140,9 @@ class SQLitePersistenceStore(PersistenceStore):
     def list_approvals(self, project_id): return self._list("approval", project_id, ApprovalRecord)
     def append_policy_decision(self, value): self._event("policy_decision", value.project_id, value.evaluated_at.isoformat(), value)
     def list_policy_decisions(self, project_id): return self._events("policy_decision", project_id, PolicyDecision)
+    def append_audit_event(self, value): self._event("audit_event", value.project_id, value.occurred_at.isoformat(), value)
+    def list_audit_events(self, project_id): return self._events("audit_event", project_id, AuditEvent)
+    def append_routing_record(self, value): self._event("routing_record", value.project_id, value.created_at.isoformat(), value)
+    def list_routing_records(self, project_id): return self._events("routing_record", project_id, RoutingRecord)
+    def append_release_validation_record(self, value): self._event("release_validation", value.project_id, value.created_at.isoformat(), value)
+    def list_release_validation_records(self, project_id): return self._events("release_validation", project_id, ReleaseValidationRecord)
