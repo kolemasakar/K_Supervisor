@@ -1,25 +1,26 @@
 # POLICY_AND_PERMISSIONS
 Політика контрольованої автономності, дозволів, ризику та явного погодження у K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
-Phase: 11
+Baseline: v0.3 Phase 2 COMPLETE
+Date: 2026-09-14
 
 ## 1. Purpose
 
-Phase 11 places a deterministic policy boundary before controlled execution.
+The policy boundary resolves project/workflow constraints before controlled execution.
 
-The core rule is:
+Core rule:
 
 ```text
 resolve policy -> decide -> audit -> execute only if ALLOW
 ```
 
-Agents do not decide their own permissions and cannot silently broaden the permissions supplied by the platform.
+Agents do not decide or broaden their own permissions.
 
 ## 2. Policy Effects
 
-Every evaluation returns exactly one effect:
+Every evaluation returns one of:
 
 ```text
 ALLOW
@@ -27,13 +28,13 @@ DENY
 REQUIRE_APPROVAL
 ```
 
-`DENY` and `REQUIRE_APPROVAL` are represented to orchestration as a normalized `BLOCKED` AgentRunResult with error category `POLICY_BLOCKED`. The downstream dispatcher is not called unless the decision is `ALLOW`.
+`DENY` and `REQUIRE_APPROVAL` remain normalized orchestration blocking states; downstream execution is not called unless the decision is `ALLOW`.
 
-## 3. Trusted Declarations
+## 3. Trusted Capability Declarations
 
-Capability risk and side effects come from the registered `CapabilityDescriptor`, not from caller-provided request data.
+Risk and side effects come from the registered `CapabilityDescriptor`, not caller-provided data.
 
-Supported risk classes:
+Risk classes:
 
 ```text
 LOW
@@ -42,7 +43,7 @@ HIGH
 CRITICAL
 ```
 
-Supported side effects:
+Side effects:
 
 ```text
 NONE
@@ -55,74 +56,21 @@ DELETE_RESOURCE
 EXECUTE_CODE
 ```
 
-A request may narrow declared side effects. It cannot request effects that the capability did not declare.
+A request may narrow declared effects but cannot broaden them.
 
-## 4. Project Policy
+## 4. Project and Workflow Policy
 
-Project policy is resolved from the active approved ProjectSpec:
+Project policy is resolved from the active approved ProjectSpec. Workflow overlays are restrictive-only and may narrow capability, side-effect, tool-operation and protected-reference scope; they may not expand project authority.
 
-```text
-ProjectSpec.autonomy.policy
-```
+## 5. Tool Permissions and Protected References
 
-The baseline machine policy supports:
+Tool operations are scoped by agent/tool/operation. Protected access uses canonical protected references rather than plaintext secrets.
 
-- capability allow/deny constraints;
-- allowed, approval-required, and denied side effects;
-- per-agent tool/operation permissions;
-- allowed protected access references;
-- risk classes that require approval.
+`require_tool_operation()` and `require_access_reference()` remain enforcement helpers. v0.3 Phase 3 is responsible for centralizing these checks inside the standard side-effect gateway so callers do not have to compose them independently.
 
-Default behavior permits `NONE` and `READ_EXTERNAL`; material side effects require approval by default. `HIGH` and `CRITICAL` capabilities require approval by default.
+## 6. Least-Privilege Execution Context
 
-## 5. Workflow Constraints
-
-A workflow may provide an additional policy overlay in `workflow_constraints`.
-
-The overlay is restrictive only. It may narrow project permissions but may not expand them.
-
-Examples:
-
-- capability allowlists are intersected;
-- allowed side effects are intersected;
-- denied side effects are accumulated;
-- per-agent tool permissions are intersected;
-- access-reference allowlists are intersected;
-- approval requirements may be strengthened, not weakened.
-
-## 6. Per-Agent Tool Permissions
-
-Tool permissions are scoped by both agent and operation.
-
-Logical form:
-
-```text
-agent.policy:
-  repo.read: [read]
-  repo.write: [write]
-```
-
-`PolicyEngine` rejects requested tool operations outside the resolved scope. The resulting least-privilege context contains only the tool operations actually authorized for the run.
-
-`require_tool_operation()` is the Phase 11 enforcement helper for tool invocation boundaries. A universal runtime Tool Gateway is not claimed by this phase; later runtime integration may centralize this helper without changing the policy contract.
-
-## 7. Protected Access References
-
-Policy never places plaintext secrets into execution policy.
-
-Only canonical protected references may be authorized:
-
-```text
-secret://<scope>/<name>
-```
-
-`allowed_access_refs` defines the project-level reference scope. Workflow policy may narrow it. `require_access_reference()` checks a concrete reference against the resolved least-privilege execution context before secret resolution or tool use.
-
-Phase 10 remains responsible for resolving protected references through a replaceable SecretBackend.
-
-## 8. Least-Privilege Execution Context
-
-An `ALLOW` decision produces a `LeastPrivilegeExecutionContext` containing only:
+An ALLOW decision contains only the resolved scope:
 
 ```text
 project_id
@@ -135,15 +83,13 @@ access_refs
 approval_id
 ```
 
-`PolicyEnforcedDispatcher` replaces the broad request policy with this resolved context before passing the request to the actual AgentDispatcher.
+Production dispatch replaces broad caller policy with this least-privilege context before execution.
 
-This creates a deterministic boundary between project/workflow policy and executable agent context.
+## 7. Approval Scope
 
-## 9. Approval Gate
+Material permission expansion produces `REQUIRE_APPROVAL`. `PolicyApprovalBroker` creates a durable `ApprovalRecord` and blocking `HumanActionRequest`.
 
-Material permission expansion produces `REQUIRE_APPROVAL`.
-
-`PolicyApprovalBroker` creates a durable `ApprovalRecord` and a blocking `HumanActionRequest`. The affected project enters `WAITING_FOR_OWNER` through the existing Human Intervention Broker.
+Approval remains bound to deterministic permission scope containing project, agent, capability/version, operation, risk, side effects, tool permissions and protected references.
 
 Notification delivery is not approval:
 
@@ -151,53 +97,73 @@ Notification delivery is not approval:
 NOTIFICATION_SENT != POLICY_APPROVED
 ```
 
-Execution can continue only after the matching ApprovalRecord is explicitly `APPROVED`.
+## 8. Approval Lifecycle
 
-Approval is bound to a deterministic SHA-256 scope containing:
+Current durable states:
 
-- project;
-- agent;
-- capability and capability version;
-- operation;
-- risk class;
-- side effects;
-- tool permissions;
-- protected access references.
+```text
+PENDING
+APPROVED
+REJECTED
+EXPIRED
+REVOKED
+```
 
-Equivalent future tasks may reuse an approved exact scope. A different permission scope does not inherit that approval. Rejected scopes remain rejected and do not repeatedly create new approval prompts.
+Optional `expires_at` may be assigned when the approval request is created.
 
-Approval expiry and revocation are not claimed by Phase 11.
+Rules:
 
-## 10. Failure Safety
+- PENDING can become APPROVED, REJECTED or EXPIRED;
+- APPROVED can expire after `expires_at` or be explicitly REVOKED;
+- REJECTED, EXPIRED and REVOKED records are not treated as active permission;
+- an expired/revoked/rejected exact scope may later create a new approval request instead of permanently reusing the old record;
+- revocation requires an explicit non-empty reason;
+- policy evaluation returns `APPROVAL_EXPIRED` or `APPROVAL_REVOKED` and requires fresh approval rather than silently allowing execution.
 
-Approval state and project operational state are persisted separately, but ordering is conservative:
+Existing historical approval records remain valid because new expiry/revocation fields default to `None`.
 
-- approval resumes the project before the ApprovalRecord becomes `APPROVED`;
-- rejection resolves the owner wait before the ApprovalRecord becomes `REJECTED`.
+## 9. Human Intervention Interaction
 
-If a process stops between those writes, authorization does not become broader: the permission remains non-approved until the durable approval record is written.
+A blocking approval request uses Human Intervention and moves the project to `WAITING_FOR_OWNER` when required.
 
-## 11. Policy Audit
+- approval verifies the matching HumanAction before authorization becomes APPROVED;
+- rejection or pending expiry cancels the matching owner action;
+- when no other blockers remain, the project returns to ACTIVE;
+- Human Intervention state/project transition/required audit uses the Phase 2 atomic persistence boundary.
 
-Every policy evaluation produces a structured `PolicyDecision` containing:
+Owner action completion and permission state remain explicit durable records.
 
-- decision ID;
-- project/request identity;
-- effect;
-- stable reason code and reason;
-- risk class;
-- timestamp;
-- resolved least-privilege context when allowed;
-- approval reference when applicable;
-- scope metadata.
+## 10. Approval Audit
 
-Production composition uses `PersistencePolicyAuditSink`. SQLite stores policy decisions as append-only events, so decisions survive process restart without storing hidden chain-of-thought.
+Approval lifecycle mutations generate normalized durable audit events including:
 
-## 12. Orchestration Semantics
+```text
+APPROVAL_REQUESTED
+APPROVAL_APPROVED
+APPROVAL_REJECTED
+APPROVAL_EXPIRED
+APPROVAL_REVOKED
+```
 
-Policy blocking is distinct from execution failure.
+Approval record mutation and its required audit event are committed through the same SQLite transaction boundary.
 
-The Supervisor preserves a policy-blocked result as:
+Phase 2 regression tests explicitly verify durable expiry/revocation audit evidence.
+
+## 11. Policy Decision Audit
+
+Every policy evaluation still produces a durable structured `PolicyDecision` containing decision identity, project/request correlation, effect, reason code, risk, timestamp, least-privilege context when allowed, approval reference and scope metadata.
+
+No hidden chain-of-thought is stored.
+
+## 12. Failure Safety
+
+The platform fails closed for invalid, expired, revoked or missing approvals. Human Intervention and Approval remain separate domain records, but each control-state mutation is persisted with its required normalized audit where defined.
+
+Universal cross-system atomicity is not claimed. Phase 3 centralizes the external side-effect invocation boundary; distributed transaction guarantees remain out of scope.
+
+## 13. Orchestration Semantics
+
+Policy blocking remains distinct from execution failure:
 
 ```text
 AgentRunResult: BLOCKED
@@ -205,32 +171,44 @@ Task: BLOCKED
 WorkflowRun: BLOCKED
 ```
 
-A prohibited operation therefore does not become an execution error and is not retried as a transient provider failure.
+A prohibited operation is not converted into a transient provider failure.
 
-## 13. Production Composition
+## 14. Production Composition
 
-Controlled execution is composed as:
+Current controlled execution composition:
 
 ```text
 SupervisorKernel
     -> PolicyEnforcedDispatcher
         -> PolicyEngine
-        -> Policy audit
+        -> durable PolicyDecision audit
         -> optional PolicyApprovalBroker
         -> AgentDispatcher / AgentRuntimeDispatcher only when ALLOW
 ```
 
-This preserves existing AgentDispatcher replaceability while adding a mandatory controlled-autonomy layer for production composition.
+Phase 3 adds the centralized side-effect gateway underneath/alongside the approved execution context without bypassing this policy ownership.
 
-## 14. Non-Goals of Phase 11
+## 15. Validation Baseline
 
-Phase 11 does not implement:
+Authoritative Phase 2 baseline:
 
-- a universal centralized Tool Gateway;
-- approval expiry or revocation;
+```text
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
+pytest: 103 passed
+branch-aware coverage: 85.23%
+ResourceWarning gate: PASS
+```
+
+Approval expiry, revocation, audit persistence and restart recovery are covered by v0.3 Phase 2 tests while all Phase 11 predecessor policy tests remain green.
+
+## 16. Current Non-Goals
+
+Not yet implemented here:
+
+- universal centralized Tool Gateway (Phase 3);
 - organization-wide RBAC/ABAC administration UI;
-- cryptographic signing of approvals;
-- provider-specific authorization systems;
+- cryptographic approval signing;
+- provider-specific authorization administration;
+- arbitrary untrusted Python sandboxing;
 - hidden reasoning audit.
-
-These can be added behind the current policy contracts without broadening agent authority by default.
