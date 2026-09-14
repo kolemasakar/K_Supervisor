@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 2.
 
-Version: 2.1
+Version: 2.2
 Status: ACTIVE
 Date: 2026-09-14
 
@@ -19,9 +19,22 @@ v0.3 Phase 1: COMPLETE
 v0.3 Phase 2: COMPLETE
 Current approved phase: v0.3 Phase 3
 v0.3 Phase 3 status: ACTIVE
+v0.3 Phase 3 runtime implementation at handoff: NOT STARTED
 v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
+
+## Session Handoff
+
+Owner-directed project handoff is prepared for continuation in a new chat.
+
+```text
+Handoff prepared: 2026-09-14
+Planned resume: 2026-09-16 09:00 Europe/Kyiv
+Canonical handoff: docs/PROJECT_HANDOFF_2026_09_16.md
+```
+
+The temporary work pause does not change roadmap authorization: Phase 3 remains the current approved phase, but no Phase 3 runtime implementation was intentionally started before the handoff.
 
 ## Current Validated Runtime Baseline
 
@@ -38,7 +51,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline unless a later implementation checkpoint explicitly states otherwise.
+Documentation-only closure/handoff commits after this implementation SHA do not replace the validated runtime baseline unless a later implementation checkpoint explicitly states otherwise.
 
 ## Phase 2 Completion
 
@@ -77,6 +90,8 @@ Primary scope:
 - replaceable concrete tool/provider adapters.
 
 Phase 3 may not be marked COMPLETE until its phase-specific tests and the full cumulative regression suite pass on its committed implementation baseline.
+
+The new chat must first follow `PROJECT_HANDOFF_2026_09_16.md`, verify `main` against the frozen Phase 2 implementation baseline, and perform a pre-implementation audit of current side-effect paths before writing Phase 3 runtime code.
 
 ## Public Compatibility Baseline
 
