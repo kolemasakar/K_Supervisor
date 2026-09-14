@@ -104,6 +104,13 @@ class PolicyEngine:
             approval = self.approvals.get_approval(approval_id) if self.approvals and approval_id else None
             if approval is not None and approval.status == ApprovalStatus.REJECTED:
                 return self._decision(request, PolicyEffect.DENY, "APPROVAL_REJECTED", "permission expansion was rejected", risk, approval_id=approval.approval_id)
+            if approval is not None and approval.status == ApprovalStatus.REVOKED:
+                return self._decision(request, PolicyEffect.REQUIRE_APPROVAL, "APPROVAL_REVOKED", "permission expansion approval was revoked", risk, approval_id=approval.approval_id, metadata={"scope_hash": scope_hash})
+            if approval is not None and (
+                approval.status == ApprovalStatus.EXPIRED
+                or approval.is_expired_at(self._now())
+            ):
+                return self._decision(request, PolicyEffect.REQUIRE_APPROVAL, "APPROVAL_EXPIRED", "permission expansion approval expired", risk, approval_id=approval.approval_id, metadata={"scope_hash": scope_hash})
             if approval is None or approval.status != ApprovalStatus.APPROVED or approval.scope_hash != scope_hash:
                 return self._decision(request, PolicyEffect.REQUIRE_APPROVAL, "APPROVAL_REQUIRED", "material permission scope requires explicit approval", risk, approval_id=approval_id, metadata={"scope_hash": scope_hash})
 
