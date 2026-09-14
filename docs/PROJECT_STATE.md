@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.2 і затвердження ROADMAP v0.3.
+Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 0.
 
-Version: 1.8
+Version: 1.9
 Status: ACTIVE
 Date: 2026-09-14
 
@@ -14,13 +14,14 @@ Product status: PRE-ALPHA
 Package: k-supervisor==0.1.0
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
-Current approved phase: v0.3 Phase 0
-v0.3 Phase 0 status: ACTIVE
-v0.3 Phase 1-8: PLANNED / NOT STARTED
+v0.3 Phase 0: COMPLETE
+Current approved phase: v0.3 Phase 1
+v0.3 Phase 1 status: ACTIVE
+v0.3 Phase 2-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-The current runtime implementation remains the validated v0.2 predecessor baseline until a later v0.3 implementation checkpoint explicitly replaces it.
+The runtime implementation remains the validated v0.2 predecessor baseline until Phase 1 produces a new committed implementation checkpoint.
 
 ```text
 Core Validation run: 34793901147
@@ -34,20 +35,37 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation synchronization after the implementation SHA does not change the runtime baseline unless a later implementation checkpoint explicitly states otherwise.
+## Phase 0 Completion
 
-## Roadmap Records
+Phase 0 froze the predecessor baseline and hardening contract without runtime changes.
 
-- `ROADMAP.md` - active ROADMAP v0.3.
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md` - v0.3 approval/start checkpoint.
-- `ROADMAP_V0_2_ARCHIVE.md` - full archived predecessor roadmap.
-- `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md` - v0.2 closure checkpoint.
-- `ROADMAP_IMPLEMENTATION_AUDIT.md` - completed v0.2 Phase 0-16 compliance audit plus successor reference.
-- `CHAT_HANDOFF.md` - compact current continuation context.
+Authoritative records:
 
-## Public Baseline
+- `HARDENING_BASELINE_V0_3.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md`;
+- `ROADMAP_V0_2_ARCHIVE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`.
 
-The public compatibility baseline remains unchanged during v0.3 Phase 0.
+All known predecessor technical debt is assigned to a v0.3 phase or explicitly deferred in `HARDENING_BASELINE_V0_3.md`.
+
+## Active Phase 1 Scope
+
+`v0.3 Phase 1 - Persistence & Resource Hygiene` is authorized for implementation.
+
+Primary scope:
+
+- explicit persistence connection lifecycle/ownership;
+- transaction-boundary hardening;
+- persistent schema version/migration mechanism;
+- storage abstractions independent of SQLite physical layout;
+- cleanup of known SQLite ResourceWarning leaks;
+- deterministic reopen/restart recovery;
+- documented storage replacement boundary.
+
+Phase 1 may not be marked COMPLETE until its phase-specific tests and full permanent regression suite pass on the committed implementation baseline.
+
+## Public Compatibility Baseline
 
 ```text
 Python facade: ksupervisor
@@ -60,89 +78,18 @@ Extension groups:
   k_supervisor.adapters
 ```
 
-`COMPATIBILITY_POLICY.md` remains authoritative for public contracts, package/CLI/config and extension surfaces.
+`COMPATIBILITY_POLICY.md` remains authoritative.
 
 ## Preserved Architecture Rules
 
-The following are mandatory v0.3 hardening invariants:
+Project remains the top-level managed unit; Agent and Capability remain separate; workflows remain capability-oriented; Supervisor owns orchestration; authoritative state is platform-owned; Human Intervention and owner publication remain explicit; email remains the primary required owner notification transport; policy/permission checks precede material external actions; K-Research & Critic remains reference-only.
 
-- Project remains the top-level managed unit; Project != Task.
-- Agent != Capability.
-- ProjectSpec approval gates material project scope.
-- workflows bind capabilities rather than concrete agents where practical.
-- Supervisor owns orchestration and routing boundaries.
-- lifecycle and operational state remain distinct.
-- platform persistence is authoritative; hidden conversational memory is not.
-- owner-required actions remain explicit Human Intervention records.
-- notification delivery does not imply owner-action completion.
-- email remains the primary required owner notification channel.
-- secrets remain protected references and are not embedded in ordinary docs/notifications/audit payloads.
-- policy and permission enforcement occurs before side effects.
-- RELEASE_READY remains distinct from publication.
-- publication remains owner-controlled.
-- K-Research & Critic remains reference-only.
+## Current Hardening Debt
 
-## Technical Debt Mapped to ROADMAP v0.3
+The frozen debt assignment is maintained in `HARDENING_BASELINE_V0_3.md`.
 
-### v0.3 Phase 1 — Persistence & Resource Hygiene
+Phase 1 owns persistence/resource hygiene. Later phases own durable control state, centralized external-action control, runtime isolation, service/API boundary, production observability, extension/repository governance and end-to-end operational qualification.
 
-- SQLite connection/resource lifecycle hardening;
-- 14 currently visible SQLite `ResourceWarning` warnings;
-- transaction/migration/storage replacement discipline.
+## Validation Rule
 
-### v0.3 Phase 2 — Durable Control State
-
-- process-local runtime idempotency;
-- approval expiry/revocation absent;
-- incomplete aggregate recovery for later resources;
-- stronger atomicity between authoritative state and audit writes.
-
-### v0.3 Phase 3 — Centralized Side-Effect Enforcement
-
-- no universal centralized Tool Gateway;
-- protected-reference/policy/idempotency enforcement must converge at one standard side-effect boundary.
-
-### v0.3 Phase 4 — Runtime Isolation & Cancellation
-
-- current in-process cancellation is cooperative;
-- stronger worker/process fault isolation and bounded termination are required.
-
-### v0.3 Phase 5 — Service/API Boundary
-
-- no HTTP/RPC service API exists yet.
-
-### v0.3 Phase 6 — Production Observability
-
-- metrics are derived snapshots rather than persisted operational telemetry;
-- no distributed tracing, OpenTelemetry/Prometheus-compatible exporter boundary or SLO foundation yet.
-
-### v0.3 Phase 7 — Extension Trust & Platform Governance
-
-- `NamedExtensionRegistry` is in-process/non-durable;
-- extension packages execute as trusted Python code without trust/signature verification;
-- repository `main` governance and required CI/status-check policy need hardening;
-- current GitHub Actions deprecation warnings should be resolved where practical.
-
-### v0.3 Phase 8 — Operational Readiness & Qualification
-
-- release evidence is still supplied explicitly rather than fully operationally ingested;
-- external/package-index publishing is not automated;
-- a complete real-project lifecycle qualification has not yet been performed under hardened boundaries.
-
-## Deliberate Deferrals
-
-Unless separately promoted into scope, ROADMAP v0.3 does not require:
-
-- WhatsApp/Viber or other non-email transports;
-- automatic GPT Store publication;
-- distributed execution clusters;
-- remote agents as a mandatory baseline;
-- event-bus architecture;
-- multi-tenant SaaS isolation/billing;
-- mandatory PostgreSQL or a specific observability vendor.
-
-## Current Roadmap Gate
-
-`v0.3 Phase 0 — Baseline Freeze & Hardening Contract` is ACTIVE.
-
-Phase 0 authorizes documentation, baseline classification, compatibility/migration rules and validation planning. Runtime hardening work belongs to subsequent approved v0.3 phases and must satisfy predecessor exit criteria before phase completion is claimed.
+The v0.2 predecessor suite is the minimum regression floor. Runtime implementation phases require successful Core Validation on their committed implementation SHA before completion.
