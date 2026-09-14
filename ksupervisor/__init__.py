@@ -3,6 +3,7 @@ from .extensions import (
     EXTENSION_GROUPS,
     DiscoveredExtension,
     ExtensionContext,
+    NamedExtensionRegistry,
     activate_extension,
     discover_extensions,
 )
@@ -13,6 +14,7 @@ __all__ = [
     "EXTENSION_GROUPS",
     "DiscoveredExtension",
     "ExtensionContext",
+    "NamedExtensionRegistry",
     "PlatformConfig",
     "activate_extension",
     "discover_extensions",
