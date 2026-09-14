@@ -2,8 +2,9 @@
 Оновлений план розвитку K_Supervisor як системи життєвого циклу AI-проєктів і модульної мультиагентної платформи.
 
 Version: 0.2
-Status: ACTIVE
+Status: COMPLETE
 Roadmap start: 2026-08-14
+Roadmap completed: 2026-09-14
 
 ## 1. Roadmap Rule
 
@@ -398,8 +399,29 @@ Exit criteria:
 
 - an external developer can add a compliant agent, capability, project template, or adapter without changing Supervisor core code.
 
+## Roadmap Closure
+
+ROADMAP v0.2 is complete as of 2026-09-14.
+
+```text
+Published phases: 0-16
+Completed phases: 0-16
+Unmet published exit criteria: 0
+Current approved implementation phase: NONE
+Phase 17: NOT DEFINED
+```
+
+Completion evidence is recorded in:
+
+- `docs/PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`;
+- `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`;
+- `docs/PROJECT_STATE.md`.
+
+Additional implementation work requires an explicit new roadmap/revision. It must not be silently appended to completed Phase 16 or described as an approved Phase 17.
+
 ## Future Direction
 
 Possible later work includes distributed execution, remote agents, event buses, multi-tenant isolation, advanced planning, richer scheduling, additional publication targets, and optional messaging integrations such as WhatsApp or Viber.
 
-These are deferred until the local project-lifecycle and email-first automation baseline is proven.
+These items are candidate future directions only. They are not approved implementation work until incorporated into a new explicit roadmap/revision.
