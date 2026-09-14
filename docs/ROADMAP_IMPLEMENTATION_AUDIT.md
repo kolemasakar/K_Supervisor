@@ -1,12 +1,10 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
-Звірка фактичної реалізації K_Supervisor з завершеним ROADMAP v0.2 та фіксація successor baseline.
+Звірка фактичної реалізації K_Supervisor із завершеним ROADMAP v0.2 та посилання на активний successor ROADMAP v0.3.
 
-Version: 1.7
+Version: 1.8
 Status: COMPLETE
 Date: 2026-09-14
-Audit scope: ROADMAP v0.2 Phase 0-16
-Successor roadmap: ROADMAP v0.3 ACTIVE
-Current successor phase: v0.3 Phase 0
+Primary audited scope: ROADMAP v0.2 Phase 0-16
 
 ## v0.2 Audit Result
 
@@ -14,10 +12,7 @@ Current successor phase: v0.3 Phase 0
 Roadmap phases reviewed: 0-16
 Unmet published exit criteria: 0
 ROADMAP v0.2 status: COMPLETE
-Phase 17: NOT DEFINED
 ```
-
-## Compliance Matrix
 
 | v0.2 Phase | Result |
 | --- | --- |
@@ -39,9 +34,9 @@ Phase 17: NOT DEFINED
 | 15 | PASS |
 | 16 | PASS |
 
-Detailed implementation evidence remains preserved in each v0.2 phase completion checkpoint.
+Detailed v0.2 implementation evidence remains preserved in the individual phase completion checkpoints.
 
-## Final Validated v0.2 Runtime Implementation
+## Frozen v0.2 Runtime Baseline
 
 ```text
 Core Validation run: 34793901147
@@ -55,40 +50,45 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation synchronization after that implementation SHA does not itself replace the runtime implementation baseline.
+This remains the authoritative runtime predecessor baseline until an explicit v0.3 implementation checkpoint supersedes it.
 
 ## Preserved Boundaries
 
-Project and Task remain separate; Agent and Capability remain separate; workflows route by capability; policy precedes side effects; owner-required actions and publication stay explicit; K-Research & Critic remains reference-only; external extensions do not require Supervisor-core edits.
+Project and Task remain separate; Agent and Capability remain separate; workflows remain capability-oriented; Supervisor owns orchestration; authoritative state is platform-owned; policy/permissions precede material external actions; Human Intervention and owner publication remain explicit; K-Research & Critic remains reference-only; external extensions do not require Supervisor-core edits.
 
-## v0.2 Closure Records
+## v0.3 Successor State
 
-- `PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md`
-- `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`
-- `ROADMAP_V0_2_ARCHIVE.md`
-
-## Successor Decision
-
-ROADMAP v0.3 — Production Hardening & Service Boundary is approved and active.
-
-The successor uses revision-local numbering:
+ROADMAP v0.3 was explicitly approved on 2026-09-14 and uses revision-local Phase 0-8 numbering.
 
 ```text
-v0.3 Phase 0 through v0.3 Phase 8
+v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
+Current approved phase: v0.3 Phase 1 - Persistence & Resource Hygiene
+v0.3 Phase 1: ACTIVE
+v0.3 Phase 2-8: PLANNED / NOT STARTED
+Phase 17: NOT DEFINED
 ```
 
-This successor roadmap does not create, rename or reinterpret a Phase 17.
+Phase 0 introduced no runtime changes. It froze:
 
-Approval evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md`.
+- the predecessor implementation/validation baseline;
+- technical-debt ownership by phase;
+- public/internal compatibility boundaries;
+- migration/rollback expectations;
+- hardening invariants;
+- cumulative v0.3 validation rules.
 
-## Current Successor Gate
+Authoritative Phase 0 records:
 
-`v0.3 Phase 0 — Baseline Freeze & Hardening Contract` is ACTIVE.
+- `HARDENING_BASELINE_V0_3.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md`.
 
-The v0.2 regression/compatibility baseline remains the minimum floor for v0.3. Runtime hardening implementation may only be claimed under the corresponding v0.3 phase with cumulative validation evidence.
+## Historical Closure Records
 
-## Audit Closure
+- `PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`;
+- `ROADMAP_V0_2_ARCHIVE.md`.
 
-The v0.2 implementation audit remains COMPLETE and immutable in scope: all published v0.2 exit criteria were satisfied.
+## Audit Boundary
 
-Future implementation evidence belongs to v0.3 phase checkpoints and future v0.3 audit records rather than modifying the meaning of this completed v0.2 compliance result.
+This document's PASS matrix remains the completed v0.2 implementation audit. v0.3 implementation evidence must be recorded phase-by-phase in new v0.3 checkpoints and must not rewrite the historical v0.2 PASS record.
