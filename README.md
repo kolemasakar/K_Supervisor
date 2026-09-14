@@ -13,38 +13,13 @@ K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-ag
 
 K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a reference product only.
 
-## Core Documents
+## Canonical Status Documents
 
-- `docs/VISION.md`
 - `docs/PROJECT_STATE.md`
-- `docs/PROJECT_CONTRACT.md`
-- `docs/PROJECT_LIFECYCLE.md`
-- `docs/PROJECT_CONTROL_PLANE.md`
-- `docs/ARCHITECTURE.md`
-- `docs/AGENT_CONTRACT.md`
-- `docs/CAPABILITY_MODEL.md`
-- `docs/MACHINE_CONTRACTS.md`
-- `docs/PERSISTENCE.md`
-- `docs/NOTIFICATIONS.md`
-- `docs/REGISTRIES.md`
-- `docs/SUPERVISOR_KERNEL.md`
-- `docs/PROJECT_FACTORY.md`
-- `docs/WORKFLOW_ENGINE.md`
-- `docs/AGENT_RUNTIME.md`
-- `docs/PROJECT_SCHEDULER.md`
-- `docs/INTEGRATIONS.md`
-- `docs/POLICY_AND_PERMISSIONS.md`
-- `docs/AGENT_FACTORY.md`
-- `docs/RELEASE_MANAGER.md`
-- `docs/REFERENCE_RESEARCH_CRITIC_WORKFLOW.md`
-- `docs/OBSERVABILITY_AND_RELIABILITY.md`
-- `docs/TEST_MATRIX.md`
-- `docs/PLATFORM_INTERFACES.md`
-- `docs/DEVELOPER_GUIDE.md`
-- `docs/COMPATIBILITY_POLICY.md`
-- `docs/NOTIFICATION_ADAPTER_INTERFACE.md`
 - `docs/ROADMAP.md`
 - `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`
+- `docs/CHAT_HANDOFF.md`
 - `docs/DOCS_INDEX.md`
 
 ## Implementation Status
@@ -69,15 +44,15 @@ Phase 15  Observability / Reliability / CI            COMPLETE
 Phase 16  Interfaces / Packaging / Extensibility      COMPLETE
 ```
 
-Validation baseline:
+Final validated implementation baseline:
 
 ```text
-Core Validation: PASS
-Run: 34793901147
+Core Validation run: 34793901147
+Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
 Python: 3.13.15
 pytest: 88 passed
 branch-aware coverage: 85.46%
-coverage gate: >= 80%
+coverage gate: >= 80% PASS
 compileall including examples: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
@@ -88,4 +63,8 @@ live owner mailbox delivery: PASS
 
 The distribution builds as `k-supervisor==0.1.0` and exposes the `ksupervisor` Python facade plus the `k-supervisor` CLI. Standard Python entry points support externally packaged agents, capabilities, project templates and adapters without Supervisor-core edits.
 
-ROADMAP v0.2 has no remaining published implementation phase. Future development must be introduced through an explicit roadmap revision rather than silently extending Phase 16.
+## Roadmap Closure
+
+ROADMAP v0.2 is complete and `docs/ROADMAP.md` is explicitly marked `Status: COMPLETE`. There is no approved Phase 17. Future implementation requires an explicit new roadmap/revision before coding begins.
+
+For continuing work in a new conversation, start with `docs/CHAT_HANDOFF.md` and re-fetch the canonical status documents from `main` before making changes.
