@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 1.9
+Version: 2.0
 Status: ACTIVE
 
 ## Reading Order
@@ -15,7 +15,7 @@ Status: ACTIVE
 7. `AGENT_CONTRACT.md` - common agent execution contract.
 8. `CAPABILITY_MODEL.md` - capability discovery and routing.
 9. `MACHINE_CONTRACTS.md` - machine-readable baseline.
-10. `PERSISTENCE.md` - durable project state and recovery.
+10. `PERSISTENCE.md` - durable project state, observability events and recovery.
 11. `NOTIFICATIONS.md` - intervention and email notifications.
 12. `REGISTRIES.md` - agent and capability registries.
 13. `SUPERVISOR_KERNEL.md` - task orchestration and routing.
@@ -28,9 +28,11 @@ Status: ACTIVE
 20. `AGENT_FACTORY.md` - agent blueprints, scaffolding, registry/runtime binding, and reference agents.
 21. `RELEASE_MANAGER.md` - release state, readiness, GPT Store preparation, and publication handoff.
 22. `REFERENCE_RESEARCH_CRITIC_WORKFLOW.md` - Phase 14 reference behavior mapping and capability composition.
-23. `ROADMAP.md` - phased implementation plan.
-24. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
-25. `PROJECT_FILE_STANDARD.md` - repository file standard.
+23. `OBSERVABILITY_AND_RELIABILITY.md` - structured audit, metrics, reliability and CI quality baseline.
+24. `TEST_MATRIX.md` - regression coverage by roadmap phase and reliability category.
+25. `ROADMAP.md` - phased implementation plan.
+26. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
+27. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
@@ -50,23 +52,27 @@ Phase 11: COMPLETE
 Phase 12: COMPLETE
 Phase 13: COMPLETE
 Phase 14: COMPLETE
-Next: Phase 15 - Observability, Reliability, CI, and Test Matrix
+Phase 15: COMPLETE
+Next: Phase 16 - Interfaces, Packaging, and Extensibility
 ```
 
 Current automated validation:
 
 ```text
 Python 3.13.15
-75 tests PASS
+81 tests PASS
+branch-aware coverage: 85.57%
+coverage gate: >= 80%
+compileall: PASS
 ```
 
 Latest checkpoints:
 
 ```text
-PROJECT_CHECKPOINT_PHASE_11_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_12_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_13_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_14_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_15_COMPLETE.md
 ```
 
 ## External References
