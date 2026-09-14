@@ -1,9 +1,10 @@
 # AGENT_RUNTIME
-Опис Phase 8 runtime-рівня для контрольованого виконання агентів та нормалізації runtime failures.
+Опис runtime-рівня K_Supervisor для контрольованого виконання агентів, normalized failures та durable idempotency.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
-Phase: 8
+Baseline: v0.3 Phase 2 COMPLETE
+Date: 2026-09-14
 
 ## Purpose
 
@@ -26,22 +27,13 @@ Supervisor and Workflow Engine remain independent of concrete execution mechanis
 
 ## Runtime Adapter
 
-`RuntimeAdapter` is the replaceable execution boundary.
-
-Phase 8 provides `InProcessRuntimeAdapter` as the first reference implementation. It runs registered handlers in a worker thread and returns only `AgentRunResult` envelopes to the orchestration layer.
-
-Future process, container, remote-service, or managed runtimes can implement the same adapter contract.
+`RuntimeAdapter` is the replaceable execution boundary. `InProcessRuntimeAdapter` remains the current reference implementation. Future process/container/remote adapters can implement the same contract.
 
 ## Execution Control
 
-Each invocation receives an `ExecutionControl` object with:
+Each invocation receives `ExecutionControl` with cancellation signal, parsed runtime limits and usage counters.
 
-- cancellation signal;
-- parsed runtime limits;
-- runtime usage counters;
-- cooperative resource-consumption checks.
-
-Supported request limits in the Phase 8 baseline are:
+Supported limits include:
 
 ```text
 timeout_seconds
@@ -52,85 +44,50 @@ max_cost
 max_retries
 ```
 
-`max_retries` is accepted as part of the common request contract but retry orchestration remains owned by `SupervisorKernel`.
+Retry orchestration remains owned by Supervisor.
 
-Unknown limit names and invalid limit values are rejected deterministically as `VALIDATION_ERROR`.
+## Timeout, Cancellation and Errors
 
-## Timeout and Cancellation
+Timeout/cancellation and handler failures are normalized to `AgentRunResult`; raw execution exceptions do not cross the runtime boundary. Returned results are correlation-validated before acceptance.
 
-`timeout_seconds` is enforced by the in-process adapter and normalized to:
+The current in-process adapter still uses cooperative cancellation and cannot forcibly terminate arbitrary Python code. Strong process isolation belongs to v0.3 Phase 4.
 
-```text
-status: TIMED_OUT
-error.category: TIMEOUT
-error.retryable: true
-```
+## Runtime Idempotency
 
-Cancellation is cooperative. `AgentRuntimeDispatcher.cancel(run_id)` signals the active `ExecutionControl`; a compliant in-process handler calls `check_cancelled()` at safe interruption points.
-
-A cooperative cancellation is normalized to:
+For requests with `idempotency_key`, successful results can be replayed with the new request correlation IDs and:
 
 ```text
-status: CANCELLED
-error.category: CANCELLED
+metadata.idempotent_replay = true
 ```
 
-The Phase 8 in-process adapter cannot forcibly terminate arbitrary Python code that ignores cancellation. Hard process isolation is intentionally left to a future runtime adapter.
+Reuse of the same semantic idempotency scope with a different input signature is rejected.
 
-## Exception Normalization
+### Durable platform path
 
-Raw handler exceptions do not cross the runtime boundary.
+When `AgentRuntimeDispatcher` is constructed with the platform persistence store, it uses `PersistenceIdempotencyStore`.
 
-Baseline mappings include:
+Durable scope includes:
 
 ```text
-RuntimeDependencyUnavailable -> DEPENDENCY_UNAVAILABLE / retryable
-RuntimeProviderError          -> PROVIDER_ERROR / retryable
-RuntimeToolError              -> TOOL_ERROR
-RuntimeTimeout                -> TIMEOUT / TIMED_OUT
-RuntimeCancelled              -> CANCELLED / CANCELLED
-RuntimeLimitExceeded          -> POLICY_BLOCKED / BLOCKED
-RuntimeValidationError        -> VALIDATION_ERROR
-unexpected exception          -> EXECUTION_ERROR
+project_id
+agent_id
+capability_id
+capability_version
+operation
+idempotency_key
 ```
 
-Runtime-generated results preserve the request correlation fields required by Agent Contract v1.
+The prior successful result is stored as `RuntimeIdempotencyRecord`. Supported store/process restart therefore does not change replay semantics, and the handler is not invoked again for an equivalent replay.
 
-Returned handler results are also checked for correlation consistency before they are accepted.
+Scopes are project-isolated. Concurrent durable claims are resolved against the immutable authoritative record and cannot silently replace a different signature.
 
-## Resource Limits
+### Standalone compatibility path
 
-In-process handlers may report controlled resource consumption through:
-
-```text
-control.consume("tool_calls", amount)
-control.consume("tokens", amount)
-control.consume("sources", amount)
-control.consume("cost", amount)
-```
-
-A configured limit is checked before the updated usage value is accepted. Exceeding a limit produces a normalized `BLOCKED` result with `POLICY_BLOCKED` error category.
-
-Recorded runtime usage is attached to `AgentRunResult.metrics.runtime_usage`.
-
-This is a cooperative accounting boundary. Provider-native token, cost, and tool enforcement can be added by later provider/runtime adapters.
-
-## Idempotency
-
-`MemoryIdempotencyStore` is the Phase 8 reference idempotency hook.
-
-For requests with `idempotency_key`:
-
-- a successful result can be replayed without invoking the handler again;
-- replay receives the correlation IDs of the new request;
-- reuse of the same key with a different input payload is rejected;
-- replay is marked with `metadata.idempotent_replay = true`.
-
-The reference store is process-local and not durable across restarts. Durable cross-process idempotency can replace it behind the runtime boundary in a later persistence/infrastructure refinement.
+`MemoryIdempotencyStore` remains available when no platform persistence store is supplied. It preserves the original Phase 8 behavior but remains process-local and does not claim restart durability.
 
 ## Health and Availability
 
-Runtime execution updates `AgentRegistry` availability:
+Runtime execution continues to update Agent Registry availability:
 
 ```text
 AVAILABLE/DEGRADED -> BUSY during execution
@@ -141,23 +98,38 @@ runtime failure    -> DEGRADED
 repeated failures  -> UNAVAILABLE
 ```
 
-The default unavailability threshold is three consecutive runtime failures and is configurable on `AgentRuntimeDispatcher`.
+A later successful run resets the consecutive-failure counter.
 
-A later successful run resets the consecutive-failure counter and restores `AVAILABLE`.
+## Resource Accounting
 
-## Isolation Boundary
+Handlers may report controlled resource consumption through `ExecutionControl.consume(...)`. Exceeding configured limits produces normalized `BLOCKED` policy failures. Usage is attached to `AgentRunResult.metrics.runtime_usage`.
 
-Phase 8 guarantees logical failure isolation at the Agent Contract boundary: handler exceptions, timeout, cancellation, invalid results, and runtime policy failures are represented as normalized `AgentRunResult` statuses and errors.
+This remains cooperative accounting. Phase 3 centralizes external side-effect enforcement; Phase 4 strengthens runtime isolation/cancellation.
 
-The reference in-process adapter does not claim OS/process isolation. Stronger isolation belongs to additional `RuntimeAdapter` implementations and does not require Supervisor-core changes.
+## Recovery Boundary
+
+Durable runtime idempotency records are project-scoped persistence resources and are included in `ProjectRecoverySnapshot`. Runtime handler/process-local execution stacks themselves are not serialized as authoritative state.
+
+Workflow/Task/Human Intervention durable records determine restart recovery and resumability through their existing platform boundaries.
 
 ## Validation
 
-Core Validation on the committed Phase 8 baseline:
+Authoritative v0.3 Phase 2 baseline:
 
 ```text
-Python 3.13.15
-46 tests PASS
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
+Python: 3.13.15
+pytest: 103 passed
+branch-aware coverage: 85.23%
+ResourceWarning gate: PASS
 ```
 
-Coverage includes success, exception normalization, timeout, cooperative cancellation, resource limits, idempotency replay/conflict, retry classification, result correlation, and agent health transitions.
+Phase 2 verifies durable replay across SQLite restart, project isolation, notification/execution duplicate protection and interrupted workflow/project resume. Full predecessor runtime timeout/cancellation/limit/health regressions remain green.
+
+## Current Limits
+
+- in-process cancellation remains cooperative;
+- no OS/process isolation yet;
+- durable idempotency prevents supported duplicate platform execution but does not claim universal exactly-once external effects;
+- centralized external side-effect enforcement belongs to Phase 3.
