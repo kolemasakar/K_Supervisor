@@ -21,11 +21,11 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 0 | Baseline Freeze & Hardening Contract | COMPLETE |
 | v0.3 Phase 1 | Persistence & Resource Hygiene | ACTIVE |
 | v0.3 Phase 2 | Durable Control State | PLANNED |
-| v0.3 Phase 3 | Centralized Action Gateway | PLANNED |
+| v0.3 Phase 3 | Centralized Side-Effect Enforcement | PLANNED |
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | PLANNED |
 | v0.3 Phase 5 | Service/API Boundary | PLANNED |
 | v0.3 Phase 6 | Production Observability | PLANNED |
-| v0.3 Phase 7 | Extension and Platform Governance | PLANNED |
+| v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
 ## Phase 0 Result
