@@ -3,12 +3,13 @@
 
 Status: PRE-ALPHA
 Concept baseline: v0.2
-Roadmap baseline: Phase 16
+Roadmap baseline: COMPLETE (Phase 0-16)
+Package version: 0.1.0
 Repository: `kolemasakar/K_Supervisor`
 
 ## Purpose
 
-K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, reference multi-agent compositions, and structured reliability/observability boundaries.
+K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, reference multi-agent compositions, observability/reliability, packaging, and external extension discovery.
 
 K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a reference product only.
 
@@ -38,6 +39,10 @@ K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a referen
 - `docs/REFERENCE_RESEARCH_CRITIC_WORKFLOW.md`
 - `docs/OBSERVABILITY_AND_RELIABILITY.md`
 - `docs/TEST_MATRIX.md`
+- `docs/PLATFORM_INTERFACES.md`
+- `docs/DEVELOPER_GUIDE.md`
+- `docs/COMPATIBILITY_POLICY.md`
+- `docs/NOTIFICATION_ADAPTER_INTERFACE.md`
 - `docs/ROADMAP.md`
 - `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`
 - `docs/DOCS_INDEX.md`
@@ -61,19 +66,26 @@ Phase 12  Reference Agents / Agent Factory            COMPLETE
 Phase 13  Release Manager / Publication Readiness     COMPLETE
 Phase 14  Reference Research-Critic Workflow          COMPLETE
 Phase 15  Observability / Reliability / CI            COMPLETE
-Phase 16  Interfaces / Packaging / Extensibility      NEXT
+Phase 16  Interfaces / Packaging / Extensibility      COMPLETE
 ```
 
 Validation baseline:
 
 ```text
 Core Validation: PASS
+Run: 34793901147
 Python: 3.13.15
-pytest: 81 passed
-branch-aware coverage: 85.57%
+pytest: 88 passed
+branch-aware coverage: 85.46%
 coverage gate: >= 80%
-compileall: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
 live owner mailbox delivery: PASS
 ```
 
-The current reliability baseline includes append-only audit/routing/release-validation records, derived project/agent metrics, deterministic failure injection, restart recovery tests, a routing performance regression guard, and permanent CI syntax/coverage quality gates.
+## Public Baseline
+
+The distribution builds as `k-supervisor==0.1.0` and exposes the `ksupervisor` Python facade plus the `k-supervisor` CLI. Standard Python entry points support externally packaged agents, capabilities, project templates and adapters without Supervisor-core edits.
+
+ROADMAP v0.2 has no remaining published implementation phase. Future development must be introduced through an explicit roadmap revision rather than silently extending Phase 16.
