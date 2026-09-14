@@ -1,6 +1,12 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "k-supervisor"
 version = "0.1.0"
+description = "AI project lifecycle supervisor and modular multi-agent platform"
+readme = "README.md"
 requires-python = ">=3.13"
 dependencies = ["pydantic>=2.10,<3"]
 
@@ -9,7 +15,36 @@ dev = [
     "pytest>=8.3,<10",
     "jsonschema>=4.23,<5",
     "pytest-cov>=6,<8",
+    "build>=1.2,<2",
 ]
+
+[project.scripts]
+k-supervisor = "ksupervisor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "access*",
+    "agent_factory*",
+    "agents*",
+    "factory*",
+    "integrations*",
+    "ksupervisor*",
+    "models*",
+    "observability*",
+    "persistence*",
+    "policy*",
+    "providers*",
+    "provisioning*",
+    "registry*",
+    "release_manager*",
+    "runtime*",
+    "scheduler*",
+    "supervisor*",
+    "tools*",
+    "workflows*",
+]
+namespaces = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
