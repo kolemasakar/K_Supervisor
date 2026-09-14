@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 1.5
+Version: 1.6
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 2
+Current phase: v0.3 Phase 3
 
 ## v0.2 Regression Matrix
 
@@ -35,8 +35,8 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | --- | --- | --- |
 | 0 | predecessor traceability, compatibility review, full v0.2 regression evidence, documentation consistency | COMPLETE |
 | 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | COMPLETE |
-| 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | ACTIVE |
-| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | PLANNED |
+| 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | COMPLETE |
+| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | ACTIVE |
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | PLANNED |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
@@ -45,14 +45,26 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 
 ## Phase 1 Evidence
 
-Authoritative implementation baseline:
-
 ```text
 Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
 Core Validation run: 34804141156
-Python: 3.13.15
 pytest: 95 passed
 branch-aware coverage: 85.66%
+ResourceWarning gate: PASS
+```
+
+Primary Phase 1 tests: `tests/test_v03_phase1_persistence_hardening.py`.
+
+## Phase 2 Evidence
+
+Authoritative implementation baseline:
+
+```text
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
+Python: 3.13.15
+pytest: 103 passed
+branch-aware coverage: 85.23%
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall: PASS
@@ -60,37 +72,43 @@ wheel build/install: PASS
 public interface smoke: PASS
 ```
 
-Phase 1 hardening tests:
+Phase 2 hardening tests:
 
 ```text
-tests/test_v03_phase1_persistence_hardening.py
+tests/test_v03_phase2_durable_control_state.py
+tests/test_v03_phase2_restart_resume.py
 ```
 
 Verified behaviors:
 
-- context-manager connection ownership;
-- idempotent initialize/close;
-- deterministic v1 -> v2 migration with data preservation;
-- fail-closed unsupported schema handling;
-- transaction rollback;
-- independent concurrent SQLite writers under the supported local boundary;
-- zero SQLite ResourceWarning leakage;
-- predecessor restart/recovery compatibility.
+- persistence-backed runtime idempotency survives restart;
+- command replay reuses the prior authoritative successful result without invoking the handler again;
+- idempotency scope is isolated by project;
+- notification SENT duplicate suppression survives restart;
+- approval expiry is deterministic and persisted;
+- approval revocation is persisted and rejected by subsequent policy evaluation;
+- expiry/revocation lifecycle changes are durably audited;
+- richer ProjectRecoverySnapshot reconstructs Human Intervention, notification/delivery, approval, runtime-idempotency, policy, audit, routing and release-validation state;
+- interrupted Task/WorkflowRun + WAITING_FOR_OWNER state reconstructs after restart and resumes through Human Intervention;
+- injected audit failure rolls back matching Project transition + Project snapshot;
+- all predecessor regression tests remain green.
 
-Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`.
 
-## Phase 2 Required Verification
+## Phase 3 Required Verification
 
-Phase 2 implementation must prove:
+Phase 3 implementation must prove:
 
-- idempotency state survives process/store restart;
-- replay of the same supported command returns/reuses the authoritative outcome rather than creating an unintended duplicate operation;
-- notification/execution deduplication state is durable where required by standard platform paths;
-- approval expiry is deterministic and time-aware;
-- approval revocation is persisted, enforced and audited;
-- interrupted workflow/project control state can be reconstructed after restart;
-- richer recovery aggregation uses authoritative persistence rather than hidden process memory;
-- required control-state/audit writes respect the defined atomicity boundary;
+- standard material side effects execute through the centralized gateway path;
+- ALLOW permits one normalized adapter invocation;
+- DENY prevents adapter invocation;
+- REQUIRE_APPROVAL prevents adapter invocation until permission is approved;
+- requested tool/operation permissions are checked before invocation;
+- protected references are authorized before resolution/use;
+- project/request/agent/capability correlation reaches the side-effect record;
+- idempotency is propagated and repeated invocation does not create an unintended duplicate through the supported path;
+- tool/provider failures are normalized and durably audited;
+- concrete adapters remain replaceable behind the gateway contract;
 - all completed v0.2 + v0.3 regression tests remain green.
 
 ## Permanent Quality Gates
@@ -115,11 +133,11 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 34804141156
-Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34808287772
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
 Python: 3.13.15
-pytest: 95 passed
-branch-aware coverage: 85.66%
+pytest: 103 passed
+branch-aware coverage: 85.23%
 coverage gate: PASS
 ResourceWarning gate: PASS
 wheel build/install: PASS
