@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from models.enums import ReleaseStatus
 from models.release import ReleaseTarget
+from observability.release_validation import record_release_validation
 
 from .contracts import ReleaseEvidence
 from .errors import ReleaseNotReadyError, ReleaseProfileValidationError
@@ -84,4 +87,11 @@ class TargetPreparer:
             available_files=self.repository_adapter.list_files(repository),
             satisfied_criteria=tuple(criteria),
         )
-        return self.readiness.check(project, spec, release, target, evidence)
+        report = self.readiness.check(project, spec, release, target, evidence)
+        record_release_validation(
+            self.store,
+            report=report,
+            release_target_id=target.release_target_id,
+            created_at=datetime.now(timezone.utc),
+        )
+        return report
