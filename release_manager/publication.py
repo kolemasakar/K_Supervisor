@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from models.enums import ReleaseStatus
 from models.intervention import HumanActionRequest
+from observability.audit import record_audit
 
 from .state import transition_target
 
@@ -38,6 +39,17 @@ class PublicationHandoff:
         target = transition_target(target, ReleaseStatus.PUBLICATION_REQUIRED, at)
         target = target.model_copy(update={"human_action_id": opened.human_action_id})
         self.store.save_release_target(target)
+        record_audit(
+            self.store,
+            project_id=target.project_id,
+            category="RELEASE",
+            event_type="RELEASE_PUBLICATION_REQUIRED",
+            occurred_at=at,
+            resource_type="ReleaseTarget",
+            resource_id=target.release_target_id,
+            correlation_id=target.release_id,
+            details={"target_type": target.target_type},
+        )
         return target
 
     def confirm(self, target, at):
@@ -49,4 +61,15 @@ class PublicationHandoff:
             self.human.verify(target.human_action_id, True, at)
         target = transition_target(target, ReleaseStatus.PUBLISHED, at)
         self.store.save_release_target(target)
+        record_audit(
+            self.store,
+            project_id=target.project_id,
+            category="RELEASE",
+            event_type="RELEASE_TARGET_PUBLISHED",
+            occurred_at=at,
+            resource_type="ReleaseTarget",
+            resource_id=target.release_target_id,
+            correlation_id=target.release_id,
+            details={"target_type": target.target_type},
+        )
         return target
