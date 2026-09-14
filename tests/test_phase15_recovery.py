@@ -12,7 +12,7 @@ def test_observability_records_survive_restart(tmp_path):
     path = store.path
     expected = len(store.list_release_validation_records("P13"))
     store.close()
-    recovered = SQLitePersistenceStore(path)
-    recovered.initialize()
-    assert len(recovered.list_release_validation_records("P13")) == expected
-    assert recovered.list_audit_events("P13")
+
+    with SQLitePersistenceStore(path) as recovered:
+        assert len(recovered.list_release_validation_records("P13")) == expected
+        assert recovered.list_audit_events("P13")
