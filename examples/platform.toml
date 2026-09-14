@@ -1,0 +1,10 @@
+config_version = "1"
+state_db_path = "runtime/k_supervisor.db"
+strict_extensions = true
+
+extension_groups = [
+  "k_supervisor.agents",
+  "k_supervisor.capabilities",
+  "k_supervisor.project_templates",
+  "k_supervisor.adapters",
+]
