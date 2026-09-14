@@ -90,6 +90,8 @@ class ApprovalStatus(StrEnum):
     PENDING = "PENDING"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
+    EXPIRED = "EXPIRED"
+    REVOKED = "REVOKED"
 
 
 class ApprovalRecord(ContractModel):
@@ -101,17 +103,52 @@ class ApprovalRecord(ContractModel):
     status: ApprovalStatus = ApprovalStatus.PENDING
     created_at: datetime
     decided_at: datetime | None = None
+    expires_at: datetime | None = None
+    expired_at: datetime | None = None
+    revoked_at: datetime | None = None
+    revocation_reason: str | None = None
     metadata: JsonObject = {}
 
-    @field_validator("created_at", "decided_at")
+    @field_validator(
+        "created_at",
+        "decided_at",
+        "expires_at",
+        "expired_at",
+        "revoked_at",
+    )
     @classmethod
     def validate_datetime(cls, value: datetime | None) -> datetime | None:
         return None if value is None else ensure_tz(value)
 
     @model_validator(mode="after")
     def validate_state(self):
-        if self.status == ApprovalStatus.PENDING and self.decided_at is not None:
-            raise ValueError("pending approval must not have decided_at")
-        if self.status in {ApprovalStatus.APPROVED, ApprovalStatus.REJECTED} and self.decided_at is None:
-            raise ValueError("resolved approval requires decided_at")
+        if self.expires_at is not None and self.expires_at <= self.created_at:
+            raise ValueError("approval expires_at must be after created_at")
+        if self.status == ApprovalStatus.PENDING:
+            if self.decided_at is not None or self.expired_at is not None or self.revoked_at is not None:
+                raise ValueError("pending approval cannot be resolved")
+        elif self.status in {ApprovalStatus.APPROVED, ApprovalStatus.REJECTED}:
+            if self.decided_at is None:
+                raise ValueError("decided approval requires decided_at")
+            if self.expired_at is not None or self.revoked_at is not None:
+                raise ValueError("decided approval has invalid lifecycle timestamps")
+        elif self.status == ApprovalStatus.EXPIRED:
+            if self.expired_at is None:
+                raise ValueError("expired approval requires expired_at")
+            if self.revoked_at is not None:
+                raise ValueError("expired approval cannot also be revoked")
+        elif self.status == ApprovalStatus.REVOKED:
+            if self.decided_at is None or self.revoked_at is None:
+                raise ValueError("revoked approval requires decision and revocation timestamps")
+            if self.expired_at is not None:
+                raise ValueError("revoked approval cannot also be expired")
+            if not self.revocation_reason:
+                raise ValueError("revoked approval requires revocation_reason")
         return self
+
+    def is_expired_at(self, at: datetime) -> bool:
+        at = ensure_tz(at)
+        return self.expires_at is not None and at >= self.expires_at
+
+    def is_active_at(self, at: datetime) -> bool:
+        return self.status == ApprovalStatus.APPROVED and not self.is_expired_at(at)
