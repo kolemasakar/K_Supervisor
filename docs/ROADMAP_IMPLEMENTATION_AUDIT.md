@@ -1,7 +1,7 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
 Звірка фактичної реалізації K_Supervisor із завершеним ROADMAP v0.2 та посилання на активний successor ROADMAP v0.3.
 
-Version: 1.9
+Version: 2.0
 Status: COMPLETE
 Date: 2026-09-14
 Primary audited scope: ROADMAP v0.2 Phase 0-16
@@ -50,7 +50,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-This remains the immutable predecessor evidence for the v0.2 audit. It has now been superseded operationally by the validated v0.3 Phase 1 runtime baseline, without rewriting the historical v0.2 PASS result.
+This remains immutable predecessor evidence for the v0.2 audit. Successor runtime baselines do not rewrite the historical v0.2 PASS record.
 
 ## Preserved Boundaries
 
@@ -63,9 +63,10 @@ ROADMAP v0.3 was explicitly approved on 2026-09-14 and uses revision-local Phase
 ```text
 v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
-Current approved phase: v0.3 Phase 2 - Durable Control State
-v0.3 Phase 2: ACTIVE
-v0.3 Phase 3-8: PLANNED / NOT STARTED
+v0.3 Phase 2 - Durable Control State: COMPLETE
+Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
+v0.3 Phase 3: ACTIVE
+v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
@@ -74,9 +75,21 @@ Phase 17: NOT DEFINED
 ```text
 Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
 Core Validation run: 34804141156
-Python: 3.13.15
 pytest: 95 passed
 branch-aware coverage: 85.66%
+ResourceWarning gate: PASS
+```
+
+Phase 1 hardened connection lifecycle, explicit transactions, SQLite schema migration/versioning, supported local concurrency and ResourceWarning enforcement while preserving the approved persistence abstraction and public compatibility surfaces.
+
+### v0.3 Phase 2 validated runtime baseline
+
+```text
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
+Python: 3.13.15
+pytest: 103 passed
+branch-aware coverage: 85.23%
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -84,14 +97,27 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Phase 1 hardened connection lifecycle, explicit transactions, SQLite schema migration/versioning, supported local concurrency and ResourceWarning enforcement while preserving the approved persistence abstraction and public compatibility surfaces.
+Phase 2 delivered durable project-scoped runtime idempotency, restart-safe notification deduplication evidence, approval expiry/revocation with durable audit, expanded recovery aggregation, restart/resume verification and atomic state+audit writes for core Project/Human Intervention/Approval control mutations.
 
-Authoritative v0.3 records:
+Phase 2 completion record:
+
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`.
+
+Current supporting contracts:
+
+- `PERSISTENCE.md`;
+- `AGENT_RUNTIME.md`;
+- `POLICY_AND_PERMISSIONS.md`;
+- `PROJECT_STATE.md`;
+- `TEST_MATRIX.md`.
+
+## Authoritative v0.3 Records
 
 - `HARDENING_BASELINE_V0_3.md` - frozen Phase 0 contract;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
-- `PERSISTENCE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
+- `ROADMAP.md`;
 - `PROJECT_STATE.md`;
 - `TEST_MATRIX.md`.
 
