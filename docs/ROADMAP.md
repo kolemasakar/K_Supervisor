@@ -1,427 +1,529 @@
 # ROADMAP
-Оновлений план розвитку K_Supervisor як системи життєвого циклу AI-проєктів і модульної мультиагентної платформи.
+План розвитку K_Supervisor для переходу від PRE-ALPHA functional platform baseline до hardened autonomous platform foundation.
 
-Version: 0.2
-Status: COMPLETE
-Roadmap start: 2026-08-14
-Roadmap completed: 2026-09-14
+Version: 0.3
+Status: ACTIVE
+Approved: 2026-09-14
+Roadmap start: 2026-09-14
+Predecessor: ROADMAP v0.2 COMPLETE
+Current phase: v0.3 Phase 0
 
 ## 1. Roadmap Rule
 
-K_Supervisor starts from Phase 0 and does not continue the historical phase numbering of K-Research & Critic.
-
-Each phase must define deliverables, tests, exit criteria, and deferred work.
-
-The v0.2 roadmap adds the Project Lifecycle Control Plane above the previously defined Multi-Agent Core.
-
-## Phase 0 - Foundation and Architecture Baseline
-
-Goal: freeze the product concept before runtime implementation.
-
-Scope:
-
-- define K_Supervisor as AI Project Lifecycle Supervisor + Modular Multi-Agent Platform;
-- define Project Control Plane;
-- define Project Contract / ProjectSpec;
-- define Project Lifecycle and operational state separation;
-- define Agent Contract;
-- define Capability Model;
-- define email-first Notification Broker policy;
-- define parallel-project requirement;
-- define release/publication boundary;
-- define reference-product boundary;
-- create repository bootstrap structure.
-
-Primary deliverables:
+ROADMAP v0.3 uses revision-local phase numbering.
 
 ```text
-README.md
-docs/VISION.md
-docs/ARCHITECTURE.md
-docs/PROJECT_CONTROL_PLANE.md
-docs/PROJECT_CONTRACT.md
-docs/PROJECT_LIFECYCLE.md
-docs/AGENT_CONTRACT.md
-docs/CAPABILITY_MODEL.md
-docs/ROADMAP.md
-docs/DOCS_INDEX.md
+v0.3 Phase 0
+v0.3 Phase 1
+...
+v0.3 Phase 8
 ```
 
-Exit criteria:
+This is not a continuation of v0.2 numbering and does not create or imply a Phase 17.
 
-- Project is the top-level managed unit;
-- Project and Task are separated;
-- Agent and Capability are separated;
-- Control Plane and Multi-Agent Core boundaries are explicit;
-- email is the initial notification channel;
-- future messaging channels are deferred;
-- GPT Store preparation and publication are separate;
-- parallel project operation is an explicit requirement;
-- K-Research & Critic remains reference-only.
+Each phase must define:
 
-## Phase 1 - Machine Contracts and Core State Models
+- Goal;
+- Scope / Deliverables;
+- Tests;
+- Exit Criteria;
+- Deferred Work.
 
-Goal: convert Phase 0 logical contracts into executable validated models.
+No phase may be marked COMPLETE without successful authoritative validation on the committed implementation baseline.
 
-Planned work:
+The completed ROADMAP v0.2 and its Core Validation remain the minimum compatibility/regression floor unless an explicitly approved change states otherwise.
 
-- select implementation language/runtime baseline;
-- implement Project and ProjectSpec models;
-- implement lifecycle and operational state models;
-- implement Task and WorkflowRun models;
-- implement AgentDescriptor, CapabilityDescriptor, AgentRunRequest, and AgentRunResult;
-- implement HumanActionRequest and NotificationEvent;
-- implement Release and ReleaseTarget models;
-- add JSON schemas where interchange requires them;
-- add validation, serialization, compatibility, and transition tests;
-- freeze first machine-readable contract versions.
+## 2. Program Objective
 
-Exit criteria:
-
-- core models round-trip reliably;
-- invalid state transitions fail deterministically;
-- ProjectSpec approval state is machine-enforced;
-- contract compatibility is testable.
-
-## Phase 2 - Persistence and Project Registry
-
-Goal: establish durable project identity and resumable state early.
-
-Planned work:
-
-- persistence interface;
-- initial local persistence backend;
-- Project Registry;
-- ProjectSpec version storage;
-- lifecycle and operational transition records;
-- task/workflow/run records;
-- artifact references;
-- release records;
-- recovery and resume baseline.
-
-Exit criteria:
-
-- projects survive process restart;
-- current project state can be reconstructed without hidden memory;
-- multiple projects can be registered independently.
-
-## Phase 3 - Human Intervention and Email Notification Baseline
-
-Goal: provide the owner-control boundary required for autonomous project work.
-
-Planned work:
-
-- Human Intervention Broker;
-- HumanActionRequest state machine;
-- Notification Broker;
-- EmailAdapter / EmailProvider interface;
-- one working email transport;
-- owner email configuration;
-- delivery attempt records;
-- duplicate suppression / idempotency protection;
-- verification and resume hooks;
-- notification policy for ACTION_REQUIRED, FIRST_WORKING, RELEASE_READY, and critical failures.
-
-Deferred:
+Move K_Supervisor from:
 
 ```text
-WhatsApp
-Viber
-other messaging transports
+PRE-ALPHA functional platform
 ```
 
-Exit criteria:
-
-- a project can enter WAITING_FOR_OWNER;
-- owner receives an email with a structured required action;
-- the project can resume after the completion condition is verified;
-- unrelated projects remain unaffected.
-
-## Phase 4 - Agent and Capability Registries
-
-Goal: provide dynamic discovery without hard-coded Supervisor imports.
-
-Planned work:
-
-- AgentRegistry;
-- CapabilityRegistry;
-- capability version resolution;
-- provider registration;
-- availability state;
-- duplicate/conflict handling;
-- compatibility tests.
-
-Exit criteria:
-
-- agents can be added or removed without Supervisor-core changes;
-- providers can be resolved by capability requirement.
-
-## Phase 5 - Supervisor Orchestration Kernel
-
-Goal: implement the smallest useful task-level Supervisor.
-
-Planned work:
-
-- task intake within a Project;
-- task/run identifiers;
-- capability requirement creation;
-- candidate resolution;
-- dispatch boundary;
-- normalized result handling;
-- retry and escalation hooks;
-- explicit task state machine.
-
-Exit criteria:
-
-- one project task can request one capability and receive a validated result from a dynamically selected agent.
-
-## Phase 6 - Project Factory and Repository Bootstrap
-
-Goal: automate creation of approved projects.
-
-Planned work:
-
-- onboarding-to-ProjectSpec handoff;
-- repository create/connect adapter;
-- reusable project templates;
-- README and baseline documentation generation;
-- roadmap generation;
-- architecture/bootstrap generation;
-- initial CI scaffolding where required;
-- initial agent/workflow scaffolding;
-- bootstrap validation;
-- Project Registry update.
-
-Exit criteria:
-
-- an approved ProjectSpec can produce a valid managed repository with minimum project documentation and structure;
-- manual owner intervention is requested only at explicit boundaries.
-
-## Phase 7 - Workflow Engine and Multi-Agent Composition
-
-Goal: orchestrate multi-step collaboration.
-
-Planned work:
-
-- WorkflowDefinition;
-- workflow nodes and transitions;
-- sequential and conditional nodes;
-- capability-based node binding;
-- bounded iteration loops;
-- approval gates;
-- delegation through Supervisor;
-- workflow validation.
-
-Exit criteria:
-
-- a workflow can use multiple capabilities without direct agent coupling.
-
-## Phase 8 - Agent Runtime and Execution Control
-
-Goal: standardize safe agent execution.
-
-Planned work:
-
-- runtime adapter interface;
-- local/in-process executor;
-- timeout and cancellation;
-- exception normalization;
-- resource limits;
-- retry classification;
-- idempotency hooks;
-- agent health and availability.
-
-Exit criteria:
-
-- runtime failures are isolated and represented through Agent Contract statuses.
-
-## Phase 9 - Project Scheduler and Parallel Execution
-
-Goal: support simultaneous work across multiple independent projects.
-
-Planned work:
-
-- Project Scheduler;
-- project priority;
-- per-project concurrency limits;
-- global concurrency limits;
-- shared-resource locks;
-- provider/rate-limit coordination;
-- project-level budgets;
-- blocked-project isolation;
-- parallel execution tests.
-
-Exit criteria:
-
-- at least two independent projects can make progress concurrently;
-- WAITING_FOR_OWNER on one project does not stop the other;
-- shared limits are enforced deterministically.
-
-## Phase 10 - Tools, Providers, Provisioning, and Secret Backends
-
-Goal: connect projects to external systems through stable adapters.
-
-Planned work:
-
-- Tool interface;
-- Provider interface;
-- dependency declaration;
-- tool/provider registry;
-- protected access-reference interface;
-- initial protected storage backend;
-- repository/service provisioning adapters;
-- server/database/cloud integration patterns;
-- availability checks;
-- provider-independent model selection hooks.
-
-Exit criteria:
-
-- platform integrations can be replaced behind stable interfaces;
-- project access data is not embedded in normal documentation or notification events.
-
-## Phase 11 - Policy, Permissions, Risk, and Approval
-
-Goal: enforce controlled autonomy before side effects occur.
-
-Planned work:
-
-- policy decision model;
-- capability risk classes;
-- side-effect permissions;
-- per-agent tool permissions;
-- approval gates;
-- project/workflow policy constraints;
-- least-privilege execution context;
-- audit of policy decisions.
-
-Exit criteria:
-
-- prohibited operations are blocked before execution;
-- material permission expansion requires explicit approval.
-
-## Phase 12 - Reference Agents and Agent Factory
-
-Goal: validate the common contracts and automate new agent creation.
-
-Planned work:
-
-- reusable agent template/scaffolder;
-- AgentDescriptor generation;
-- capability declaration generation;
-- validation and test template;
-- automatic registry integration;
-- reference agents such as ResearchAgent, CriticAgent, ReportAgent, DataAnalysisAgent, and FactCheckAgent.
-
-Exit criteria:
-
-- at least three agent types use the same Agent Contract;
-- at least one capability has two interchangeable providers;
-- a new compliant agent can be scaffolded and validated with minimal manual work.
-
-## Phase 13 - Release Manager and Publication Readiness
-
-Goal: automate release preparation after a project reaches a working state.
-
-Planned work:
-
-- Release Manager;
-- Release and ReleaseTarget state machines;
-- generic release readiness checks;
-- release artifacts and checklists;
-- FIRST_WORKING event handling;
-- RELEASE_READY event handling;
-- GPT Store preparation profile;
-- automated preparation of feasible GPT assets and validation;
-- owner publication handoff.
-
-Exit criteria:
-
-- a project can move from FIRST_WORKING to target-specific RELEASE_READY;
-- GPT Store publication requirements that can be generated or validated automatically are prepared automatically;
-- publication remains an explicit per-project owner action.
-
-## Phase 14 - Reference Research-Critic Workflow
-
-Goal: demonstrate that K-Research & Critic behavior can be re-composed on the new platform.
-
-Planned work:
-
-- study v1.0.0 reference behavior;
-- define Research-Critic workflow from capabilities;
-- implement profile approval as a reusable mechanism;
-- implement independent critique/revision loop;
-- compare behavior against reference expectations;
-- document intentional differences.
-
-Exit criteria:
-
-- required behavior is expressed through new contracts and registries;
-- no direct legacy runtime dependency exists.
-
-## Phase 15 - Observability, Reliability, CI, and Test Matrix
-
-Goal: make project and platform behavior diagnosable and regression-safe.
-
-Planned work:
-
-- structured audit events;
-- project and agent metrics;
-- routing records;
-- notification records;
-- release validation records;
-- integration tests;
-- failure injection;
-- recovery tests;
-- deterministic fixtures;
-- CI quality gates;
-- coverage and performance baseline.
-
-Exit criteria:
-
-- major project transitions, routing decisions, intervention requests, notifications, and releases are testable and auditable.
-
-## Phase 16 - Interfaces, Packaging, and Extensibility
-
-Goal: expose a stable platform for wider use and extension.
-
-Planned work:
-
-- CLI and/or API boundary;
-- configuration model;
-- extension discovery;
-- packaging;
-- example project templates and workflows;
-- developer documentation;
-- compatibility policy;
-- future notification adapter interface documentation.
-
-Exit criteria:
-
-- an external developer can add a compliant agent, capability, project template, or adapter without changing Supervisor core code.
-
-## Roadmap Closure
-
-ROADMAP v0.2 is complete as of 2026-09-14.
+to:
 
 ```text
-Published phases: 0-16
-Completed phases: 0-16
-Unmet published exit criteria: 0
-Current approved implementation phase: NONE
+hardened autonomous platform foundation
+```
+
+The program must harden the existing architecture rather than replace it with parallel control paths.
+
+## 3. Overall Exit Criterion
+
+ROADMAP v0.3 succeeds when K_Supervisor can reliably execute a long-running managed lifecycle for a real AI project through durable state, centralized side-effect control, isolated execution, a service/API boundary and production-grade observability while preserving the approved v0.2 architecture contracts.
+
+A qualification project must progress from approved ProjectSpec to RELEASE_READY, survive restart/recovery, preserve owner-control boundaries and run concurrently with another independent project without Supervisor-core rewrites.
+
+## 4. Preserved Architecture Invariants
+
+The following remain mandatory throughout v0.3:
+
+- Project is the top-level managed unit; Project != Task.
+- Agent != Capability.
+- ProjectSpec approval gates material project scope.
+- workflows bind capabilities rather than concrete agent implementations where practical.
+- Supervisor owns orchestration/routing boundaries.
+- lifecycle state and operational state remain separate.
+- persistence is platform-owned; hidden conversational memory is not authoritative state.
+- Human Intervention represents owner-required actions explicitly.
+- notification delivery does not equal owner action completion.
+- email remains the first and primary owner notification transport.
+- secrets remain protected references and are not embedded in normal documentation, notifications or audit payloads.
+- policy/permission enforcement occurs before side effects.
+- RELEASE_READY remains separate from publication.
+- external publication remains owner-controlled unless a future explicit roadmap changes that boundary.
+- K-Research & Critic v1.0.0 remains reference-only, not a runtime dependency.
+- existing public package/CLI/config/entry-point compatibility rules remain governed by `COMPATIBILITY_POLICY.md`.
+
+## v0.3 Phase 0 - Baseline Freeze & Hardening Contract
+
+Status: ACTIVE
+
+### Goal
+
+Freeze the exact v0.2 predecessor baseline, classify technical debt and define hardening/migration rules before runtime changes.
+
+### Scope / Deliverables
+
+- preserve the completed v0.2 roadmap as an archived historical snapshot;
+- record the v0.2 validated implementation baseline as the predecessor runtime baseline;
+- classify known debt by v0.3 phase;
+- define public vs internal compatibility surfaces;
+- define migration and rollback expectations;
+- define hardening invariants and prohibited parallel control paths;
+- synchronize PROJECT_STATE, TEST_MATRIX, DOCS_INDEX, CHAT_HANDOFF and roadmap audit references;
+- establish v0.3 phase completion and validation rules.
+
+### Tests
+
+- full v0.2 Core Validation remains PASS;
+- contract compatibility review;
+- package/CLI/public import smoke;
+- extension entry-point regression review;
+- documentation consistency review.
+
+### Exit Criteria
+
+- v0.2 predecessor baseline is immutable and traceable;
+- all current technical-debt items are assigned, explicitly deferred or retired;
+- every subsequent v0.3 phase has measurable deliverables/tests/exit criteria;
+- no architecture-breaking ambiguity remains before Phase 1;
+- v0.2 regression baseline passes unchanged.
+
+### Deferred Work
+
+Runtime hardening implementation belongs to Phase 1 and later.
+
+## v0.3 Phase 1 - Persistence & Resource Hygiene
+
+### Goal
+
+Make persistence/resource ownership reliable for long-running execution while preserving the storage abstraction.
+
+### Scope / Deliverables
+
+- explicit storage connection lifecycle and ownership;
+- transaction boundary hardening;
+- migration/version mechanism for persistent schema evolution;
+- storage repository abstractions that do not expose SQLite physical layout as a public contract;
+- resource cleanup for temporary/test SQLite connections;
+- recovery invariants for reopen/restart;
+- documented storage replacement boundary.
+
+### Tests
+
+- open/close/reopen lifecycle;
+- crash/restart recovery;
+- forward migration tests;
+- rollback on failed authoritative writes;
+- concurrent access within supported limits;
+- resource-leak/ResourceWarning checks.
+
+### Exit Criteria
+
+- Core Validation reports zero known SQLite ResourceWarning leaks attributable to platform/tests;
+- restart recovery remains deterministic;
+- invalid/unsupported migrations fail safely;
+- storage backend remains replaceable behind the approved persistence boundary;
+- all v0.2 regression tests pass.
+
+### Deferred Work
+
+- mandatory PostgreSQL deployment;
+- distributed database clustering;
+- cross-region replication.
+
+## v0.3 Phase 2 - Durable Control State
+
+### Goal
+
+Move critical control decisions out of process-local memory so execution can resume safely after restart.
+
+### Scope / Deliverables
+
+- durable runtime/command idempotency;
+- durable notification/execution deduplication state;
+- approval expiry and revocation lifecycle;
+- richer authoritative recovery snapshot/aggregate reconstruction;
+- stronger atomicity between authoritative state and required audit records;
+- durable control records required to resume active workflows/projects.
+
+### Tests
+
+- restart between state transitions;
+- duplicate command replay;
+- duplicate external invocation protection;
+- duplicate notification delivery attempt protection;
+- approval expiry/revocation;
+- interrupted workflow recovery;
+- recovery without hidden in-memory state.
+
+### Exit Criteria
+
+- process restart does not change idempotency semantics;
+- replay of the same command cannot create an unintended duplicate side effect through the standard path;
+- approval expiry/revocation is enforceable and auditable;
+- active project state can be reconstructed from authoritative persisted data;
+- all prior regression gates pass.
+
+### Deferred Work
+
+- cross-region consensus;
+- distributed event sourcing;
+- global exactly-once guarantees across arbitrary third-party systems.
+
+## v0.3 Phase 3 - Centralized Side-Effect Enforcement
+
+### Goal
+
+Create one mandatory platform-controlled path for material external side effects.
+
+### Scope / Deliverables
+
+- centralized Tool Gateway / execution gateway;
+- normalized tool invocation contract;
+- policy/risk/permission enforcement before invocation;
+- approval enforcement before approval-gated invocation;
+- protected access-reference resolution at execution time;
+- idempotency key propagation where supported;
+- normalized audit/telemetry of invocation decisions and outcomes;
+- explicit prohibition of standard-path bypass around the gateway.
+
+### Tests
+
+- denied operation never executes;
+- approval-required operation blocks before execution;
+- revoked/expired approval blocks execution;
+- missing/invalid protected reference blocks execution;
+- duplicate invocation handling;
+- provider/tool failure normalization;
+- attempted unauthorized bypass is rejected by platform interfaces.
+
+### Exit Criteria
+
+- standard platform external side effects cannot execute without policy/permission enforcement;
+- material permission expansion still requires explicit approval;
+- protected secrets are not emitted into ordinary state/audit/notification payloads;
+- side-effect decisions and results are reconstructable from authoritative records;
+- all prior regression gates pass.
+
+### Deferred Work
+
+- universal sandbox for arbitrary third-party code;
+- public tool marketplace.
+
+## v0.3 Phase 4 - Runtime Isolation & Cancellation
+
+### Goal
+
+Strengthen execution isolation so a failed or non-cooperative agent cannot compromise the Supervisor process.
+
+### Scope / Deliverables
+
+- hardened runtime backend abstraction;
+- isolated worker/process execution option;
+- bounded termination path;
+- timeout/cancellation escalation;
+- worker/resource limit enforcement appropriate to the backend;
+- worker health/unavailability state;
+- crash/termination normalization through Agent Contract statuses;
+- preserve in-process execution only as an explicit trusted/test option.
+
+### Tests
+
+- hung agent;
+- ignored cooperative cancellation;
+- worker crash;
+- timeout escalation;
+- repeated worker failures;
+- resource limit violation;
+- Supervisor remains responsive after worker failure.
+
+### Exit Criteria
+
+- an unresponsive isolated execution cannot indefinitely block the Supervisor process;
+- every supported execution mode has a bounded termination/recovery path;
+- worker failure is normalized and auditable;
+- Agent Contract semantics remain compatible;
+- all prior regression gates pass.
+
+### Deferred Work
+
+- Kubernetes requirement;
+- remote execution cluster;
+- arbitrary container scheduler.
+
+## v0.3 Phase 5 - Service/API Boundary
+
+### Goal
+
+Expose K_Supervisor as a controlled service without creating a second control plane.
+
+### Scope / Deliverables
+
+- versioned HTTP and/or RPC service boundary;
+- project create/read/status/control operations;
+- ProjectSpec submission and approval operations;
+- task/workflow execution/status operations;
+- HumanActionRequest read/complete/verify operations where allowed;
+- release/readiness/status operations;
+- health/readiness endpoints;
+- authentication/authorization boundary appropriate to PRE-ALPHA hardening;
+- idempotent command semantics for mutating API operations;
+- API delegates to existing Supervisor/Control Plane contracts rather than bypassing them.
+
+### Tests
+
+- service contract validation;
+- invalid lifecycle transitions;
+- authorization boundary;
+- idempotent command replay;
+- restart continuity;
+- API cannot bypass policy/approval/tool gateway;
+- CLI/Python/public contract compatibility.
+
+### Exit Criteria
+
+- the primary managed project lifecycle can be controlled through the service API without direct use of internal implementation modules;
+- API operations preserve existing ProjectSpec/Supervisor/policy boundaries;
+- public v0.2 package/CLI surfaces remain compatible unless an explicit versioned change is approved;
+- all prior regression gates pass.
+
+### Deferred Work
+
+- public SaaS UI;
+- multi-tenant billing;
+- mobile client.
+
+## v0.3 Phase 6 - Production Observability
+
+### Goal
+
+Make long-running autonomous behavior diagnosable from supported telemetry rather than ad-hoc database inspection.
+
+### Scope / Deliverables
+
+- persisted operational telemetry required for incident reconstruction;
+- correlation/trace identifiers across Project -> Supervisor -> Runtime -> Tool Gateway;
+- structured logging contract;
+- metrics export boundary;
+- trace export boundary compatible with common standards;
+- health/readiness instrumentation;
+- SLO-compatible measurements/foundations;
+- sensitive-data redaction rules and tests.
+
+### Tests
+
+- reconstruct a project execution timeline;
+- diagnose a failed workflow from supported records;
+- correlate Supervisor/runtime/tool events;
+- telemetry continuity after restart;
+- secret/protected-reference redaction;
+- metrics/trace exporter contract tests.
+
+### Exit Criteria
+
+- material execution paths can answer what happened, where, why and what authoritative state remains;
+- operational telemetry survives the restart boundaries required by the design;
+- telemetry does not expose protected credentials;
+- observability does not alter control-plane authority;
+- all prior regression gates pass.
+
+### Deferred Work
+
+- mandatory dependency on a specific observability SaaS/vendor;
+- full enterprise SLO management suite.
+
+## v0.3 Phase 7 - Extension Trust & Platform Governance
+
+### Goal
+
+Make extensibility and repository operation safer without breaking the Phase 16 public extension baseline.
+
+### Scope / Deliverables
+
+- durable extension metadata where platform operation requires durability;
+- explicit extension compatibility/trust state;
+- allow/deny activation policy;
+- extension provenance metadata;
+- signature-verification boundary where feasible;
+- extension isolation requirements aligned with Runtime Phase 4;
+- preserve stable Phase 16 entry-point group names;
+- repository governance policy for `main`;
+- required CI/status-check policy where repository capabilities allow it;
+- resolve current CI action deprecation warnings where practical.
+
+### Tests
+
+- incompatible extension rejection;
+- unknown/untrusted extension handling;
+- disabled extension handling;
+- invalid/malicious registration behavior;
+- extension entry-point regression;
+- repository/CI governance validation.
+
+### Exit Criteria
+
+- extension discovery alone never implies automatic trust/activation;
+- activation requires explicit compatibility/trust decision;
+- existing documented extension entry-point names remain supported;
+- repository merge/deployment workflow has documented mandatory validation gates;
+- all prior regression gates pass.
+
+### Deferred Work
+
+- universal security guarantee for arbitrary hostile Python packages;
+- public third-party marketplace governance.
+
+## v0.3 Phase 8 - Operational Readiness & Autonomous Lifecycle Qualification
+
+### Goal
+
+Qualify K_Supervisor as an integrated hardened system rather than a collection of hardened components.
+
+### Scope / Deliverables
+
+- end-to-end qualification project;
+- repeatable deployment/runbook;
+- backup and restore procedure;
+- upgrade/migration procedure from the predecessor supported baseline;
+- package/release pipeline through the owner-controlled publication boundary;
+- operational readiness checklist;
+- failure/restart recovery qualification;
+- concurrent-project qualification;
+- Human Intervention + email + resume qualification;
+- FIRST_WORKING and RELEASE_READY qualification.
+
+### Tests
+
+The qualification flow must exercise:
+
+```text
+Onboarding / ProjectSpec creation
+-> owner approval
+-> repository/bootstrap
+-> provisioning
+-> workflow/roadmap execution
+-> controlled Tool Gateway side effects
+-> HumanActionRequest when required
+-> email notification
+-> owner action / verification
+-> automatic resume where possible
+-> FIRST_WORKING
+-> validation
+-> RELEASE_READY
+-> owner publication handoff
+```
+
+Additional tests:
+
+- clean deployment;
+- restart while a project is active;
+- deterministic failure injection;
+- backup/restore;
+- supported upgrade/migration;
+- concurrent second project continues while the first waits for owner action;
+- full v0.2 and v0.3 regression suite.
+
+### Exit Criteria
+
+- one real qualification project progresses from approved ProjectSpec to RELEASE_READY through supported platform boundaries;
+- restart/recovery does not lose authoritative control state;
+- a waiting/blocked project does not block an independent project;
+- side effects remain policy-controlled;
+- owner action/publication boundaries remain explicit;
+- deployment/recovery/upgrade procedures are documented and validated;
+- full authoritative regression suite passes on the committed baseline.
+
+### Deferred Work
+
+- automatic GPT Store publication;
+- WhatsApp/Viber or other non-email messaging transports unless explicitly promoted into scope;
+- distributed execution clusters;
+- remote agents as a required baseline;
+- event bus architecture;
+- multi-tenant SaaS isolation/billing;
+- advanced autonomous planning beyond the qualification needs.
+
+## 5. Global Validation Gates
+
+Every runtime implementation phase must preserve at minimum:
+
+```text
+Core Validation                PASS
+branch-aware coverage          >= 80%
+compileall including examples  PASS
+isolated wheel build           PASS
+wheel install outside checkout PASS
+public CLI/import smoke         PASS
+v0.2 compatibility regression  PASS
+```
+
+Additional v0.3 tests are cumulative unless an approved roadmap amendment states otherwise.
+
+A phase is not COMPLETE merely because its code exists. Completion requires committed evidence, passing required validation and synchronized canonical documentation/checkpoint records.
+
+## 6. Compatibility Rule
+
+`COMPATIBILITY_POLICY.md` remains active.
+
+In particular, the following Phase 16 entry-point groups remain stable compatibility surfaces:
+
+```text
+k_supervisor.agents
+k_supervisor.capabilities
+k_supervisor.project_templates
+k_supervisor.adapters
+```
+
+Changes that cannot safely interpret existing public configuration must use a new `config_version` with migration guidance.
+
+## 7. Notification and Publication Boundaries
+
+Email remains the primary required notification channel for v0.3.
+
+Non-email transports remain extension/future work unless separately approved.
+
+Release preparation may be automated. External publication remains an explicit per-project owner action.
+
+## 8. Roadmap State
+
+```text
+ROADMAP v0.2: COMPLETE
+ROADMAP v0.3: ACTIVE
+Current approved phase: v0.3 Phase 0
+v0.3 Phase 0 status: ACTIVE
+v0.3 Phase 1-8 status: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Completion evidence is recorded in:
+Approval of this roadmap authorizes Phase 0 documentation/baseline work. Runtime implementation proceeds phase-by-phase under the active roadmap and must not skip required exit criteria.
 
-- `docs/PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md`;
+## 9. Historical Record
+
+The full completed predecessor roadmap is preserved in:
+
+- `docs/ROADMAP_V0_2_ARCHIVE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`;
-- `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`;
-- `docs/PROJECT_STATE.md`.
-
-Additional implementation work requires an explicit new roadmap/revision. It must not be silently appended to completed Phase 16 or described as an approved Phase 17.
-
-## Future Direction
-
-Possible later work includes distributed execution, remote agents, event buses, multi-tenant isolation, advanced planning, richer scheduling, additional publication targets, and optional messaging integrations such as WhatsApp or Viber.
-
-These items are candidate future directions only. They are not approved implementation work until incorporated into a new explicit roadmap/revision.
+- `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`.
