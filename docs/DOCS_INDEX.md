@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 2.0
+Version: 2.1
 Status: ACTIVE
 
 ## Reading Order
@@ -30,9 +30,13 @@ Status: ACTIVE
 22. `REFERENCE_RESEARCH_CRITIC_WORKFLOW.md` - Phase 14 reference behavior mapping and capability composition.
 23. `OBSERVABILITY_AND_RELIABILITY.md` - structured audit, metrics, reliability and CI quality baseline.
 24. `TEST_MATRIX.md` - regression coverage by roadmap phase and reliability category.
-25. `ROADMAP.md` - phased implementation plan.
-26. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit.
-27. `PROJECT_FILE_STANDARD.md` - repository file standard.
+25. `PLATFORM_INTERFACES.md` - public package, CLI, configuration, extension discovery and packaging.
+26. `DEVELOPER_GUIDE.md` - extension authoring and registration patterns.
+27. `COMPATIBILITY_POLICY.md` - contract/package/CLI/config compatibility rules.
+28. `NOTIFICATION_ADAPTER_INTERFACE.md` - future transport adapter design boundary.
+29. `ROADMAP.md` - published phased implementation plan.
+30. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit and closure.
+31. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
@@ -53,26 +57,42 @@ Phase 12: COMPLETE
 Phase 13: COMPLETE
 Phase 14: COMPLETE
 Phase 15: COMPLETE
-Next: Phase 16 - Interfaces, Packaging, and Extensibility
+Phase 16: COMPLETE
+Published ROADMAP v0.2: COMPLETE
 ```
 
 Current automated validation:
 
 ```text
-Python 3.13.15
-81 tests PASS
-branch-aware coverage: 85.57%
+Core Validation run: 34793901147
+Python: 3.13.15
+88 tests PASS
+branch-aware coverage: 85.46%
 coverage gate: >= 80%
-compileall: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
 ```
 
 Latest checkpoints:
 
 ```text
-PROJECT_CHECKPOINT_PHASE_12_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_13_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_14_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_15_COMPLETE.md
+PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md
+```
+
+## Public Extension Baseline
+
+```text
+Python facade: ksupervisor
+CLI: k-supervisor
+entry-point groups:
+  k_supervisor.agents
+  k_supervisor.capabilities
+  k_supervisor.project_templates
+  k_supervisor.adapters
 ```
 
 ## External References
@@ -87,4 +107,4 @@ Canonical shared file standard:
 kolemasakar/AI_general
 ```
 
-External references are not implementation dependencies unless an explicit architecture decision creates one. Phase 14 studies K-Research & Critic behavior as a reference but does not import or depend on its runtime.
+External references are not implementation dependencies unless an explicit architecture decision creates one. ROADMAP v0.2 has no remaining published phase; any new implementation program requires an explicit roadmap revision.
