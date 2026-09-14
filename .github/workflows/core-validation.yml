@@ -41,8 +41,8 @@ jobs:
       - run: python -m pip install "pydantic>=2.10,<3" "pytest>=8.3,<10" "jsonschema>=4.23,<5" "pytest-cov>=6,<8" "build>=1.2,<2"
       - name: Compile Python sources
         run: python -m compileall -q access agent_factory agents examples factory integrations ksupervisor models observability persistence policy providers provisioning registry release_manager runtime scheduler supervisor tools workflows
-      - name: Test with coverage gate
-        run: python -m pytest -q --cov=. --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+      - name: Test with coverage gate and resource-warning gate
+        run: python -m pytest -q -W error::ResourceWarning --cov=. --cov-report=term-missing --cov-report=xml --cov-fail-under=80
       - name: Build wheel
         run: python -m build --wheel
       - name: Install wheel and smoke public CLI
