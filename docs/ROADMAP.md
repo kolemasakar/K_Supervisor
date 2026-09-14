@@ -7,6 +7,7 @@ Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
 Current phase: v0.3 Phase 3
+Session handoff: prepared 2026-09-14; planned resume 2026-09-16 09:00 Europe/Kyiv
 
 ## Program Objective
 
@@ -27,6 +28,8 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 6 | Production Observability | PLANNED |
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
+
+The owner-directed handoff pause does not change the active phase. At the 2026-09-14 handoff, Phase 3 is authorized but its runtime implementation has not intentionally started. Canonical continuation instructions are in `PROJECT_HANDOFF_2026_09_16.md`.
 
 ## Completed Phase 0
 
@@ -84,6 +87,15 @@ Evidence:
 ## Active Phase 3 - Centralized Side-Effect Enforcement
 
 Goal: establish one standard platform boundary for material external side effects so policy, permissions, protected references, idempotency and audit are enforced before invocation rather than relying on each caller to compose them correctly.
+
+Implementation state at handoff:
+
+```text
+Authorized: YES
+Runtime implementation started: NO
+Resume protocol: docs/PROJECT_HANDOFF_2026_09_16.md
+Planned continuation: 2026-09-16 09:00 Europe/Kyiv
+```
 
 Required deliverables:
 
