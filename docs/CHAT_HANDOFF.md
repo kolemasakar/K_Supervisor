@@ -1,24 +1,27 @@
 # CHAT_HANDOFF
 Канонічний контекст для продовження роботи над K_Supervisor у новому чаті.
 
-Version: 1.4
+Version: 1.5
 Status: ACTIVE
 Date: 2026-09-14
+Planned continuation: 2026-09-16 09:00 Europe/Kyiv
 
 ## Start Here
 
-Before changing runtime code in a new conversation, read from `main`:
+Before changing runtime code in a new conversation, read from `main` in this order:
 
 ```text
+docs/PROJECT_HANDOFF_2026_09_16.md
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
+docs/TEST_MATRIX.md
 docs/HARDENING_BASELINE_V0_3.md
+docs/COMPATIBILITY_POLICY.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md
 docs/PERSISTENCE.md
 docs/AGENT_RUNTIME.md
 docs/POLICY_AND_PERMISSIONS.md
-docs/TEST_MATRIX.md
-docs/COMPATIBILITY_POLICY.md
+docs/INTEGRATIONS.md
 docs/ROADMAP_IMPLEMENTATION_AUDIT.md
 ```
 
@@ -41,11 +44,12 @@ v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
 Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
 v0.3 Phase 3: ACTIVE
+v0.3 Phase 3 runtime implementation at handoff: NOT STARTED
 v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Work proceeds under revision-local v0.3 phase numbering.
+Work proceeds under revision-local v0.3 phase numbering. The owner-directed pause for chat transition does not change roadmap authorization.
 
 ## Current Runtime Baseline
 
@@ -65,7 +69,7 @@ k-supervisor CLI outside checkout: PASS
 import ksupervisor outside checkout: PASS
 ```
 
-Documentation synchronization after this SHA does not replace the runtime baseline unless a later implementation checkpoint explicitly states otherwise.
+Documentation-only closure/handoff commits after this SHA do not replace the runtime baseline unless a later implementation checkpoint explicitly states otherwise.
 
 ## Completed Phase 2
 
@@ -104,6 +108,23 @@ Required work includes:
 - replaceable concrete tool/provider adapters.
 
 Required verification includes ALLOW/DENY/REQUIRE_APPROVAL invocation behavior, tool permissions, protected references, repeated invocation/idempotency, failure normalization/audit, correlation persistence and the full cumulative regression suite.
+
+## New-Chat Start Protocol
+
+At the beginning of the new chat:
+
+1. Read `docs/PROJECT_HANDOFF_2026_09_16.md` first.
+2. Verify current `main` and compare it with the frozen Phase 2 implementation SHA.
+3. Confirm no post-Phase-2 runtime implementation exists unless a later explicit implementation checkpoint says otherwise.
+4. Audit current material side-effect paths before designing the gateway.
+5. Implement only Phase 3 scope and preserve all cumulative regression gates.
+
+Recommended starter instruction:
+
+```text
+Продовжуємо K_Supervisor з docs/PROJECT_HANDOFF_2026_09_16.md.
+Звір main і validated Phase 2 baseline, виконай pre-implementation audit для v0.3 Phase 3 — Centralized Side-Effect Enforcement, після чого реалізуй Phase 3 строго за ROADMAP/TEST_MATRIX без виходу за scope.
+```
 
 ## Preserved Architecture
 
