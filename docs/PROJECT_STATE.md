@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 1.
+Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 2.
 
-Version: 2.0
+Version: 2.1
 Status: ACTIVE
 Date: 2026-09-14
 
@@ -16,20 +16,21 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0: COMPLETE
 v0.3 Phase 1: COMPLETE
-Current approved phase: v0.3 Phase 2
-v0.3 Phase 2 status: ACTIVE
-v0.3 Phase 3-8: PLANNED / NOT STARTED
+v0.3 Phase 2: COMPLETE
+Current approved phase: v0.3 Phase 3
+v0.3 Phase 3 status: ACTIVE
+v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Core Validation run: 34804141156
-Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34808287772
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
 Python: 3.13.15
-pytest: 95 passed
-branch-aware coverage: 85.66%
+pytest: 103 passed
+branch-aware coverage: 85.23%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -37,44 +38,45 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-This replaces the v0.2 predecessor SHA as the current validated runtime baseline. Later documentation-only synchronization commits do not replace it unless a later implementation checkpoint explicitly states otherwise.
+Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline unless a later implementation checkpoint explicitly states otherwise.
 
-## Phase 1 Completion
+## Phase 2 Completion
 
-ROADMAP v0.3 Phase 1 completed persistence/resource hardening:
+ROADMAP v0.3 Phase 2 completed durable control-state hardening:
 
-- explicit SQLite connection lifecycle and context-manager ownership;
-- idempotent initialize/close;
-- explicit transactional commit/rollback boundary;
-- SQLite schema version 2;
-- tested v1 -> v2 migration with data preservation;
-- fail-closed handling for unsupported schema versions;
-- WAL/busy-timeout support and concurrent-writer validation;
-- zero known SQLite ResourceWarning leaks under the permanent CI warning gate;
-- deterministic predecessor restart/recovery preserved;
-- SQLite physical layout remains behind the persistence abstraction.
+- persistence-backed runtime/command idempotency for the standard AgentRuntimeDispatcher path;
+- project-scoped idempotency and restart-safe successful-result replay;
+- durable notification delivery history used for restart-safe duplicate suppression;
+- approval `EXPIRED` and `REVOKED` lifecycle states with policy enforcement;
+- durable approval lifecycle audit;
+- expanded `ProjectRecoverySnapshot` for Human Intervention, notifications/delivery, approvals, runtime idempotency, policy, audit, routing and release-validation state;
+- Project lifecycle/operational changes, ProjectSpec activation, Human Intervention and Approval control writes use atomic state+audit persistence helpers where required;
+- interrupted waiting project/task/workflow state reconstructs after restart and can resume through the normal Human Intervention path.
 
 Authoritative records:
 
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `PERSISTENCE.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
-- `HARDENING_BASELINE_V0_3.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`.
+- `AGENT_RUNTIME.md`;
+- `POLICY_AND_PERMISSIONS.md`.
 
-## Active Phase 2 Scope
+SQLite schema remains version 2 because Phase 2 control records use the existing generic resources/events storage layout.
 
-`v0.3 Phase 2 - Durable Control State` is authorized for implementation.
+## Active Phase 3 Scope
+
+`v0.3 Phase 3 - Centralized Side-Effect Enforcement` is authorized for implementation.
 
 Primary scope:
 
-- durable runtime/command idempotency;
-- durable notification/execution deduplication state for standard platform paths;
-- approval expiry/revocation;
-- richer authoritative recovery aggregation;
-- stronger atomicity between required authoritative control state and audit records;
-- restart-safe control records required to resume active workflows/projects.
+- centralized Tool Gateway / side-effect execution gateway for standard platform paths;
+- normalized invocation/result contract;
+- policy, tool-permission and protected-reference enforcement before external invocation;
+- correlation and idempotency propagation;
+- normalized durable side-effect audit;
+- deterministic no-invocation semantics for denied or approval-required requests;
+- replaceable concrete tool/provider adapters.
 
-Phase 2 may not be marked COMPLETE until phase-specific tests and the full permanent regression suite pass on its committed implementation baseline.
+Phase 3 may not be marked COMPLETE until its phase-specific tests and the full cumulative regression suite pass on its committed implementation baseline.
 
 ## Public Compatibility Baseline
 
@@ -89,7 +91,7 @@ Extension groups:
   k_supervisor.adapters
 ```
 
-`COMPATIBILITY_POLICY.md` remains authoritative. Phase 1 did not change these public surfaces.
+`COMPATIBILITY_POLICY.md` remains authoritative. Phase 2 preserved the distribution/CLI/config/entry-point baseline.
 
 ## Preserved Architecture Rules
 
@@ -97,10 +99,15 @@ Project remains the top-level managed unit; Agent and Capability remain separate
 
 ## Remaining Hardening Debt
 
-Phase 1 persistence/resource hygiene is resolved at its approved scope. Remaining roadmap ownership begins with Phase 2 durable control state, followed by centralized side-effect enforcement, runtime isolation, service/API boundary, production observability, extension/repository governance and end-to-end operational qualification.
+Completed:
 
-Distributed database clustering, mandatory PostgreSQL and cross-region replication remain deferred rather than hidden Phase 1 failures.
+- Phase 1 persistence/resource hygiene;
+- Phase 2 durable control state.
+
+Remaining roadmap ownership begins with centralized side-effect enforcement, followed by runtime isolation, service/API boundary, production observability, extension/repository governance and end-to-end operational qualification.
+
+Distributed consensus, cross-region event sourcing and universal provider-level exactly-once guarantees remain explicitly deferred rather than hidden Phase 2 failures.
 
 ## Validation Rule
 
-The v0.2 regression baseline plus completed v0.3 tests are cumulative. Runtime implementation phases require successful Core Validation on their committed implementation SHA before completion.
+The completed v0.2 regression baseline plus completed v0.3 phase tests are cumulative. Runtime implementation phases require successful Core Validation on their committed implementation SHA before completion.
