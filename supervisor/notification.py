@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from models.enums import DeliveryStatus, NotificationChannel
 from models.intervention import NotificationDeliveryAttempt, NotificationEvent
+from observability.audit import record_audit
 from persistence.base import PersistenceStore
 from providers.email import EmailProvider, OutboundEmail
 
@@ -37,7 +38,9 @@ class NotificationBroker:
         if event.channel != NotificationChannel.EMAIL:
             raise ValueError("Phase 3 supports EMAIL notifications only")
         self.store.save_notification(event)
+        self._audit(event, "NOTIFICATION_RECORDED", event.created_at)
         if not self.should_deliver(event):
+            self._audit(event, "NOTIFICATION_SUPPRESSED", now or event.created_at)
             return None
 
         key = idempotency_key or f"{event.notification_id}:EMAIL:{recipient}"
@@ -48,6 +51,7 @@ class NotificationBroker:
         ]
         sent = [item for item in prior if item.status == DeliveryStatus.SENT]
         if sent:
+            self._audit(event, "NOTIFICATION_DUPLICATE_SUPPRESSED", now or datetime.now(timezone.utc))
             return sent[-1]
 
         attempt_number = max((item.attempt_number for item in prior), default=0) + 1
@@ -77,6 +81,7 @@ class NotificationBroker:
                 }
             )
             self.store.append_notification_delivery_attempt(failed)
+            self._audit(event, "NOTIFICATION_DELIVERY_FAILED", failed.completed_at, severity="WARNING")
             raise NotificationDeliveryError(str(exc)) from exc
 
         completed = pending.model_copy(
@@ -87,7 +92,27 @@ class NotificationBroker:
             }
         )
         self.store.append_notification_delivery_attempt(completed)
+        self._audit(event, "NOTIFICATION_DELIVERY_SENT", completed.completed_at)
         return completed
+
+    def _audit(self, event: NotificationEvent, event_type: str, at: datetime, severity: str | None = None) -> None:
+        record_audit(
+            self.store,
+            project_id=event.project_id,
+            category="NOTIFICATION",
+            event_type=event_type,
+            occurred_at=at,
+            resource_type="NotificationEvent",
+            resource_id=event.notification_id,
+            severity=severity or event.severity,
+            correlation_id=event.human_action_id,
+            details={
+                "notification_type": event.event_type,
+                "channel": event.channel.value,
+                "action_required": event.action_required,
+                "blocking": event.blocking,
+            },
+        )
 
     @staticmethod
     def _subject(event: NotificationEvent) -> str:
