@@ -2,55 +2,32 @@
 Система автоматизованого життєвого циклу AI-проєктів поверх модульної мультиагентної платформи.
 
 Status: PRE-ALPHA
-Concept baseline: v0.2
-Roadmap: v0.3 ACTIVE
-Current phase: v0.3 Phase 0
 Package version: 0.1.0
 Repository: `kolemasakar/K_Supervisor`
 
 ## Purpose
 
-K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, reference multi-agent compositions, observability/reliability, packaging and external extension discovery.
+K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, observability/reliability, packaging and external extension discovery.
 
-The long-term objective is for an owner to approve a structured ProjectSpec and for the platform to bootstrap, coordinate, implement, validate and prepare that project for release while requesting owner intervention only at explicit boundaries.
+K_Supervisor is separate from K-Research & Critic, which remains reference-only.
 
-K_Supervisor is a separate project. K-Research & Critic v1.0.0 remains a reference product only.
-
-## Canonical Status Documents
-
-- `docs/PROJECT_STATE.md`
-- `docs/ROADMAP.md`
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md`
-- `docs/TEST_MATRIX.md`
-- `docs/ROADMAP_IMPLEMENTATION_AUDIT.md`
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`
-- `docs/ROADMAP_V0_2_ARCHIVE.md`
-- `docs/CHAT_HANDOFF.md`
-- `docs/DOCS_INDEX.md`
-
-## Completed v0.2 Runtime Baseline
+## Roadmap Status
 
 ```text
-v0.2 Phase 0   Foundation / Architecture                    COMPLETE
-v0.2 Phase 1   Machine Contracts / Core Models             COMPLETE
-v0.2 Phase 2   Persistence / Project Registry              COMPLETE
-v0.2 Phase 3   Human Intervention / Email Notification     COMPLETE
-v0.2 Phase 4   Agent / Capability Registries               COMPLETE
-v0.2 Phase 5   Supervisor Orchestration Kernel             COMPLETE
-v0.2 Phase 6   Project Factory / Repository Bootstrap      COMPLETE
-v0.2 Phase 7   Workflow Engine / Multi-Agent Composition   COMPLETE
-v0.2 Phase 8   Agent Runtime / Execution Control           COMPLETE
-v0.2 Phase 9   Project Scheduler / Parallel Execution      COMPLETE
-v0.2 Phase 10  Tools / Providers / Provisioning / Secrets  COMPLETE
-v0.2 Phase 11  Policy / Permissions / Risk / Approval      COMPLETE
-v0.2 Phase 12  Reference Agents / Agent Factory            COMPLETE
-v0.2 Phase 13  Release Manager / Publication Readiness     COMPLETE
-v0.2 Phase 14  Reference Research-Critic Workflow          COMPLETE
-v0.2 Phase 15  Observability / Reliability / CI            COMPLETE
-v0.2 Phase 16  Interfaces / Packaging / Extensibility      COMPLETE
+ROADMAP v0.2: COMPLETE
+ROADMAP v0.3: ACTIVE
+v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
+Current approved phase: v0.3 Phase 1 - Persistence & Resource Hygiene
+v0.3 Phase 1: ACTIVE
+v0.3 Phase 2-8: PLANNED / NOT STARTED
+Phase 17: NOT DEFINED
 ```
 
-Final validated predecessor runtime baseline:
+Phase 0 froze the predecessor baseline, technical-debt assignment, compatibility/migration rules and cumulative validation gates. Phase 1 is authorized to harden persistence/resource ownership.
+
+## Current Runtime Baseline
+
+Until Phase 1 produces a new validated implementation checkpoint:
 
 ```text
 Core Validation run: 34793901147
@@ -65,43 +42,63 @@ public CLI/import smoke: PASS
 live owner mailbox delivery: PASS
 ```
 
-Documentation synchronization after that implementation SHA does not itself replace the runtime baseline.
+## Implemented v0.2 Platform Baseline
 
-## Active ROADMAP v0.3
+- Project lifecycle/control plane and ProjectSpec contracts;
+- machine contracts and JSON schemas;
+- SQLite persistence and Project Registry;
+- Human Intervention and email Notification Broker;
+- Agent/Capability registries and capability routing;
+- Supervisor orchestration kernel;
+- Project Factory and repository bootstrap;
+- Workflow Engine;
+- Agent Runtime;
+- Project Scheduler and parallel project controls;
+- Tool/Provider/Provisioning interfaces and protected access references;
+- policy/permissions/approval boundaries;
+- Agent Factory and reference agents;
+- Release Manager and owner publication handoff;
+- reference Research-Critic composition;
+- observability/reliability/CI baseline;
+- installable wheel, public `ksupervisor` facade, CLI/config and extension discovery.
 
-ROADMAP v0.3 — Production Hardening & Service Boundary is approved and active.
+## Active Phase 1
 
-```text
-v0.3 Phase 0  Baseline Freeze & Hardening Contract                       ACTIVE
-v0.3 Phase 1  Persistence & Resource Hygiene                              PLANNED
-v0.3 Phase 2  Durable Control State                                       PLANNED
-v0.3 Phase 3  Centralized Side-Effect Enforcement                         PLANNED
-v0.3 Phase 4  Runtime Isolation & Cancellation                            PLANNED
-v0.3 Phase 5  Service/API Boundary                                        PLANNED
-v0.3 Phase 6  Production Observability                                    PLANNED
-v0.3 Phase 7  Extension Trust & Platform Governance                       PLANNED
-v0.3 Phase 8  Operational Readiness & Autonomous Lifecycle Qualification  PLANNED
-```
+Phase 1 targets:
 
-ROADMAP v0.3 uses revision-local numbering and does not create or imply a Phase 17.
+- explicit storage connection lifecycle and ownership;
+- transaction-boundary hardening;
+- persistent schema version/migration mechanism;
+- storage abstractions independent of SQLite physical layout;
+- cleanup of known SQLite ResourceWarning leaks;
+- deterministic reopen/restart recovery;
+- documented storage replacement boundary.
+
+Phase 1 completion requires phase-specific tests plus the full permanent Core Validation suite on the committed implementation baseline.
 
 ## Public Baseline
 
-The distribution remains `k-supervisor==0.1.0` and exposes the `ksupervisor` Python facade plus the `k-supervisor` CLI.
-
-Standard Python entry points support externally packaged agents, capabilities, project templates and adapters without Supervisor-core edits:
-
 ```text
-k_supervisor.agents
-k_supervisor.capabilities
-k_supervisor.project_templates
-k_supervisor.adapters
+Distribution: k-supervisor==0.1.0
+Python facade: ksupervisor
+CLI: k-supervisor
+Config version: 1
+Extension groups:
+  k_supervisor.agents
+  k_supervisor.capabilities
+  k_supervisor.project_templates
+  k_supervisor.adapters
 ```
 
-These public compatibility surfaces remain governed by `docs/COMPATIBILITY_POLICY.md`.
+## Canonical Documents
 
-## Validation Rule
+Start with:
 
-The completed v0.2 Core Validation remains the minimum regression floor for v0.3. A v0.3 runtime phase is not COMPLETE until its phase-specific checks and the cumulative authoritative regression suite pass on the committed implementation baseline.
+- `docs/PROJECT_STATE.md`;
+- `docs/ROADMAP.md`;
+- `docs/HARDENING_BASELINE_V0_3.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
+- `docs/TEST_MATRIX.md`;
+- `docs/CHAT_HANDOFF.md`.
 
-For continuing work in a new conversation, start with `docs/CHAT_HANDOFF.md` and re-fetch the canonical status documents from `main` before making changes.
+The completed v0.2 roadmap remains archived in `docs/ROADMAP_V0_2_ARCHIVE.md`.
