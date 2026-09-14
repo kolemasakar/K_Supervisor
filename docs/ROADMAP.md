@@ -6,7 +6,7 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 1
+Current phase: v0.3 Phase 2
 
 ## Program Objective
 
@@ -19,8 +19,8 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | Phase | Name | Status |
 | --- | --- | --- |
 | v0.3 Phase 0 | Baseline Freeze & Hardening Contract | COMPLETE |
-| v0.3 Phase 1 | Persistence & Resource Hygiene | ACTIVE |
-| v0.3 Phase 2 | Durable Control State | PLANNED |
+| v0.3 Phase 1 | Persistence & Resource Hygiene | COMPLETE |
+| v0.3 Phase 2 | Durable Control State | ACTIVE |
 | v0.3 Phase 3 | Centralized Side-Effect Enforcement | PLANNED |
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | PLANNED |
 | v0.3 Phase 5 | Service/API Boundary | PLANNED |
@@ -28,50 +28,70 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-## Phase 0 Result
+## Completed Phase 0
 
-Phase 0 is COMPLETE. It froze the predecessor implementation and validation baseline, classified technical debt, defined compatibility and migration rules, and established cumulative validation requirements.
+Phase 0 froze the predecessor implementation and validation baseline, classified technical debt and established cumulative hardening/compatibility rules.
 
 Evidence:
 
 - `HARDENING_BASELINE_V0_3.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
-- predecessor implementation SHA `755be348fc3376ad5c09f178a3268b0fb7685107`;
-- Core Validation run `34793901147`, PASS.
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`.
 
-## Active Phase 1
+## Completed Phase 1
 
-Goal: make persistence and resource ownership reliable for long-running execution while preserving the storage abstraction.
+Phase 1 hardened persistence/resource ownership without changing public/domain contracts.
+
+Validated baseline:
+
+```text
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34804141156
+Python: 3.13.15
+pytest: 95 passed
+branch-aware coverage: 85.66%
+ResourceWarning gate: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Evidence:
+
+- `PERSISTENCE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+
+## Active Phase 2 - Durable Control State
+
+Goal: move critical control decisions out of process-local memory so active work can resume safely after restart.
 
 Required deliverables:
 
-- explicit storage connection lifecycle and ownership;
-- transaction-boundary hardening;
-- persistent schema version and migration mechanism;
-- storage abstractions independent of SQLite physical layout;
-- cleanup of known SQLite ResourceWarning leaks;
-- deterministic reopen/restart recovery;
-- documented storage replacement boundary.
+- durable runtime/command idempotency;
+- durable notification/execution deduplication state where required by standard platform paths;
+- approval expiry and revocation lifecycle;
+- richer authoritative recovery snapshot/aggregate reconstruction;
+- stronger atomicity between authoritative control state and required audit records;
+- durable control records required to resume active workflows/projects.
 
 Required tests:
 
-- open/close/reopen;
-- restart recovery;
-- forward migration;
-- rollback behavior;
-- supported concurrent access;
-- ResourceWarning checks;
-- full v0.2 regression suite.
+- restart between state transitions;
+- duplicate command replay;
+- duplicate execution/notification protection;
+- approval expiry and revocation;
+- interrupted workflow/project recovery;
+- aggregate reconstruction without hidden process memory;
+- full Phase 0-1 and v0.2 regression suite.
 
 Exit criteria:
 
-- zero known SQLite ResourceWarning leaks attributable to platform/tests;
-- deterministic restart recovery;
-- unsupported migrations fail safely;
-- storage remains replaceable behind the approved persistence boundary;
-- Core Validation PASS on the committed Phase 1 implementation baseline.
+- process restart does not change supported idempotency semantics;
+- replay of the same command does not create an unintended duplicate operation through the standard path;
+- approval expiry/revocation is enforceable and auditable;
+- active project/control state can be reconstructed from authoritative persisted data;
+- required authoritative control writes and audit records use the defined atomic boundary;
+- Core Validation PASS on the committed Phase 2 implementation baseline.
 
-Deferred from Phase 1: mandatory PostgreSQL deployment, distributed clustering and cross-region replication.
+Deferred from Phase 2: distributed consensus, cross-region event sourcing and universal exactly-once guarantees across arbitrary external systems.
 
 ## Validation Rule
 
@@ -80,6 +100,7 @@ Every runtime implementation phase must preserve the permanent regression floor:
 ```text
 Core Validation                PASS
 branch-aware coverage          >= 80%
+ResourceWarning gate           PASS
 compileall including examples  PASS
 isolated wheel build           PASS
 wheel install outside checkout PASS
@@ -91,4 +112,4 @@ v0.2 compatibility regression  PASS
 
 Project/Task and Agent/Capability remain separate; ProjectSpec approval remains authoritative for material scope; Supervisor remains the orchestration boundary; platform state remains authoritative and persisted; owner-required actions and publication remain explicit; email remains the primary required notification transport; K-Research & Critic remains reference-only.
 
-Detailed v0.3 debt ownership and hardening constraints are in `HARDENING_BASELINE_V0_3.md`. Required verification is maintained in `TEST_MATRIX.md`. The completed predecessor roadmap is preserved in `ROADMAP_V0_2_ARCHIVE.md`.
+Detailed debt ownership and hardening constraints are in `HARDENING_BASELINE_V0_3.md`. Required verification is maintained in `TEST_MATRIX.md`. The completed predecessor roadmap is preserved in `ROADMAP_V0_2_ARCHIVE.md`.
