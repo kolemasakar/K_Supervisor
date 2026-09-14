@@ -4,6 +4,7 @@ from models.base import ensure_tz
 from models.enums import HumanActionStatus, ProjectOperationalState
 from models.intervention import HumanActionRequest
 from models.operational import ProjectOperationalTransition
+from observability.audit import record_audit
 from persistence.base import PersistenceStore
 from registry.project_registry import ProjectRegistry
 
@@ -21,6 +22,7 @@ class HumanInterventionBroker:
         saved = action.model_copy(update={"status": state})
         if not action.blocking or project.operational_state == ProjectOperationalState.WAITING_FOR_OWNER:
             self.store.save_human_action(saved)
+            self._audit(saved, "HUMAN_ACTION_OPENED", action.created_at)
             return saved
 
         transition = ProjectOperationalTransition(
@@ -36,6 +38,7 @@ class HumanInterventionBroker:
             }
         )
         self.store.apply_human_action_operational_transition(saved, updated_project, transition)
+        self._audit(saved, "HUMAN_ACTION_OPENED", action.created_at)
         return saved
 
     def verify(self, human_action_id: str, ok: bool, at: datetime) -> HumanActionRequest:
@@ -48,7 +51,9 @@ class HumanInterventionBroker:
         resolved = action.model_copy(
             update={"status": HumanActionStatus.VERIFIED, "resolved_at": at}
         )
-        return self._resolve(action, resolved, at)
+        result = self._resolve(action, resolved, at)
+        self._audit(result, "HUMAN_ACTION_VERIFIED", at)
+        return result
 
     def cancel(self, human_action_id: str, at: datetime) -> HumanActionRequest:
         at = ensure_tz(at)
@@ -62,7 +67,9 @@ class HumanInterventionBroker:
         resolved = action.model_copy(
             update={"status": HumanActionStatus.CANCELLED, "resolved_at": at}
         )
-        return self._resolve(action, resolved, at)
+        result = self._resolve(action, resolved, at)
+        self._audit(result, "HUMAN_ACTION_CANCELLED", at)
+        return result
 
     def _resolve(
         self,
@@ -94,3 +101,20 @@ class HumanInterventionBroker:
         else:
             self.store.save_human_action(resolved)
         return resolved
+
+    def _audit(self, action: HumanActionRequest, event_type: str, at: datetime) -> None:
+        record_audit(
+            self.store,
+            project_id=action.project_id,
+            category="INTERVENTION",
+            event_type=event_type,
+            occurred_at=at,
+            resource_type="HumanActionRequest",
+            resource_id=action.human_action_id,
+            severity="WARNING" if action.blocking else "INFO",
+            details={
+                "action_type": action.action_type,
+                "blocking": action.blocking,
+                "status": action.status.value,
+            },
+        )
