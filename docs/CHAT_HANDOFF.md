@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
 Канонічний контекст для продовження роботи над K_Supervisor у новому чаті.
 
-Version: 1.3
+Version: 1.4
 Status: ACTIVE
 Date: 2026-09-14
 
@@ -13,8 +13,10 @@ Before changing runtime code in a new conversation, read from `main`:
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
 docs/HARDENING_BASELINE_V0_3.md
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md
 docs/PERSISTENCE.md
+docs/AGENT_RUNTIME.md
+docs/POLICY_AND_PERMISSIONS.md
 docs/TEST_MATRIX.md
 docs/COMPATIBILITY_POLICY.md
 docs/ROADMAP_IMPLEMENTATION_AUDIT.md
@@ -36,9 +38,10 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
-Current approved phase: v0.3 Phase 2 - Durable Control State
-v0.3 Phase 2: ACTIVE
-v0.3 Phase 3-8: PLANNED / NOT STARTED
+v0.3 Phase 2 - Durable Control State: COMPLETE
+Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
+v0.3 Phase 3: ACTIVE
+v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
@@ -49,11 +52,11 @@ Work proceeds under revision-local v0.3 phase numbering.
 The authoritative validated runtime baseline is:
 
 ```text
-Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
-Core Validation run: 34804141156
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
 Python: 3.13.15
-pytest: 95 passed
-branch-aware coverage: 85.66%
+pytest: 103 passed
+branch-aware coverage: 85.23%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -64,40 +67,43 @@ import ksupervisor outside checkout: PASS
 
 Documentation synchronization after this SHA does not replace the runtime baseline unless a later implementation checkpoint explicitly states otherwise.
 
-## Completed Phase 1
+## Completed Phase 2
 
-Phase 1 delivered:
+Phase 2 delivered:
 
-- explicit SQLite lifecycle and context-manager ownership;
-- idempotent initialize/close;
-- explicit transaction/rollback boundary;
-- schema version 2 and tested v1 -> v2 migration;
-- fail-closed unsupported schema handling;
-- WAL/busy-timeout support for local concurrent writers;
-- concurrent-writer verification;
-- permanent CI failure on `ResourceWarning`;
-- zero known SQLite ResourceWarning leaks;
-- preserved restart/recovery and public/domain compatibility.
+- persistence-backed runtime idempotency on the standard AgentRuntimeDispatcher path;
+- project-scoped restart-safe successful-result replay and concurrent claim protection;
+- durable notification delivery history verified for duplicate suppression after restart;
+- ApprovalRecord states `EXPIRED` and `REVOKED`, with explicit timestamps/reason and policy enforcement;
+- durable approval lifecycle audit;
+- expanded ProjectRecoverySnapshot for human actions, notification/delivery state, approvals, runtime idempotency, policy, audit, routing and release-validation records;
+- atomic state+audit persistence for core Project, Human Intervention and Approval control mutations;
+- verified interrupted Task/WorkflowRun + WAITING_FOR_OWNER reconstruction and resume after restart;
+- SQLite schema remains version 2 because Phase 2 uses the generic resources/events layout.
 
 Authoritative records:
 
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `PERSISTENCE.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+- `AGENT_RUNTIME.md`;
+- `POLICY_AND_PERMISSIONS.md`.
 
-## Active Phase 2
+## Active Phase 3
 
-Goal: make critical control state durable across process restart.
+Goal: centralize material external side effects behind one enforceable platform gateway.
 
 Required work includes:
 
-- durable runtime/command idempotency;
-- durable notification/execution deduplication state for standard platform paths;
-- approval expiry and revocation lifecycle;
-- richer authoritative recovery aggregation;
-- stronger atomicity between required control state and audit records;
-- restart-safe records required to resume active workflows/projects.
+- Tool Gateway / side-effect execution gateway for standard production paths;
+- normalized side-effect invocation/result contract;
+- policy and tool-operation permission validation before invocation;
+- protected-reference authorization before resolution/use;
+- correlation and idempotency propagation;
+- normalized durable side-effect attempt/outcome audit;
+- no external invocation for DENY or REQUIRE_APPROVAL;
+- replaceable concrete tool/provider adapters.
 
-Required verification includes command replay across restart, durable deduplication, approval expiry/revocation, interrupted control-state recovery, aggregate reconstruction without hidden memory, atomicity tests and the full cumulative regression suite.
+Required verification includes ALLOW/DENY/REQUIRE_APPROVAL invocation behavior, tool permissions, protected references, repeated invocation/idempotency, failure normalization/audit, correlation persistence and the full cumulative regression suite.
 
 ## Preserved Architecture
 
@@ -132,4 +138,4 @@ Entry-point groups:
 
 ## Working Rule
 
-Implement only the active roadmap phase. Do not mark Phase 2 complete until the committed implementation passes all published Phase 2 verification and permanent Core Validation gates. After completion, synchronize README, PROJECT_STATE, ROADMAP status, TEST_MATRIX, DOCS_INDEX, CHAT_HANDOFF and the phase checkpoint.
+Implement only the active roadmap phase. Do not mark Phase 3 complete until the committed implementation passes all published Phase 3 verification and permanent Core Validation gates. After completion, synchronize README, PROJECT_STATE, ROADMAP status, TEST_MATRIX, DOCS_INDEX, CHAT_HANDOFF, affected technical contracts and the phase checkpoint.
