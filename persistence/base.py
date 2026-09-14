@@ -2,8 +2,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
+from models.audit import AuditEvent
 from models.intervention import HumanActionRequest, NotificationDeliveryAttempt, NotificationEvent
 from models.lifecycle import ProjectLifecycleTransition
+from models.observability_records import RoutingRecord, ReleaseValidationRecord
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
@@ -91,12 +93,7 @@ class PersistenceStore(ABC):
     @abstractmethod
     def list_notification_delivery_attempts(self, project_id: str) -> tuple[NotificationDeliveryAttempt, ...]: ...
     @abstractmethod
-    def apply_human_action_operational_transition(
-        self,
-        action: HumanActionRequest,
-        project: Project,
-        transition: ProjectOperationalTransition,
-    ) -> None: ...
+    def apply_human_action_operational_transition(self, action: HumanActionRequest, project: Project, transition: ProjectOperationalTransition) -> None: ...
     @abstractmethod
     def save_approval(self, value: ApprovalRecord) -> None: ...
     @abstractmethod
@@ -107,3 +104,15 @@ class PersistenceStore(ABC):
     def append_policy_decision(self, value: PolicyDecision) -> None: ...
     @abstractmethod
     def list_policy_decisions(self, project_id: str) -> tuple[PolicyDecision, ...]: ...
+    @abstractmethod
+    def append_audit_event(self, value: AuditEvent) -> None: ...
+    @abstractmethod
+    def list_audit_events(self, project_id: str) -> tuple[AuditEvent, ...]: ...
+    @abstractmethod
+    def append_routing_record(self, value: RoutingRecord) -> None: ...
+    @abstractmethod
+    def list_routing_records(self, project_id: str) -> tuple[RoutingRecord, ...]: ...
+    @abstractmethod
+    def append_release_validation_record(self, value: ReleaseValidationRecord) -> None: ...
+    @abstractmethod
+    def list_release_validation_records(self, project_id: str) -> tuple[ReleaseValidationRecord, ...]: ...
