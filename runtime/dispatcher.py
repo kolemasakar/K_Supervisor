@@ -4,19 +4,31 @@ from threading import RLock
 
 from models.agent import AgentError, AgentRunRequest, AgentRunResult
 from models.enums import ExecutionStatus
+from persistence.base import PersistenceStore
 from registry.agent_registry import AgentAvailability, AgentRegistry
 
 from .contracts import ExecutionControl, RuntimeAdapter, RuntimeLimits
 from .errors import AgentRuntimeError, RuntimeValidationError
 from .health import RuntimeHealthTracker
-from .idempotency import MemoryIdempotencyStore
+from .idempotency import MemoryIdempotencyStore, PersistenceIdempotencyStore
 
 
 class AgentRuntimeDispatcher:
-    def __init__(self, registry: AgentRegistry, adapter: RuntimeAdapter, *, unavailable_after: int = 3):
+    def __init__(
+        self,
+        registry: AgentRegistry,
+        adapter: RuntimeAdapter,
+        *,
+        unavailable_after: int = 3,
+        persistence_store: PersistenceStore | None = None,
+    ):
         self.registry = registry
         self.adapter = adapter
-        self.idempotency = MemoryIdempotencyStore()
+        self.idempotency = (
+            PersistenceIdempotencyStore(persistence_store)
+            if persistence_store is not None
+            else MemoryIdempotencyStore()
+        )
         self.health = RuntimeHealthTracker(registry, unavailable_after)
         self._controls: dict[str, ExecutionControl] = {}
         self._lock = RLock()
