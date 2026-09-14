@@ -1,24 +1,25 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
-Звірка фактичної реалізації K_Supervisor з завершеним ROADMAP v0.2.
+Звірка фактичної реалізації K_Supervisor з завершеним ROADMAP v0.2 та фіксація successor baseline.
 
-Version: 1.6
+Version: 1.7
 Status: COMPLETE
 Date: 2026-09-14
-Scope: Phase 0-16
+Audit scope: ROADMAP v0.2 Phase 0-16
+Successor roadmap: ROADMAP v0.3 ACTIVE
+Current successor phase: v0.3 Phase 0
 
-## Result
+## v0.2 Audit Result
 
 ```text
 Roadmap phases reviewed: 0-16
 Unmet published exit criteria: 0
-Roadmap status: COMPLETE
-Current approved phase: NONE
+ROADMAP v0.2 status: COMPLETE
 Phase 17: NOT DEFINED
 ```
 
 ## Compliance Matrix
 
-| Phase | Result |
+| v0.2 Phase | Result |
 | --- | --- |
 | 0 | PASS |
 | 1 | PASS |
@@ -38,9 +39,9 @@ Phase 17: NOT DEFINED
 | 15 | PASS |
 | 16 | PASS |
 
-Detailed implementation evidence is preserved in each phase completion checkpoint.
+Detailed implementation evidence remains preserved in each v0.2 phase completion checkpoint.
 
-## Final Validated Implementation
+## Final Validated v0.2 Runtime Implementation
 
 ```text
 Core Validation run: 34793901147
@@ -54,19 +55,40 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Closure synchronization after the implementation SHA is documentation-only unless a later checkpoint states otherwise.
+Documentation synchronization after that implementation SHA does not itself replace the runtime implementation baseline.
 
 ## Preserved Boundaries
 
 Project and Task remain separate; Agent and Capability remain separate; workflows route by capability; policy precedes side effects; owner-required actions and publication stay explicit; K-Research & Critic remains reference-only; external extensions do not require Supervisor-core edits.
 
-## Closure Records
+## v0.2 Closure Records
 
 - `PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md`
 - `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md`
-- `PROJECT_STATE.md`
-- `CHAT_HANDOFF.md`
+- `ROADMAP_V0_2_ARCHIVE.md`
 
-## Closure
+## Successor Decision
 
-All published ROADMAP v0.2 exit criteria are satisfied. Further implementation requires an explicit new roadmap/revision before coding begins. There is no approved Phase 17.
+ROADMAP v0.3 — Production Hardening & Service Boundary is approved and active.
+
+The successor uses revision-local numbering:
+
+```text
+v0.3 Phase 0 through v0.3 Phase 8
+```
+
+This successor roadmap does not create, rename or reinterpret a Phase 17.
+
+Approval evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md`.
+
+## Current Successor Gate
+
+`v0.3 Phase 0 — Baseline Freeze & Hardening Contract` is ACTIVE.
+
+The v0.2 regression/compatibility baseline remains the minimum floor for v0.3. Runtime hardening implementation may only be claimed under the corresponding v0.3 phase with cumulative validation evidence.
+
+## Audit Closure
+
+The v0.2 implementation audit remains COMPLETE and immutable in scope: all published v0.2 exit criteria were satisfied.
+
+Future implementation evidence belongs to v0.3 phase checkpoints and future v0.3 audit records rather than modifying the meaning of this completed v0.2 compliance result.
