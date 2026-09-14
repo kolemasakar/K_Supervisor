@@ -6,15 +6,24 @@ from pydantic import BaseModel, ConfigDict
 
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
+from models.audit import AuditEvent
 from models.base import ensure_tz
+from models.control import RuntimeIdempotencyRecord
 from models.enums import ProjectLifecycleState, ProjectOperationalState, ProjectSpecStatus
+from models.intervention import (
+    HumanActionRequest,
+    NotificationDeliveryAttempt,
+    NotificationEvent,
+)
 from models.lifecycle import ProjectLifecycleTransition
+from models.observability_records import RoutingRecord, ReleaseValidationRecord
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
 from models.task import Task, WorkflowRun
-from observability.audit import record_audit
+from observability.audit import build_audit_event
 from persistence.base import PersistenceStore
+from policy.contracts import ApprovalRecord, PolicyDecision
 
 
 class ProjectRecoverySnapshot(BaseModel):
@@ -31,6 +40,15 @@ class ProjectRecoverySnapshot(BaseModel):
     artifacts: tuple[ArtifactReference, ...]
     releases: tuple[Release, ...]
     release_targets: tuple[ReleaseTarget, ...] = ()
+    human_actions: tuple[HumanActionRequest, ...] = ()
+    notifications: tuple[NotificationEvent, ...] = ()
+    notification_delivery_attempts: tuple[NotificationDeliveryAttempt, ...] = ()
+    approvals: tuple[ApprovalRecord, ...] = ()
+    runtime_idempotency: tuple[RuntimeIdempotencyRecord, ...] = ()
+    policy_decisions: tuple[PolicyDecision, ...] = ()
+    audit_events: tuple[AuditEvent, ...] = ()
+    routing_records: tuple[RoutingRecord, ...] = ()
+    release_validation_records: tuple[ReleaseValidationRecord, ...] = ()
 
 
 class ProjectRegistry:
@@ -75,9 +93,7 @@ class ProjectRegistry:
         updated = project.model_copy(
             update={"active_project_spec_id": spec.project_spec_id, "updated_at": at}
         )
-        self.store.save_project(updated)
-        record_audit(
-            self.store,
+        audit = build_audit_event(
             project_id=project_id,
             category="PROJECT",
             event_type="PROJECT_SPEC_ACTIVATED",
@@ -85,6 +101,7 @@ class ProjectRegistry:
             resource_type="ProjectSpec",
             resource_id=spec.project_spec_id,
         )
+        self.store.save_project_with_audit(updated, audit)
         return updated
 
     def transition_lifecycle(
@@ -108,9 +125,7 @@ class ProjectRegistry:
         updated = project.model_copy(
             update={"lifecycle_state": to_state, "updated_at": at}
         )
-        self.store.apply_lifecycle_transition(updated, transition)
-        record_audit(
-            self.store,
+        audit = build_audit_event(
             project_id=project_id,
             category="PROJECT",
             event_type="PROJECT_LIFECYCLE_TRANSITION",
@@ -124,6 +139,7 @@ class ProjectRegistry:
                 "reason": reason,
             },
         )
+        self.store.apply_lifecycle_transition(updated, transition, audit)
         return updated
 
     def transition_operational(
@@ -143,9 +159,7 @@ class ProjectRegistry:
         updated = project.model_copy(
             update={"operational_state": to_state, "updated_at": at}
         )
-        self.store.apply_operational_transition(updated, transition)
-        record_audit(
-            self.store,
+        audit = build_audit_event(
             project_id=project_id,
             category="PROJECT",
             event_type="PROJECT_OPERATIONAL_TRANSITION",
@@ -157,6 +171,7 @@ class ProjectRegistry:
                 "to_state": to_state.value,
             },
         )
+        self.store.apply_operational_transition(updated, transition, audit)
         return updated
 
     def recover(self, project_id: str) -> ProjectRecoverySnapshot:
@@ -179,6 +194,15 @@ class ProjectRegistry:
             artifacts=self.store.list_artifacts(project_id),
             releases=self.store.list_releases(project_id),
             release_targets=self.store.list_release_targets(project_id),
+            human_actions=self.store.list_human_actions(project_id),
+            notifications=self.store.list_notifications(project_id),
+            notification_delivery_attempts=self.store.list_notification_delivery_attempts(project_id),
+            approvals=self.store.list_approvals(project_id),
+            runtime_idempotency=self.store.list_runtime_idempotency(project_id),
+            policy_decisions=self.store.list_policy_decisions(project_id),
+            audit_events=self.store.list_audit_events(project_id),
+            routing_records=self.store.list_routing_records(project_id),
+            release_validation_records=self.store.list_release_validation_records(project_id),
         )
 
     def _require(self, project_id: str) -> Project:
