@@ -11,7 +11,7 @@ from .errors import (
     RuntimeValidationError,
 )
 from .health import AgentHealth, RuntimeHealthTracker
-from .idempotency import MemoryIdempotencyStore
+from .idempotency import MemoryIdempotencyStore, PersistenceIdempotencyStore
 from .in_process import AgentRuntimeHandler, InProcessRuntimeAdapter
 
 __all__ = [
@@ -22,6 +22,7 @@ __all__ = [
     "ExecutionControl",
     "InProcessRuntimeAdapter",
     "MemoryIdempotencyStore",
+    "PersistenceIdempotencyStore",
     "RuntimeAdapter",
     "RuntimeCancelled",
     "RuntimeDependencyUnavailable",
