@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 2.1
+Version: 2.2
 Status: ACTIVE
 
 ## Reading Order
@@ -34,53 +34,43 @@ Status: ACTIVE
 26. `DEVELOPER_GUIDE.md` - extension authoring and registration patterns.
 27. `COMPATIBILITY_POLICY.md` - contract/package/CLI/config compatibility rules.
 28. `NOTIFICATION_ADAPTER_INTERFACE.md` - future transport adapter design boundary.
-29. `ROADMAP.md` - published phased implementation plan.
-30. `ROADMAP_IMPLEMENTATION_AUDIT.md` - implementation-to-roadmap compliance audit and closure.
-31. `PROJECT_FILE_STANDARD.md` - repository file standard.
+29. `ROADMAP.md` - completed ROADMAP v0.2.
+30. `ROADMAP_IMPLEMENTATION_AUDIT.md` - Phase 0-16 compliance audit.
+31. `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md` - overall roadmap completion checkpoint.
+32. `CHAT_HANDOFF.md` - compact context for continuing in a new conversation.
+33. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Implementation Status
 
 ```text
-Phase 0: COMPLETE
-Phase 1: COMPLETE
-Phase 2: COMPLETE
-Phase 3: COMPLETE
-Phase 4: COMPLETE
-Phase 5: COMPLETE
-Phase 6: COMPLETE
-Phase 7: COMPLETE
-Phase 8: COMPLETE
-Phase 9: COMPLETE
-Phase 10: COMPLETE
-Phase 11: COMPLETE
-Phase 12: COMPLETE
-Phase 13: COMPLETE
-Phase 14: COMPLETE
-Phase 15: COMPLETE
-Phase 16: COMPLETE
+Phase 0-16: COMPLETE
 Published ROADMAP v0.2: COMPLETE
+Current approved phase: NONE
+Phase 17: NOT DEFINED
 ```
 
-Current automated validation:
+## Final Validated Implementation
 
 ```text
 Core Validation run: 34793901147
+Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
 Python: 3.13.15
 88 tests PASS
 branch-aware coverage: 85.46%
-coverage gate: >= 80%
+coverage gate: >= 80% PASS
 compileall including examples: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Latest checkpoints:
+## Closure Checkpoints
 
 ```text
 PROJECT_CHECKPOINT_PHASE_13_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_14_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_15_COMPLETE.md
 PROJECT_CHECKPOINT_PHASE_16_COMPLETE.md
+PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md
 ```
 
 ## Public Extension Baseline
@@ -107,4 +97,4 @@ Canonical shared file standard:
 kolemasakar/AI_general
 ```
 
-External references are not implementation dependencies unless an explicit architecture decision creates one. ROADMAP v0.2 has no remaining published phase; any new implementation program requires an explicit roadmap revision.
+External references are not implementation dependencies unless an explicit architecture decision creates one. New implementation work requires an explicit new roadmap/revision; it must not be treated as an implicit Phase 17.
