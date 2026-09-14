@@ -1,7 +1,7 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
 Звірка фактичної реалізації K_Supervisor із завершеним ROADMAP v0.2 та посилання на активний successor ROADMAP v0.3.
 
-Version: 1.8
+Version: 1.9
 Status: COMPLETE
 Date: 2026-09-14
 Primary audited scope: ROADMAP v0.2 Phase 0-16
@@ -50,7 +50,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-This remains the authoritative runtime predecessor baseline until an explicit v0.3 implementation checkpoint supersedes it.
+This remains the immutable predecessor evidence for the v0.2 audit. It has now been superseded operationally by the validated v0.3 Phase 1 runtime baseline, without rewriting the historical v0.2 PASS result.
 
 ## Preserved Boundaries
 
@@ -62,26 +62,38 @@ ROADMAP v0.3 was explicitly approved on 2026-09-14 and uses revision-local Phase
 
 ```text
 v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
-Current approved phase: v0.3 Phase 1 - Persistence & Resource Hygiene
-v0.3 Phase 1: ACTIVE
-v0.3 Phase 2-8: PLANNED / NOT STARTED
+v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
+Current approved phase: v0.3 Phase 2 - Durable Control State
+v0.3 Phase 2: ACTIVE
+v0.3 Phase 3-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Phase 0 introduced no runtime changes. It froze:
+### v0.3 Phase 1 validated runtime baseline
 
-- the predecessor implementation/validation baseline;
-- technical-debt ownership by phase;
-- public/internal compatibility boundaries;
-- migration/rollback expectations;
-- hardening invariants;
-- cumulative v0.3 validation rules.
+```text
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34804141156
+Python: 3.13.15
+pytest: 95 passed
+branch-aware coverage: 85.66%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
 
-Authoritative Phase 0 records:
+Phase 1 hardened connection lifecycle, explicit transactions, SQLite schema migration/versioning, supported local concurrency and ResourceWarning enforcement while preserving the approved persistence abstraction and public compatibility surfaces.
 
-- `HARDENING_BASELINE_V0_3.md`;
+Authoritative v0.3 records:
+
+- `HARDENING_BASELINE_V0_3.md` - frozen Phase 0 contract;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md`.
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
+- `PERSISTENCE.md`;
+- `PROJECT_STATE.md`;
+- `TEST_MATRIX.md`.
 
 ## Historical Closure Records
 
@@ -91,4 +103,4 @@ Authoritative Phase 0 records:
 
 ## Audit Boundary
 
-This document's PASS matrix remains the completed v0.2 implementation audit. v0.3 implementation evidence must be recorded phase-by-phase in new v0.3 checkpoints and must not rewrite the historical v0.2 PASS record.
+This document's PASS matrix remains the completed v0.2 implementation audit. v0.3 implementation evidence is recorded phase-by-phase in separate checkpoints; this successor section only points to the current validated state and does not rewrite the historical v0.2 audit result.
