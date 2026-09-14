@@ -6,7 +6,7 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 2
+Current phase: v0.3 Phase 3
 
 ## Program Objective
 
@@ -20,8 +20,8 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | --- | --- | --- |
 | v0.3 Phase 0 | Baseline Freeze & Hardening Contract | COMPLETE |
 | v0.3 Phase 1 | Persistence & Resource Hygiene | COMPLETE |
-| v0.3 Phase 2 | Durable Control State | ACTIVE |
-| v0.3 Phase 3 | Centralized Side-Effect Enforcement | PLANNED |
+| v0.3 Phase 2 | Durable Control State | COMPLETE |
+| v0.3 Phase 3 | Centralized Side-Effect Enforcement | ACTIVE |
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | PLANNED |
 | v0.3 Phase 5 | Service/API Boundary | PLANNED |
 | v0.3 Phase 6 | Production Observability | PLANNED |
@@ -39,59 +39,85 @@ Evidence:
 
 ## Completed Phase 1
 
-Phase 1 hardened persistence/resource ownership without changing public/domain contracts.
+Phase 1 hardened persistence/resource ownership and schema evolution.
 
 Validated baseline:
 
 ```text
 Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
 Core Validation run: 34804141156
-Python: 3.13.15
 pytest: 95 passed
 branch-aware coverage: 85.66%
 ResourceWarning gate: PASS
+```
+
+Evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+
+## Completed Phase 2
+
+Phase 2 moved critical control state onto durable, restart-safe platform boundaries.
+
+Validated baseline:
+
+```text
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
+Python: 3.13.15
+pytest: 103 passed
+branch-aware coverage: 85.23%
+coverage gate: >= 80% PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
+Delivered durable runtime idempotency, restart-safe notification deduplication, approval expiry/revocation, richer recovery aggregation, restart/resume verification and atomic state+audit persistence for core Project/Human Intervention/Approval control writes.
+
 Evidence:
 
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `PERSISTENCE.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+- `AGENT_RUNTIME.md`;
+- `POLICY_AND_PERMISSIONS.md`.
 
-## Active Phase 2 - Durable Control State
+## Active Phase 3 - Centralized Side-Effect Enforcement
 
-Goal: move critical control decisions out of process-local memory so active work can resume safely after restart.
+Goal: establish one standard platform boundary for material external side effects so policy, permissions, protected references, idempotency and audit are enforced before invocation rather than relying on each caller to compose them correctly.
 
 Required deliverables:
 
-- durable runtime/command idempotency;
-- durable notification/execution deduplication state where required by standard platform paths;
-- approval expiry and revocation lifecycle;
-- richer authoritative recovery snapshot/aggregate reconstruction;
-- stronger atomicity between authoritative control state and required audit records;
-- durable control records required to resume active workflows/projects.
+- centralized Tool Gateway / side-effect execution gateway for standard platform paths;
+- normalized side-effect invocation/result contract;
+- mandatory policy and permission validation before gateway execution;
+- protected-reference authorization before resolution/use;
+- propagation of project/request/agent/capability correlation and idempotency keys;
+- normalized durable side-effect attempt/outcome audit;
+- deterministic denied/approval-required behavior with no external invocation;
+- adapter boundary that keeps concrete tools/providers replaceable.
 
 Required tests:
 
-- restart between state transitions;
-- duplicate command replay;
-- duplicate execution/notification protection;
-- approval expiry and revocation;
-- interrupted workflow/project recovery;
-- aggregate reconstruction without hidden process memory;
-- full Phase 0-1 and v0.2 regression suite.
+- ALLOW path invokes the adapter once through the gateway;
+- DENY path never invokes the adapter;
+- REQUIRE_APPROVAL path never invokes the adapter until approved;
+- tool-operation permission enforcement;
+- protected-reference authorization enforcement;
+- repeated invocation/idempotency behavior;
+- provider/tool failure normalization and audit;
+- correlation/audit persistence;
+- full completed v0.2 + v0.3 regression suite.
 
 Exit criteria:
 
-- process restart does not change supported idempotency semantics;
-- replay of the same command does not create an unintended duplicate operation through the standard path;
-- approval expiry/revocation is enforceable and auditable;
-- active project/control state can be reconstructed from authoritative persisted data;
-- required authoritative control writes and audit records use the defined atomic boundary;
-- Core Validation PASS on the committed Phase 2 implementation baseline.
+- standard production-composition material side effects have a centralized enforceable gateway path;
+- policy/permission/protected-reference checks occur before external invocation;
+- denied or approval-required requests cannot reach the external adapter through the standard path;
+- side-effect correlation, idempotency and durable audit are explicit and tested;
+- concrete adapters remain replaceable without Supervisor-core rewrites;
+- Core Validation PASS on the committed Phase 3 implementation baseline.
 
-Deferred from Phase 2: distributed consensus, cross-region event sourcing and universal exactly-once guarantees across arbitrary external systems.
+Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
 
 ## Validation Rule
 
