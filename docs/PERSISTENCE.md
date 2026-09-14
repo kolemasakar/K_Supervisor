@@ -1,36 +1,49 @@
 # PERSISTENCE
-Документ описує persistence baseline, Project Registry та актуальні recovery semantics K_Supervisor.
+Документ описує persistence boundary, SQLite hardening baseline, Project Registry та recovery semantics K_Supervisor.
 
-Version: 1.2
+Version: 1.3
 Status: ACTIVE
-Baseline Phase: 2
-Updated through: Phase 15
+Baseline Phase: v0.3 Phase 1 COMPLETE
+Date: 2026-09-14
 
 ## 1. Purpose
 
-Phase 2 established durable project identity and reconstructable project state without relying on hidden process memory. Later phases extend the same platform-owned persistence boundary with additional durable resources and append-only events.
+Persistence is platform-owned authoritative state. Phase 2 of ROADMAP v0.2 established durable project identity and restart recovery. ROADMAP v0.3 Phase 1 hardened the storage lifecycle, transaction behavior and schema evolution boundary without changing domain contracts.
 
 Agents do not access SQLite directly.
 
 ## 2. Persistence Boundary
 
-The persistence contract is defined by:
+The backend-neutral persistence contract is defined by:
 
 ```text
 persistence/base.py
 ```
 
-The initial local implementation is:
+The current local implementation is:
 
 ```text
 persistence/sqlite_store.py
 ```
 
-SQLite is a baseline backend, not a permanent architectural requirement.
+SQLite remains an implementation backend, not a public storage-layout contract. Consumers must use persistence interfaces rather than depend on SQLite table/index names. A later backend can replace SQLite behind the approved persistence boundary without changing Project/Agent/Workflow contracts.
 
-## 3. Storage Model
+## 3. SQLite Ownership and Lifecycle
 
-The local backend uses two logical storage classes:
+`SQLitePersistenceStore` now has explicit connection ownership:
+
+- `initialize()` is idempotent;
+- `close()` is idempotent;
+- the store supports `with SQLitePersistenceStore(path) as store:`;
+- failed initialization closes the connection before propagating the error;
+- closing a store rolls back any still-open transaction before closing;
+- a best-effort finalizer prevents abandoned connection objects from remaining open, but explicit close/context-manager ownership remains the normal contract.
+
+Connection configuration includes WAL mode, foreign-key enforcement, normal synchronous mode and a bounded SQLite busy timeout for supported concurrent writers.
+
+## 4. Storage Model
+
+The backend retains two generic logical storage classes:
 
 ```text
 resources
@@ -44,13 +57,48 @@ events
 - isolated by project_id
 ```
 
-Schema metadata is stored separately. The current SQLite schema version remains `1` because later logical resource/event kinds reuse the generic `resources` and `events` tables without requiring a physical schema migration.
+Schema metadata is stored in `schema_meta`. Physical SQLite layout remains internal.
 
-SQLite WAL mode is enabled.
+## 5. Schema Version and Migration
 
-## 4. Persisted Resources
+Current SQLite schema version:
 
-The durable resource boundary currently includes:
+```text
+2
+```
+
+Phase 1 introduced a deterministic migration path from schema version `1` to `2`.
+
+The migration:
+
+- preserves existing resource/event data;
+- creates the Phase 1 supporting resource index;
+- records a storage-layout metadata marker;
+- advances `schema_version` only inside the migration transaction.
+
+Initialization of a v1 database automatically migrates it to v2. Unknown/future schema versions fail closed with an explicit error. A failed/unsupported migration does not rewrite the stored version.
+
+New physical schema changes must add an explicit forward migration and tests. Silent reinterpretation of an incompatible layout is prohibited.
+
+## 6. Transaction Boundary
+
+The SQLite backend exposes an internal explicit transaction context used by authoritative writes.
+
+Top-level transactions use `BEGIN IMMEDIATE`, commit on success and roll back on failure. Nested store operations participate in the existing transaction instead of committing independently.
+
+This preserves atomic helpers such as:
+
+- lifecycle transition + resulting Project snapshot;
+- operational transition + resulting Project snapshot;
+- HumanActionRequest + operational transition + resulting Project snapshot.
+
+Phase 1 additionally verifies rollback of a write when the surrounding authoritative transaction fails.
+
+Cross-system operations involving repositories or external providers are still not one universal distributed transaction; later roadmap phases own those control-state and side-effect boundaries.
+
+## 7. Persisted Resources
+
+The durable resource boundary includes:
 
 ```text
 Project
@@ -66,13 +114,11 @@ NotificationEvent
 ApprovalRecord
 ```
 
-ProjectSpec and ArtifactReference snapshots are immutable by identifier. Re-saving the identical snapshot is idempotent; changing an existing immutable identifier raises `PersistenceConflictError`.
+ProjectSpec and ArtifactReference snapshots remain immutable by identifier. Re-saving the same snapshot is idempotent; changing an existing immutable identifier raises `PersistenceConflictError`.
 
-Release and ReleaseTarget are mutable state records with explicit state machines enforced by the release layer.
+## 8. Persisted Events
 
-## 5. Persisted Events
-
-Append-only event records currently include:
+Append-only event records include:
 
 ```text
 ProjectLifecycleTransition
@@ -84,15 +130,11 @@ RoutingRecord
 ReleaseValidationRecord
 ```
 
-Phase 15 observability records use the existing append-only event table and remain project-scoped.
+Normalized observability events do not replace authoritative business state.
 
-Lifecycle/operational transition helpers can commit a transition and resulting Project snapshot atomically in one SQLite transaction. Human-intervention transitions can atomically store the HumanActionRequest, matching operational transition and resulting Project snapshot.
+## 9. Project Registry and Recovery
 
-Normalized observability events are adjacent audit records. They do not replace authoritative business state and are not guaranteed to be part of the same transaction as every cross-component business write.
-
-## 6. Project Registry
-
-`registry/project_registry.py` is the project identity and primary recovery boundary.
+`registry/project_registry.py` remains the project identity and primary recovery boundary.
 
 Primary operations:
 
@@ -107,84 +149,67 @@ transition_operational
 recover
 ```
 
-The registry enforces ProjectSpec/project matching, APPROVED activation, explicit lifecycle/operational transitions, timezone-aware timestamps and project-scoped recovery. Phase 15 additionally records normalized audit events for ProjectSpec activation and project state transitions.
+`ProjectRecoverySnapshot` reconstructs the baseline Project aggregate used by Project Registry. Later v0.3 Phase 2 is responsible for richer durable control-state aggregation; Phase 1 intentionally does not expand that domain contract.
 
-## 7. Recovery Snapshot
+Restart/reopen recovery remains deterministic after the v1 -> v2 migration.
 
-`ProjectRecoverySnapshot` currently reconstructs:
+## 10. Supported SQLite Concurrency
 
-```text
-Project
-active ProjectSpec
-ProjectSpec history
-lifecycle transitions
-operational transitions
-Tasks
-WorkflowRuns
-AgentRunResults
-ArtifactReferences
-Releases
-ReleaseTargets
-```
+Phase 1 validates separate store instances using independent SQLite connections writing to the same WAL database concurrently.
 
-HumanActionRequest, NotificationEvent/delivery, ApprovalRecord, PolicyDecision, AuditEvent, RoutingRecord and ReleaseValidationRecord are durable through persistence APIs but are not all aggregated into `ProjectRecoverySnapshot`.
+The boundary is intentionally local-process/local-file SQLite concurrency, not distributed database coordination. `busy_timeout` provides bounded contention handling while SQLite serializes writers.
 
-## 8. Release and Observability Persistence
+Distributed clustering, cross-region replication and mandatory PostgreSQL remain outside Phase 1.
 
-ReleaseTarget persists target-specific release state, artifacts, checklist, HumanAction correlation and publication timestamp.
+## 11. Resource Hygiene Gate
 
-Phase 15 additionally persists each automated release readiness evaluation as a `ReleaseValidationRecord` containing target/release correlation and passed/failed check IDs. These records survive SQLite restart and support reliability diagnostics without inferring historical readiness solely from current repository files.
-
-`AuditEvent` and `RoutingRecord` provide structured project-level diagnostics. Metrics are derived from persisted records and are not stored as a second source of truth.
-
-## 9. Parallel Project Isolation
-
-Every persisted resource and event carries `project_id`. Queries used by platform recovery and observability boundaries are project-scoped, so one project waiting, failing, or resuming does not overwrite another project's state.
-
-Scheduler-owned concurrency and global resource limits remain outside persistence.
-
-## 10. Local Data Location
-
-Runtime databases are local runtime artifacts and must not be committed to Git.
-
-Recommended default location:
+Core Validation now executes pytest with:
 
 ```text
-runtime/k_supervisor.db
+-W error::ResourceWarning
 ```
 
-The final platform configuration and packaging mechanism belongs to Phase 16.
+A Python `ResourceWarning`, including an unclosed SQLite connection, fails CI. The previous known SQLite connection warnings are therefore eliminated as a regression class rather than merely hidden.
 
-## 11. Validation Baseline
+Tests should still prefer explicit context-manager or `close()` ownership.
 
-Current validated platform baseline after Phase 15 implementation:
+## 12. Validation Baseline
+
+Authoritative v0.3 Phase 1 implementation baseline:
 
 ```text
-Python 3.13.15
-81 tests PASS
-branch-aware coverage: 85.57%
-coverage gate: >= 80%
-Core Validation run: 34792502459
-head SHA: e68c7f3d61302a4b5bf494e392586cf09522e8e1
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34804141156
+Python: 3.13.15
+pytest: 95 passed
+branch-aware coverage: 85.66%
+coverage gate: >= 80% PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
 ```
 
-Coverage includes restart/recovery, project isolation, immutable ProjectSpec history, state transitions, human intervention, policy audit persistence, release persistence, ReleaseTarget recovery, Phase 15 release-validation recovery and normalized audit/routing records.
+Phase-specific verification covers:
 
-## 12. Baseline Limits
+- context-manager connection lifecycle;
+- idempotent initialize/close;
+- v1 -> v2 forward migration with data preservation;
+- fail-closed unsupported schema handling;
+- authoritative transaction rollback;
+- concurrent writers using independent connections;
+- no unclosed SQLite `ResourceWarning`;
+- existing restart/recovery behavior.
 
-- SQLite is the initial backend, not a permanent storage commitment.
-- `ProjectRecoverySnapshot` is not a universal aggregate of every durable resource/event type.
-- Cross-system operations involving repository files, providers or normalized audit append are not one universal transaction.
-- Migration/versioning beyond schema version `1` is deferred until the physical database schema requires it.
-- Metrics are derived snapshots rather than persisted time-series telemetry.
+## 13. Phase 1 Exit Result
 
-## 13. Phase 2 Exit Criteria
+ROADMAP v0.3 Phase 1 exit criteria are satisfied:
 
-The original Phase 2 criteria remain satisfied:
+- zero known SQLite ResourceWarning leaks under Core Validation;
+- deterministic restart/reopen recovery remains intact;
+- unsupported schema versions fail safely;
+- forward migration from the predecessor schema is tested;
+- SQLite physical layout remains behind the persistence abstraction;
+- all predecessor regression gates pass.
 
-- projects survive persistence store restart;
-- current project state can be reconstructed from durable records;
-- ProjectSpec history remains immutable;
-- lifecycle and operational histories are retained;
-- tasks, workflows, agent runs, artifacts and releases have persistence boundaries;
-- multiple projects are stored and recovered independently.
+The next persistence-related control-state work belongs to v0.3 Phase 2, not to this completed storage-hygiene phase.
