@@ -13,6 +13,7 @@ from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
 from models.task import Task, WorkflowRun
+from observability.audit import record_audit
 from persistence.base import PersistenceStore
 
 
@@ -75,6 +76,15 @@ class ProjectRegistry:
             update={"active_project_spec_id": spec.project_spec_id, "updated_at": at}
         )
         self.store.save_project(updated)
+        record_audit(
+            self.store,
+            project_id=project_id,
+            category="PROJECT",
+            event_type="PROJECT_SPEC_ACTIVATED",
+            occurred_at=at,
+            resource_type="ProjectSpec",
+            resource_id=spec.project_spec_id,
+        )
         return updated
 
     def transition_lifecycle(
@@ -99,6 +109,21 @@ class ProjectRegistry:
             update={"lifecycle_state": to_state, "updated_at": at}
         )
         self.store.apply_lifecycle_transition(updated, transition)
+        record_audit(
+            self.store,
+            project_id=project_id,
+            category="PROJECT",
+            event_type="PROJECT_LIFECYCLE_TRANSITION",
+            occurred_at=at,
+            resource_type="Project",
+            resource_id=project_id,
+            details={
+                "from_state": project.lifecycle_state.value,
+                "to_state": to_state.value,
+                "trigger": trigger,
+                "reason": reason,
+            },
+        )
         return updated
 
     def transition_operational(
@@ -119,6 +144,19 @@ class ProjectRegistry:
             update={"operational_state": to_state, "updated_at": at}
         )
         self.store.apply_operational_transition(updated, transition)
+        record_audit(
+            self.store,
+            project_id=project_id,
+            category="PROJECT",
+            event_type="PROJECT_OPERATIONAL_TRANSITION",
+            occurred_at=at,
+            resource_type="Project",
+            resource_id=project_id,
+            details={
+                "from_state": project.operational_state.value,
+                "to_state": to_state.value,
+            },
+        )
         return updated
 
     def recover(self, project_id: str) -> ProjectRecoverySnapshot:
