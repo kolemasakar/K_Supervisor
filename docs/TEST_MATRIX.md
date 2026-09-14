@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 1.3
+Version: 1.4
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 0
+Current phase: v0.3 Phase 1
 
 ## v0.2 Regression Matrix
 
@@ -29,33 +29,64 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 15 | structured audit, routing records, metrics, failure injection, recovery, performance | `test_phase15_*` |
 | 16 | public config/CLI, extension discovery/activation, examples, package build/install | `test_phase16_*` + CI package smoke |
 
-v0.2 Phase 0 remains architecture/documentation acceptance covered by later contract and integration tests.
+## v0.3 Phase Status
 
-## ROADMAP v0.3 Verification Plan
+| Phase | Required verification | Status |
+| --- | --- | --- |
+| 0 | predecessor traceability, compatibility review, full v0.2 regression evidence, documentation consistency | COMPLETE |
+| 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | ACTIVE |
+| 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | PLANNED |
+| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | PLANNED |
+| 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | PLANNED |
+| 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
+| 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
+| 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | PLANNED |
+| 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
 
-| v0.3 Phase | Required verification |
-| --- | --- |
-| 0 | predecessor baseline traceability, compatibility review, full v0.2 regression, documentation consistency |
-| 1 | storage lifecycle, close/reopen, migration, rollback, concurrency, resource warnings |
-| 2 | durable idempotency, command replay, approval expiry/revocation, restart recovery, aggregate reconstruction |
-| 3 | centralized Tool Gateway policy paths, protected references, duplicate invocation handling, normalized audit |
-| 4 | hung worker, cancellation escalation, timeout, crash isolation, bounded termination, Supervisor responsiveness |
-| 5 | API contracts, access control, invalid transitions, idempotent mutation replay, restart continuity, control-plane integrity |
-| 6 | correlation/tracing, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, data redaction |
-| 7 | extension trust/compatibility state, disabled extension behavior, invalid registration, entry-point regression, CI governance |
-| 8 | clean deployment, complete project lifecycle qualification, failure injection, backup/restore, migration, parallel project isolation |
+## Phase 0 Evidence
 
-Exact v0.3 test filenames may be introduced during implementation. The behaviors above are mandatory phase evidence.
+```text
+Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
+Core Validation run: 34793901147
+pytest: 88 passed
+branch-aware coverage: 85.46%
+compileall: PASS
+wheel build/install: PASS
+public interface smoke: PASS
+runtime changes during Phase 0: none
+```
+
+Phase 0 completion records:
+
+- `HARDENING_BASELINE_V0_3.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`.
+
+## Phase 1 Required Verification
+
+Phase 1 implementation must add or extend tests proving:
+
+- deterministic connection ownership/cleanup;
+- explicit close/reopen behavior;
+- restart recovery remains correct;
+- persistent schema versions are recognized;
+- supported forward migrations work;
+- unsupported migrations fail safely;
+- failed authoritative writes do not leave partially accepted state;
+- supported concurrent access remains deterministic;
+- known SQLite ResourceWarning leaks are eliminated;
+- all v0.2 regression tests remain green.
+
+Exact filenames may be introduced during implementation. The behaviors above are mandatory completion evidence.
 
 ## Permanent Quality Gates
 
 ```text
-structured audit        -> project, intervention, notification, routing, release and side-effect records
-integration             -> Supervisor + registries + runtime + persistence + policy + Tool Gateway boundaries
+structured audit        -> material project/control records
+integration             -> Supervisor + registries + runtime + persistence + policy boundaries
 failure injection       -> deterministic transport/runtime/storage/provider failures
 recovery                -> authoritative state reconstruction after supported restart/reopen boundaries
-referential integrity   -> ReliabilityValidator or an explicitly approved successor boundary
-metrics/telemetry       -> project/agent metrics plus v0.3 operational telemetry where implemented
+referential integrity   -> ReliabilityValidator or approved successor boundary
+metrics/telemetry       -> phase-appropriate project/agent/operational metrics
 performance             -> existing v0.2 baseline remains unless explicitly superseded
 coverage                -> branch-aware total coverage >= 80%
 syntax                  -> compileall including examples
@@ -67,7 +98,7 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 
 ## Current Authoritative Runtime Baseline
 
-Until a v0.3 implementation checkpoint explicitly replaces it:
+Until Phase 1 produces a new validated implementation checkpoint:
 
 ```text
 Core Validation run: 34793901147
@@ -80,34 +111,6 @@ wheel build/install: PASS
 public interface smoke: PASS
 ```
 
-## v0.3 Phase 0 Gate
-
-v0.3 Phase 0 is documentation/baseline hardening work and does not itself change runtime behavior.
-
-Phase 0 completion requires:
-
-- archived and traceable v0.2 roadmap/baseline;
-- synchronized canonical status documents;
-- explicit technical-debt mapping to v0.3 phases;
-- compatibility and migration rules identified;
-- full v0.2 Core Validation still PASS on the runtime predecessor baseline;
-- no regression to public package, CLI, config or extension surfaces.
-
 ## CI Rule
 
-`Core Validation` remains the authoritative automated regression workflow until an explicitly approved successor workflow replaces or extends it.
-
-Any v0.3 runtime phase must not claim completion without a successful full cumulative suite on the committed implementation baseline.
-
-The ROADMAP v0.2 quality baseline remains the minimum compatibility/regression floor for ROADMAP v0.3 unless an explicit approved change states otherwise.
-
-## Completion Evidence Rule
-
-For every completed v0.3 runtime phase, canonical evidence records at minimum:
-
-- committed implementation SHA;
-- authoritative CI/run identifier;
-- test count/result;
-- coverage result;
-- phase-specific verification evidence;
-- synchronized ROADMAP, PROJECT_STATE, TEST_MATRIX, DOCS_INDEX and checkpoint status.
+`Core Validation` remains the authoritative automated regression workflow. No runtime implementation phase may claim completion without a successful full suite on its committed implementation baseline.
