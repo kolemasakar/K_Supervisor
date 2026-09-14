@@ -1,9 +1,9 @@
 # PROJECT_STATE
 Канонічний знімок поточного стану реалізації K_Supervisor.
 
-Version: 1.4
+Version: 1.5
 Status: ACTIVE
-Date: 2026-09-13
+Date: 2026-09-14
 
 ## Current Baseline
 
@@ -11,11 +11,14 @@ Date: 2026-09-13
 Repository: kolemasakar/K_Supervisor
 Branch: main
 Product status: PRE-ALPHA
-Completed roadmap phases: 0-14
-Current roadmap phase: 15 - Observability, Reliability, CI, and Test Matrix
+Completed roadmap phases: 0-15
+Current roadmap phase: 16 - Interfaces, Packaging, and Extensibility
 Core Validation: PASS
 Python: 3.13.15
-pytest baseline: 75 passed
+pytest baseline: 81 passed
+branch-aware coverage: 85.57%
+coverage gate: >= 80%
+compileall: PASS
 ```
 
 ## Implemented Platform Layers
@@ -29,7 +32,8 @@ pytest baseline: 75 passed
 - policy, permissions, risk, approval and durable policy audit;
 - AgentFactory, reusable agent scaffolding and deterministic reference agents;
 - Release Manager, ReleaseTarget readiness, GPT Store preparation and owner publication handoff;
-- reference Research-Critic composition with mandatory profile approval and bounded autonomous review/revision.
+- reference Research-Critic composition with mandatory profile approval and bounded autonomous review/revision;
+- structured observability records, project/agent metrics, reliability validation, deterministic failure injection and permanent CI quality gates.
 
 ## Controlled-Autonomy Boundary
 
@@ -37,49 +41,49 @@ Production execution is expected to compose:
 
 ```text
 Project / Workflow
-  -> SupervisorKernel
+  -> SupervisorKernel or ObservableSupervisorKernel wrapper
   -> PolicyEnforcedDispatcher
   -> Agent Runtime / concrete dispatcher
   -> Agent Contract result
 ```
 
-Policy decisions are resolved before downstream execution. Material permission expansion requires explicit owner approval. Raw credentials are not part of normal project documentation, notifications or agent descriptors.
+Policy decisions are resolved before downstream execution. Material permission expansion requires explicit owner approval. Raw credentials are not part of normal project documentation, notifications, agent descriptors or normalized audit payloads.
 
-## Reference Research-Critic Boundary
+## Observability and Reliability Boundary
 
-Phase 14 re-composes the essential K-Research & Critic v1.0.0 control behavior without importing its runtime:
+Phase 15 adds append-only normalized records without replacing authoritative business state:
 
 ```text
-task-specific profile REVIEW_REQUIRED
-  -> explicit owner approve/edit
-  -> approved profile fingerprint
-  -> research.reference
-  -> factcheck.reference
-  -> critique.reference
-  -> REVISE loop or accepted PASS
-  -> report.reference
-  -> final report + review protocol
+AuditEvent
+RoutingRecord
+ReleaseValidationRecord
 ```
 
-No AgentRun occurs before profile approval. The loop is bounded, and exhausted iterations cannot become false approval. Audit history contains structured run IDs, selected agent IDs, verdicts and reliability values rather than private chain-of-thought.
+`MetricsCollector` derives project and per-agent metrics from durable records. `ReliabilityValidator` checks referential consistency across tasks, workflows, agent runs, routing, notification delivery and release validation. `AuditTimeline` is an ordered view of the canonical append-only audit stream.
+
+Core Validation now enforces Python source compilation, the full pytest regression suite and branch-aware total coverage >= 80%. The validated Phase 15 implementation baseline reached 85.57% coverage.
 
 ## Documentation Consistency
 
-`PROJECT_CONTRACT.md` version 0.2 remains aligned with immutable ProjectSpec persistence. `ROADMAP_IMPLEMENTATION_AUDIT.md` version 1.3 verifies Phase 0-14 against the published roadmap with no unmet published exit criteria.
+`PROJECT_CONTRACT.md` remains aligned with immutable ProjectSpec persistence. `ROADMAP_IMPLEMENTATION_AUDIT.md` version 1.4 verifies Phase 0-15 against the published roadmap with no unmet published exit criteria.
 
 ## Known Baseline Limits
 
 - SQLite remains the initial persistence backend, not a permanent storage architecture.
 - In-process runtime cancellation is cooperative; runtime idempotency storage is process-local.
-- A universal centralized Tool Gateway is not yet implemented; approval expiry/revocation is also deferred.
+- A universal centralized Tool Gateway is not implemented; approval expiry/revocation is deferred.
 - SMTP transport is best-effort and does not provide exactly-once remote delivery.
-- `ProjectRecoverySnapshot` still does not aggregate every intervention/notification/approval/policy resource into one object.
+- `ProjectRecoverySnapshot` does not aggregate every intervention/notification/approval/policy/observability resource into one object.
 - Reference agents are deterministic contract/integration examples rather than production-grade domain intelligence.
 - Release readiness evidence is explicitly supplied; external publication and Git/package release automation are deferred.
-- Phase 14 stores its task-specific profile and final reference outputs in durable WorkflowRun context rather than dedicated domain persistence/artifact records.
-- Phase 14 does not implement the legacy DomainResolver/ProfileManager subsystem or material profile-amendment flow.
-- The generic Task model has no `COMPLETED_WITH_LIMITATIONS`; exhausted reference iterations therefore record `MAX_ITERATIONS_REACHED` and fail rather than approximating the legacy state.
+- Phase 14 profile/final reference outputs live in durable WorkflowRun context rather than dedicated domain persistence/artifact records.
+- The generic Task model has no `COMPLETED_WITH_LIMITATIONS`; exhausted reference iterations use `MAX_ITERATIONS_REACHED` and fail.
+- Normalized routing records require `ObservableSupervisorKernel`; the stable base kernel remains unchanged. The current wrapper records selected routes, while a no-provider base path remains auditable through authoritative BLOCKED Task/Workflow state rather than a normalized RoutingRecord.
+- Normalized audit appends are not one universal transaction with all authoritative state changes.
+- Metrics are derived snapshots, not persisted time-series telemetry; distributed tracing/exporters are not implemented.
+- Core Validation currently emits 14 `ResourceWarning` warnings from temporary SQLite connections in existing tests; warnings are visible and not suppressed.
+- GitHub Actions still emits the Node 20 deprecation warning for checkout/setup-python actions while executing them with Node 24.
 
 ## Phase Gate
 
-Phase 15 may proceed from this baseline. Phase 16 must not be marked active until Phase 15 exit criteria are validated by Core Validation and a completion checkpoint is committed.
+Phase 16 may proceed from this baseline. It is the final published roadmap phase and must not be marked complete until its exit criteria are validated by Core Validation and a dedicated completion checkpoint is committed.
