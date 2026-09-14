@@ -21,9 +21,20 @@ v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
 Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
 v0.3 Phase 3: ACTIVE
+v0.3 Phase 3 runtime implementation at handoff: NOT STARTED
 v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
+
+## Session Handoff
+
+```text
+Handoff prepared: 2026-09-14
+Planned continuation: 2026-09-16 09:00 Europe/Kyiv
+Startup document: docs/PROJECT_HANDOFF_2026_09_16.md
+```
+
+The work pause is for the owner-requested transition to a new chat. It does not change Phase 3 authorization and does not create a new runtime baseline.
 
 ## Current Runtime Baseline
 
@@ -40,7 +51,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline.
+Documentation-only closure/handoff commits after this implementation SHA do not replace the validated runtime baseline.
 
 ## Implemented Platform Baseline
 
@@ -72,6 +83,8 @@ SQLite physical schema remains version `2`; Phase 2 uses the generic versioned r
 - deterministic no-invocation behavior for DENY and REQUIRE_APPROVAL;
 - replaceable concrete tool/provider adapters.
 
+Phase 3 is authorized but its runtime implementation was intentionally left unstarted at the 2026-09-14 handoff. The new chat must first follow `docs/PROJECT_HANDOFF_2026_09_16.md` and verify `main` against the frozen Phase 2 implementation baseline.
+
 Phase 3 completion requires its gateway enforcement tests plus the full cumulative Core Validation suite on the committed implementation baseline.
 
 ## Public Baseline
@@ -92,14 +105,15 @@ Extension groups:
 
 Start with:
 
+- `docs/PROJECT_HANDOFF_2026_09_16.md`;
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
+- `docs/TEST_MATRIX.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `docs/PERSISTENCE.md`;
 - `docs/AGENT_RUNTIME.md`;
 - `docs/POLICY_AND_PERMISSIONS.md`;
-- `docs/TEST_MATRIX.md`;
 - `docs/CHAT_HANDOFF.md`.
 
 The completed v0.2 roadmap remains archived in `docs/ROADMAP_V0_2_ARCHIVE.md`.
