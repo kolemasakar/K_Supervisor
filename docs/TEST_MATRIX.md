@@ -1,9 +1,9 @@
 # TEST_MATRIX
-Матриця regression-перевірок K_Supervisor за roadmap-фазами та reliability-категоріями.
+Матриця regression-перевірок K_Supervisor за завершеним ROADMAP v0.2 та reliability-категоріями.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
-Updated through: Phase 16
+Roadmap baseline: COMPLETE (Phase 0-16)
 
 ## Matrix
 
@@ -26,41 +26,30 @@ Updated through: Phase 16
 | 15 | structured audit, routing records, metrics, failure injection, recovery, performance | `test_phase15_*` |
 | 16 | public config/CLI, extension discovery/activation, examples, package build/install | `test_phase16_*` + CI package smoke |
 
-Phase 0 is documentation/architecture acceptance and is covered by subsequent contract and integration tests rather than a dedicated runtime test family.
+Phase 0 is documentation/architecture acceptance and is covered by later contract and integration tests rather than a dedicated runtime family.
 
-## Reliability and Quality Gates
+## Quality Gates
 
 ```text
 structured audit        -> project, intervention, notification, routing, release tests
 integration             -> Supervisor + registries + runtime + SQLite boundaries
-failure injection       -> deterministic notification transport failure
+failure injection       -> deterministic transport failure
 recovery                -> SQLite close/reopen with durable records
 referential integrity   -> ReliabilityValidator
 metrics                 -> project and per-agent derived metrics
 performance             -> 10,000 provider selections < 3 seconds
 coverage                -> branch-aware total coverage >= 80%
-syntax                  -> compileall, including Phase 16 examples
+syntax                  -> compileall including examples
 packaging               -> isolated wheel build
 installation            -> wheel install outside source checkout
 public interface smoke  -> k-supervisor version + import ksupervisor outside checkout
 ```
 
-## Phase 16 Extension Matrix
-
-```text
-agent extension group            -> discovery + activation test
-capability extension group       -> discovery + activation test
-project-template extension group -> discovery + activation + example registration test
-adapter extension group          -> discovery + activation test
-configuration                    -> JSON/TOML load tests
-CLI                              -> version + validate-config tests
-example workflow                 -> WorkflowDefinition validation test
-```
-
-## Current Baseline
+## Final Validated Baseline
 
 ```text
 Core Validation run: 34793901147
+Implementation SHA: 755be348fc3376ad5c09f178a3268b0fb7685107
 Python: 3.13.15
 pytest: 88 passed
 branch-aware coverage: 85.46%
@@ -71,6 +60,6 @@ public interface smoke: PASS
 
 ## CI Rule
 
-`Core Validation` is the authoritative automated regression workflow. A phase completion checkpoint must not claim PASS unless the full suite completes successfully on the committed implementation baseline.
+`Core Validation` remains the authoritative automated regression workflow. Any future roadmap phase must not claim completion without a successful full suite on the committed implementation baseline.
 
-Quality thresholds are baselines, not permanent ceilings. They must not be silently weakened without updating this document and the relevant checkpoint/compatibility documentation.
+The ROADMAP v0.2 quality baseline is closed but remains the minimum compatibility/regression floor for subsequent roadmap revisions unless an explicit approved change states otherwise.
