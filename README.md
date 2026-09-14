@@ -18,20 +18,21 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
-Current approved phase: v0.3 Phase 2 - Durable Control State
-v0.3 Phase 2: ACTIVE
-v0.3 Phase 3-8: PLANNED / NOT STARTED
+v0.3 Phase 2 - Durable Control State: COMPLETE
+Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
+v0.3 Phase 3: ACTIVE
+v0.3 Phase 4-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Runtime Baseline
 
 ```text
-Core Validation run: 34804141156
-Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34808287772
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
 Python: 3.13.15
-pytest: 95 passed
-branch-aware coverage: 85.66%
+pytest: 103 passed
+branch-aware coverage: 85.23%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -39,35 +40,39 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
+Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline.
+
 ## Implemented Platform Baseline
 
 The completed v0.2 platform includes Project lifecycle/control plane, machine contracts, persistence/registry, Human Intervention and email notifications, dynamic Agent/Capability routing, Supervisor orchestration, Project Factory, Workflow Engine, Agent Runtime, Scheduler, tools/providers/provisioning boundaries, policy/approval, Agent Factory, Release Manager, reference Research-Critic composition, observability/reliability, packaging, CLI/config and extension discovery.
 
-ROADMAP v0.3 Phase 1 additionally hardened persistence with:
+ROADMAP v0.3 Phase 1 additionally hardened persistence with explicit SQLite lifecycle ownership, transaction/rollback behavior, schema version 2 with tested v1 -> v2 migration, supported local concurrent writers and a permanent `ResourceWarning` CI gate.
 
-- explicit SQLite connection ownership and context-manager support;
-- idempotent initialize/close;
-- explicit transaction commit/rollback behavior;
-- SQLite schema version 2;
-- tested v1 -> v2 migration with data preservation;
-- fail-closed handling of unsupported schema versions;
-- WAL/busy-timeout support and concurrent-writer tests;
-- CI enforcement that treats `ResourceWarning` as an error;
-- zero known SQLite ResourceWarning leaks;
-- preserved restart/recovery and public compatibility.
+ROADMAP v0.3 Phase 2 additionally delivered:
 
-## Active Phase 2
+- persistence-backed runtime/command idempotency on the standard AgentRuntimeDispatcher path;
+- project-scoped restart-safe successful-result replay;
+- restart-safe notification duplicate suppression from durable delivery history;
+- approval expiry and revocation with policy enforcement and durable audit;
+- richer Project recovery aggregation for Human Intervention, notifications, approvals, runtime idempotency, policy/audit/routing/release-validation state;
+- atomic state+audit persistence for core Project, Human Intervention and Approval control mutations;
+- verified interrupted Task/WorkflowRun + owner-wait reconstruction and resume after restart.
 
-`v0.3 Phase 2 - Durable Control State` targets:
+SQLite physical schema remains version `2`; Phase 2 uses the generic versioned resources/events storage layout.
 
-- durable runtime/command idempotency;
-- durable notification/execution deduplication state for standard platform paths;
-- approval expiry and revocation;
-- richer authoritative recovery reconstruction;
-- stronger atomicity between required control state and audit records;
-- restart-safe active workflow/project control state.
+## Active Phase 3
 
-Phase 2 completion requires phase-specific recovery/replay/approval/atomicity tests plus the full permanent Core Validation suite on the committed implementation baseline.
+`v0.3 Phase 3 - Centralized Side-Effect Enforcement` targets:
+
+- one standard Tool Gateway / side-effect execution gateway;
+- normalized side-effect invocation/result contracts;
+- policy, tool-operation and protected-reference checks before external invocation;
+- correlation and idempotency propagation;
+- durable normalized side-effect attempt/outcome audit;
+- deterministic no-invocation behavior for DENY and REQUIRE_APPROVAL;
+- replaceable concrete tool/provider adapters.
+
+Phase 3 completion requires its gateway enforcement tests plus the full cumulative Core Validation suite on the committed implementation baseline.
 
 ## Public Baseline
 
@@ -90,8 +95,10 @@ Start with:
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `docs/PERSISTENCE.md`;
+- `docs/AGENT_RUNTIME.md`;
+- `docs/POLICY_AND_PERMISSIONS.md`;
 - `docs/TEST_MATRIX.md`;
 - `docs/CHAT_HANDOFF.md`.
 
