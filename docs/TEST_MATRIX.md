@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 2.2
+Version: 2.3
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 7 IN PROGRESS; Phase 8 NOT ACTIVATED
+Current phase: v0.3 Phase 7 COMPLETE; Phase 8 NOT ACTIVATED
 Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
 
 ## v0.2 Regression Matrix
@@ -41,7 +41,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | COMPLETE |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | COMPLETE |
-| 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | IN PROGRESS |
+| 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | COMPLETE |
 | 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
 
 ## Phase 1 Evidence
@@ -318,7 +318,7 @@ tests/test_v03_phase7_ci_governance.py
 
 Verified behavior includes pre-import rejection of ungoverned, disabled, untrusted, unverified or incompatible installed extensions; durable governance after restart; exact identity/version trust binding; predecessor entry-point compatibility; PR-triggered Core Validation; and updated action runtimes.
 
-Phase 7 completion remains blocked only by repository-level `main` protection / required-status-check administration, not by runtime or CI test failure.
+Phase 7 repository governance is verified complete through repository ruleset `main-core-validation` (id `23556478`): target `~DEFAULT_BRANCH`, enforcement `active`, PR required, `Core Validation` required from GitHub Actions, deletion/non-fast-forward blocked, no bypass actors, strict/up-to-date check disabled. Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md`.
 
 ## OpenAI Plugin Compatibility Regression
 

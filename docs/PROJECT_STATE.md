@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor під час ROADMAP v0.3 Phase 7.
+Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 7.
 
-Version: 2.8
+Version: 2.9
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -15,7 +15,7 @@ Package: k-supervisor==0.1.0
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0-6: COMPLETE
-v0.3 Phase 7: IN PROGRESS — implementation validated; repository governance blocker remains
+v0.3 Phase 7: COMPLETE
 v0.3 Phase 8: PLANNED / NOT ACTIVATED
 Phase 17: NOT DEFINED
 ```
@@ -57,7 +57,7 @@ Delivered Phase 7 runtime/CI work includes:
 - trust invalidation on identity-bearing metadata change;
 - PR-triggered authoritative `Core Validation` and current GitHub Actions runtime lines.
 
-Phase 7 is not COMPLETE because repository-level `main` protection and a required `Core Validation` rule have not been applied/verified through an administrative repository interface available to this session.
+Phase 7 repository governance is now complete: active repository ruleset `main-core-validation` (ruleset id `23556478`) targets the default branch, requires pull requests and the GitHub Actions check `Core Validation`, blocks deletion and non-fast-forward pushes, has no bypass actors, and does not require branches to be up to date before merge.
 
 ## OpenAI Platform Compatibility Correction
 
@@ -84,12 +84,12 @@ SQLite physical schema remains version `2`. Neither Phase 7 nor the Plugin compa
 ## Current Roadmap Boundary
 
 ```text
-Phase 7: IN PROGRESS
-Remaining blocker: repository-level main protection + required Core Validation rule
+Phase 7: COMPLETE
+Completion checkpoint: PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md
 Phase 8: PLANNED / NOT ACTIVATED
 ```
 
-The existing Phase 7 handoff remains historical start context; current state is authoritative in this document, `ROADMAP.md` and `TEST_MATRIX.md`.
+The existing Phase 7 handoff remains historical start context. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md`, this document, `ROADMAP.md` and `TEST_MATRIX.md` are authoritative for Phase 7 closure. Phase 8 is not activated.
 
 ## Public Compatibility Baseline
 
