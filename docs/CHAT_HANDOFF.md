@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
-Канонічний компактний контекст для продовження роботи над K_Supervisor після завершення ROADMAP v0.3 Phase 3.
+Канонічний компактний контекст для продовження роботи над K_Supervisor після завершення ROADMAP v0.3 Phase 4.
 
-Version: 1.6
+Version: 1.7
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -13,6 +13,8 @@ Read from `main` in this order:
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md
+docs/PHASE4_PREIMPLEMENTATION_AUDIT.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md
 docs/PHASE3_PREIMPLEMENTATION_AUDIT.md
 docs/HARDENING_BASELINE_V0_3.md
@@ -44,21 +46,21 @@ v0.3 Phase 0: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
 v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
-v0.3 Phase 4 - Runtime Isolation & Cancellation: PLANNED / NOT STARTED
+v0.3 Phase 4 - Runtime Isolation & Cancellation: COMPLETE
 v0.3 Phase 5-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-No Phase 4 runtime implementation is authorized by the Phase 3 completion checkpoint itself.
+Phase 4 runtime implementation is complete. Phase 5 is not activated by this checkpoint.
 
 ## Current Runtime Baseline
 
 ```text
-Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
-Core Validation run: 35086116020
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
+Core Validation run: 35092932820
 Python: 3.13.15
-pytest: 111 passed
-branch-aware coverage: 85.45%
+pytest: 117 passed
+branch-aware coverage: 85.13%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -84,9 +86,23 @@ Phase 3 delivered:
 
 Authoritative completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
+## Completed Phase 4
+
+Phase 4 delivered:
+
+- `ProcessRuntimeAdapter` as the hardened isolated execution option;
+- one worker process per invocation using a multiprocessing start method supported by the host;
+- parent-enforced timeout and cancellation with bounded escalation;
+- contained worker crashes and normalized failure semantics;
+- runtime usage/error propagation across the process boundary;
+- cleanup verification showing no surviving worker on supported terminal paths;
+- compatibility retention for `InProcessRuntimeAdapter` and existing runtime callers.
+
+Authoritative completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`.
+
 ## Next Planned Work
 
-The next roadmap item is `v0.3 Phase 4 - Runtime Isolation & Cancellation`, but it remains PLANNED / NOT STARTED. Before any Phase 4 runtime change, establish an explicit Phase 4 start instruction and perform its phase-specific pre-implementation review required by the roadmap/test matrix.
+The next roadmap item is `v0.3 Phase 5 - Service/API Boundary`, status PLANNED / NOT STARTED. Before any Phase 5 runtime change, establish an explicit Phase 5 start instruction and perform its phase-specific pre-implementation review required by the roadmap/test matrix.
 
 ## Preserved Architecture
 
@@ -121,4 +137,4 @@ Entry-point groups:
 
 ## Working Rule
 
-Implement only the explicitly active roadmap phase. Phase 4 must remain untouched until separately activated.
+Implement only the explicitly active roadmap phase. Phase 5 must remain untouched until separately activated.

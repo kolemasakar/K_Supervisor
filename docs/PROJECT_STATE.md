@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 3.
+Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 4.
 
-Version: 2.3
+Version: 2.4
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -18,19 +18,20 @@ v0.3 Phase 0: COMPLETE
 v0.3 Phase 1: COMPLETE
 v0.3 Phase 2: COMPLETE
 v0.3 Phase 3: COMPLETE
-v0.3 Phase 4-8: PLANNED / NOT STARTED
-Phase 4 activation in this checkpoint: NO
+v0.3 Phase 4: COMPLETE
+v0.3 Phase 5-8: PLANNED / NOT STARTED
+Phase 5 activation in this checkpoint: NO
 Phase 17: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Core Validation run: 35086116020
-Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35092932820
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
 Python: 3.13.15
-pytest: 111 passed
-branch-aware coverage: 85.45%
+pytest: 117 passed
+branch-aware coverage: 85.13%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -38,7 +39,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-The validated implementation baseline passed Core Validation run `35086116020` on the candidate branch before `main` was fast-forwarded.
+The validated implementation baseline passed Core Validation run `35092932820` on the candidate branch before `main` was fast-forwarded.
 
 ## Phase 3 Completion
 
@@ -67,14 +68,33 @@ Authoritative records:
 
 SQLite schema remains version 2 because Phase 3 uses the existing generic resources/events storage layout.
 
+## Phase 4 Completion
+
+ROADMAP v0.3 Phase 4 hardened the runtime execution boundary:
+
+- `ProcessRuntimeAdapter` runs each supported isolated invocation in a dedicated worker process;
+- parent-side timeout/cancellation owns escalation and bounded cleanup;
+- unresponsive workers are terminated rather than being allowed to continue after timeout/cancel return;
+- abnormal worker exit is contained and normalized as a runtime worker failure;
+- child runtime errors and resource-limit failures preserve normalized `AgentRunResult` semantics;
+- a failed/crashed worker does not poison a subsequent run;
+- `InProcessRuntimeAdapter` remains available for compatibility and trusted scenarios.
+
+Authoritative Phase 4 records:
+
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
+- `PHASE4_PREIMPLEMENTATION_AUDIT.md`;
+- `AGENT_RUNTIME.md`;
+- `TEST_MATRIX.md`.
+
 ## Next Planned Phase
 
 ```text
-v0.3 Phase 4 - Runtime Isolation & Cancellation
+v0.3 Phase 5 - Service/API Boundary
 Status: PLANNED / NOT STARTED
 ```
 
-Phase 4 is not activated by the Phase 3 completion checkpoint. No Phase 4 runtime work is included in the current baseline.
+Phase 5 is not activated by the Phase 4 completion checkpoint. No Phase 5 runtime work is included in the current baseline.
 
 ## Historical Handoff
 
@@ -93,7 +113,7 @@ Extension groups:
   k_supervisor.adapters
 ```
 
-`COMPATIBILITY_POLICY.md` remains authoritative. Phase 3 preserved the distribution/CLI/config/entry-point baseline.
+`COMPATIBILITY_POLICY.md` remains authoritative. Phase 4 preserved the distribution/CLI/config/entry-point baseline.
 
 ## Preserved Architecture Rules
 
@@ -105,11 +125,12 @@ Completed:
 
 - Phase 1 persistence/resource hygiene;
 - Phase 2 durable control state;
-- Phase 3 centralized side-effect enforcement.
+- Phase 3 centralized side-effect enforcement;
+- Phase 4 runtime isolation and bounded cancellation/termination.
 
-Remaining roadmap work starts only when the next phase is explicitly activated. Phase 4-8 remain PLANNED / NOT STARTED.
+Remaining roadmap work starts only when the next phase is explicitly activated. Phase 5-8 remain PLANNED / NOT STARTED.
 
-Distributed consensus, cross-region event sourcing and universal provider-level exactly-once guarantees remain explicitly deferred rather than hidden Phase 3 failures.
+Distributed consensus, cross-region event sourcing and universal provider-level exactly-once guarantees remain explicitly deferred rather than hidden Phase 4 failures.
 
 ## Validation Rule
 

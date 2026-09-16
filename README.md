@@ -20,23 +20,23 @@ v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
 v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
-v0.3 Phase 4 - Runtime Isolation & Cancellation: PLANNED / NOT STARTED
+v0.3 Phase 4 - Runtime Isolation & Cancellation: COMPLETE
 v0.3 Phase 5-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-Phase 3 is complete. `docs/PROJECT_HANDOFF_2026_09_16.md` is preserved as the historical Phase 3 startup checkpoint. The next roadmap phase, Phase 4, remains PLANNED / NOT STARTED and is not activated by this checkpoint.
+Phase 4 is complete. `docs/PROJECT_HANDOFF_2026_09_16.md` remains a historical Phase 3 startup checkpoint. The next roadmap phase, Phase 5, remains PLANNED / NOT STARTED.
 
 ## Current Runtime Baseline
 
 ```text
-Core Validation run: 35086116020
-Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35092932820
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
 Python: 3.13.15
-pytest: 111 passed
-branch-aware coverage: 85.45%
+pytest: 117 passed
+branch-aware coverage: 85.13%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -78,7 +78,18 @@ SQLite physical schema remains version `2`; Phase 2 uses the generic versioned r
 
 Phase 3 passed its gateway enforcement tests and the full cumulative Core Validation suite on implementation SHA `6868d595b66a6ada91a2e6f2f62866721d0f3560`. Completion evidence is recorded in `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
-Phase 4 remains PLANNED / NOT STARTED.
+Phase 4 is complete on implementation SHA `34049f601fc8116aa12ee15023f1dc20bc25901a`. Completion evidence is recorded in `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`.
+
+## Completed Phase 4
+
+`v0.3 Phase 4 - Runtime Isolation & Cancellation` delivered:
+
+- `ProcessRuntimeAdapter` with one isolated worker process per invocation;
+- parent-enforced timeout and cancellation with bounded escalation from cooperative signal to terminate/kill;
+- contained worker-process crashes and normalized runtime failure semantics;
+- child runtime-limit/error normalization across the process boundary;
+- bounded worker cleanup with no live worker left on supported completion paths;
+- compatibility preservation for `InProcessRuntimeAdapter` and the existing `RuntimeAdapter` contract.
 
 ## Public Baseline
 
@@ -102,6 +113,7 @@ Start with:
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `docs/PERSISTENCE.md`;

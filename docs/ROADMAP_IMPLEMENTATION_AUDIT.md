@@ -1,7 +1,7 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
 Звірка фактичної реалізації K_Supervisor із завершеним ROADMAP v0.2 та посилання на активний successor ROADMAP v0.3.
 
-Version: 2.1
+Version: 2.2
 Status: COMPLETE
 Date: 2026-09-16
 Primary audited scope: ROADMAP v0.2 Phase 0-16
@@ -65,7 +65,7 @@ v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
 v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
-v0.3 Phase 4 - Runtime Isolation & Cancellation: PLANNED / NOT STARTED
+v0.3 Phase 4 - Runtime Isolation & Cancellation: COMPLETE
 v0.3 Phase 5-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
@@ -124,6 +124,27 @@ Phase 3 completion record:
 
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
+### v0.3 Phase 4 validated runtime baseline
+
+```text
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
+Core Validation run: 35092932820
+Python: 3.13.15
+pytest: 117 passed
+branch-aware coverage: 85.13%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Phase 4 delivered process-isolated agent execution, parent-enforced bounded timeout/cancellation escalation, worker crash containment and normalized cross-process runtime errors while retaining the existing in-process compatibility path.
+
+Phase 4 completion record:
+
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`.
+
 Current supporting contracts:
 
 - `PERSISTENCE.md`;
@@ -139,6 +160,7 @@ Current supporting contracts:
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
 - `ROADMAP.md`;
 - `PROJECT_STATE.md`;
 - `TEST_MATRIX.md`.

@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 1.8
+Version: 1.9
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 3 COMPLETE; v0.3 Phase 4 PLANNED
-Phase 3 state: COMPLETE on validated implementation SHA 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Current phase: v0.3 Phase 4 COMPLETE; v0.3 Phase 5 PLANNED
+Phase 4 state: COMPLETE on validated implementation SHA 34049f601fc8116aa12ee15023f1dc20bc25901a
 
 ## v0.2 Regression Matrix
 
@@ -38,7 +38,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | COMPLETE |
 | 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | COMPLETE |
 | 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | COMPLETE |
-| 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | PLANNED |
+| 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | COMPLETE |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
 | 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | PLANNED |
@@ -156,7 +156,44 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`. Phase 4 remains PLANNED / NOT STARTED.
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
+
+## Phase 4 Evidence
+
+Phase 4 pre-implementation audit: `PHASE4_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 4 implementation tests:
+
+```text
+tests/test_v03_phase4_runtime_isolation.py
+```
+
+Verified behaviors:
+
+- successful invocation executes in a distinct worker process and preserves usage/correlation;
+- unresponsive worker timeout is bounded and leaves no active worker;
+- cancellation of an unresponsive worker escalates and returns `CANCELLED` within a bounded interval;
+- abnormal worker exit is contained and normalized as `WORKER_CRASH`;
+- runtime-limit errors preserve their normalized status/code/category across the process boundary;
+- a worker failure does not poison the next isolated run;
+- all completed v0.2 + v0.3 Phase 0-3 regression tests remain green.
+
+Authoritative Phase 4 completion baseline:
+
+```text
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
+Core Validation run: 35092932820
+Python: 3.13.15
+pytest: 117 passed
+branch-aware coverage: 85.13%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`. Phase 5 remains PLANNED / NOT STARTED.
 
 ## Permanent Quality Gates
 
@@ -180,11 +217,11 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 35086116020
-Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35092932820
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
 Python: 3.13.15
-pytest: 111 passed
-branch-aware coverage: 85.45%
+pytest: 117 passed
+branch-aware coverage: 85.13%
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS

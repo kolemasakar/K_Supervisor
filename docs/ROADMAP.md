@@ -6,8 +6,8 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 3 COMPLETE; v0.3 Phase 4 PLANNED
-Phase 3 implementation resumed: 2026-09-16
+Current phase: v0.3 Phase 4 COMPLETE; v0.3 Phase 5 PLANNED
+Phase 4 implementation completed: 2026-09-16
 
 ## Program Objective
 
@@ -23,13 +23,13 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 1 | Persistence & Resource Hygiene | COMPLETE |
 | v0.3 Phase 2 | Durable Control State | COMPLETE |
 | v0.3 Phase 3 | Centralized Side-Effect Enforcement | COMPLETE |
-| v0.3 Phase 4 | Runtime Isolation & Cancellation | PLANNED |
+| v0.3 Phase 4 | Runtime Isolation & Cancellation | COMPLETE |
 | v0.3 Phase 5 | Service/API Boundary | PLANNED |
 | v0.3 Phase 6 | Production Observability | PLANNED |
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-Phase 3 resumed on 2026-09-16 under the canonical continuation instructions in `PROJECT_HANDOFF_2026_09_16.md` and is now COMPLETE on the validated implementation baseline. Phase 4 remains PLANNED / NOT STARTED.
+Phase 4 is COMPLETE on the validated implementation baseline. Phase 5 remains PLANNED / NOT STARTED.
 
 ## Completed Phase 0
 
@@ -138,7 +138,37 @@ Exit criteria:
 
 Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
 
-Next roadmap phase: `v0.3 Phase 4 - Runtime Isolation & Cancellation`, status `PLANNED / NOT STARTED`. Phase 3 completion does not activate Phase 4.
+Successor Phase 4 is now complete. Phase 5 remains PLANNED / NOT STARTED and is not activated by Phase 4 completion.
+
+## Completed Phase 4 - Runtime Isolation & Cancellation
+
+Goal: replace cooperative-only runtime termination as the sole hardened path with an isolated worker boundary that the parent can terminate within bounded intervals.
+
+Validated baseline:
+
+```text
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
+Core Validation run: 35092932820
+Python: 3.13.15
+pytest: 117 passed
+branch-aware coverage: 85.13%
+Core Validation: PASS
+```
+
+Delivered a replaceable `ProcessRuntimeAdapter`, parent-enforced timeout/cancellation escalation, bounded worker cleanup, worker-crash containment and normalized cross-process runtime errors while preserving the in-process compatibility adapter and existing Supervisor/Workflow contracts.
+
+Required Phase 4 tests cover isolated execution, unresponsive timeout, cancellation escalation, abnormal worker exit, runtime-limit normalization and recovery on the next run. Full predecessor regressions remain green.
+
+Evidence:
+
+- `PHASE4_PREIMPLEMENTATION_AUDIT.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
+- `AGENT_RUNTIME.md`;
+- `TEST_MATRIX.md`.
+
+Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
+
+Next roadmap phase: `v0.3 Phase 5 - Service/API Boundary`, status `PLANNED / NOT STARTED`.
 
 ## Validation Rule
 

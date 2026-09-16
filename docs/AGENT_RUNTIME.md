@@ -1,10 +1,10 @@
 # AGENT_RUNTIME
 Опис runtime-рівня K_Supervisor для контрольованого виконання агентів, normalized failures та durable idempotency.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
-Baseline: v0.3 Phase 2 COMPLETE
-Date: 2026-09-14
+Baseline: v0.3 Phase 4 COMPLETE
+Date: 2026-09-16
 
 ## Purpose
 
@@ -27,7 +27,7 @@ Supervisor and Workflow Engine remain independent of concrete execution mechanis
 
 ## Runtime Adapter
 
-`RuntimeAdapter` is the replaceable execution boundary. `InProcessRuntimeAdapter` remains the current reference implementation. Future process/container/remote adapters can implement the same contract.
+`RuntimeAdapter` is the replaceable execution boundary. `InProcessRuntimeAdapter` remains available for compatibility and trusted development scenarios. `ProcessRuntimeAdapter` provides the Phase 4 hardened execution path with one isolated worker process per invocation and parent-enforced termination.
 
 ## Execution Control
 
@@ -50,7 +50,7 @@ Retry orchestration remains owned by Supervisor.
 
 Timeout/cancellation and handler failures are normalized to `AgentRunResult`; raw execution exceptions do not cross the runtime boundary. Returned results are correlation-validated before acceptance.
 
-The current in-process adapter still uses cooperative cancellation and cannot forcibly terminate arbitrary Python code. Strong process isolation belongs to v0.3 Phase 4.
+The in-process adapter remains cooperative. `ProcessRuntimeAdapter` enforces timeout/cancellation in the parent process: cooperative cancellation is requested first, then termination and kill escalation use bounded joins. Worker exit without a valid result envelope is normalized as a runtime worker crash.
 
 ## Runtime Idempotency
 
@@ -104,7 +104,7 @@ A later successful run resets the consecutive-failure counter.
 
 Handlers may report controlled resource consumption through `ExecutionControl.consume(...)`. Exceeding configured limits produces normalized `BLOCKED` policy failures. Usage is attached to `AgentRunResult.metrics.runtime_usage`.
 
-This remains cooperative accounting. Phase 3 centralizes external side-effect enforcement; Phase 4 strengthens runtime isolation/cancellation.
+Resource accounting remains cooperative inside the handler. Phase 3 centralizes external side-effect enforcement; Phase 4 adds parent-enforced process isolation, bounded cancellation and crash containment.
 
 ## Recovery Boundary
 
@@ -114,22 +114,22 @@ Workflow/Task/Human Intervention durable records determine restart recovery and 
 
 ## Validation
 
-Authoritative v0.3 Phase 2 baseline:
+Authoritative v0.3 Phase 4 baseline:
 
 ```text
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
-Core Validation run: 34808287772
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
+Core Validation run: 35092932820
 Python: 3.13.15
-pytest: 103 passed
-branch-aware coverage: 85.23%
+pytest: 117 passed
+branch-aware coverage: 85.13%
 ResourceWarning gate: PASS
 ```
 
-Phase 2 verifies durable replay across SQLite restart, project isolation, notification/execution duplicate protection and interrupted workflow/project resume. Full predecessor runtime timeout/cancellation/limit/health regressions remain green.
+Phase 4 verifies isolated success/correlation, parent-enforced timeout, cancellation escalation, worker crash containment, runtime-limit normalization and successful recovery on the next run. All predecessor runtime/idempotency/health regressions remain green.
 
 ## Current Limits
 
-- in-process cancellation remains cooperative;
-- no OS/process isolation yet;
+- `InProcessRuntimeAdapter` cancellation remains cooperative by design;
+- `ProcessRuntimeAdapter` is process isolation, not a universal sandbox for arbitrary untrusted Python;
 - durable idempotency prevents supported duplicate platform execution but does not claim universal exactly-once external effects;
-- centralized external side-effect enforcement belongs to Phase 3.
+- distributed worker clusters/remote execution are outside Phase 4 scope.
