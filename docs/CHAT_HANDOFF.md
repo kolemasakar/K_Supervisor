@@ -1,13 +1,14 @@
 # CHAT_HANDOFF
 Canonical compact context for continuing K_Supervisor after ROADMAP v0.3 completion.
 
-Version: 3.0
+Version: 3.1
 Status: ACTIVE
 Date: 2026-09-16
 
 ## Start Here
 
 ```text
+docs/PROJECT_HANDOFF_2026_09_16_ROADMAP_V0_4.md
 docs/PROJECT_STATE.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md
@@ -58,4 +59,4 @@ Ruleset `main-core-validation` (id `23556478`) is active on the default branch, 
 
 ## Working Rule
 
-ROADMAP v0.3 is closed. Do not create or implement a Phase 9 implicitly. Any new implementation cycle must start by explicitly approving a new roadmap/revision, then establishing its baseline audit, scope, test matrix and exit criteria before runtime changes.
+ROADMAP v0.3 is closed. `PROJECT_HANDOFF_2026_09_16_ROADMAP_V0_4.md` is the canonical new-chat transition record. Do not create or implement a Phase 9 implicitly. The next chat must verify the final v0.3 baselines, perform the post-v0.3 baseline/product-gap audit, draft a new roadmap/revision and obtain explicit approval before runtime changes.
