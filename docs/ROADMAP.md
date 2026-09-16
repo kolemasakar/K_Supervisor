@@ -6,10 +6,11 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 6 COMPLETE; v0.3 Phase 7 PLANNED
+Current phase: v0.3 Phase 7 IN PROGRESS
 Phase 6 implementation completed: 2026-09-16
-Phase 7 transition handoff prepared: 2026-09-16
-Phase 7 activation: NO
+Phase 7 implementation validated: 2026-09-16
+Phase 7 completion blocker: repository-level main protection / required status-check governance
+Phase 8 activation: NO
 
 ## Program Objective
 
@@ -28,10 +29,10 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | COMPLETE |
 | v0.3 Phase 5 | Service/API Boundary | COMPLETE |
 | v0.3 Phase 6 | Production Observability | COMPLETE |
-| v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
+| v0.3 Phase 7 | Extension Trust & Platform Governance | IN PROGRESS |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-Phase 6 is COMPLETE on the validated implementation baseline. Phase 7 remains PLANNED / NOT STARTED.
+Phase 6 is COMPLETE. Phase 7 runtime/CI implementation is validated but Phase 7 remains IN PROGRESS until repository-level `main` protection and required `Core Validation` governance are applied and verified. Phase 8 remains PLANNED / NOT ACTIVATED.
 
 ## Completed Phase 0
 
@@ -140,7 +141,7 @@ Exit criteria:
 
 Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
 
-Successor Phases 4-6 are complete. Phase 7 remains PLANNED / NOT STARTED and is not activated by Phase 6 completion.
+Successor Phases 4-6 are complete. Phase 7 is IN PROGRESS with validated runtime/CI implementation; repository-level governance remains the completion blocker.
 
 ## Completed Phase 4 - Runtime Isolation & Cancellation
 
@@ -170,7 +171,7 @@ Evidence:
 
 Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
 
-Phase 4 remains complete. Phase 7 is the next planned roadmap phase after completed Phases 5-6; current handoff is `PROJECT_HANDOFF_2026_09_16_PHASE_7.md`.
+Phase 4 remains complete. Phase 7 is active and IN PROGRESS after completed Phases 5-6; `PROJECT_HANDOFF_2026_09_16_PHASE_7.md` is preserved as its start handoff.
 
 ## Completed Phase 5 - Service/API Boundary
 
@@ -202,7 +203,7 @@ Evidence:
 
 Phase 5 does not claim production hosting/TLS, external identity-provider integration, health/readiness/SLO telemetry, distributed tracing, extension trust governance or distributed persistence. Those remain outside Phase 5.
 
-Next roadmap phase: `v0.3 Phase 7 - Extension Trust & Platform Governance`, status `PLANNED / NOT STARTED`.
+Current roadmap phase: `v0.3 Phase 7 - Extension Trust & Platform Governance`, status `IN PROGRESS`.
 
 ## Validation Rule
 
@@ -252,4 +253,37 @@ Evidence:
 
 Phase 6 does not add third-party telemetry SDK dependencies, remote collectors, production hosting, deployment qualification or extension trust governance.
 
-Next roadmap phase: `v0.3 Phase 7 - Extension Trust & Platform Governance`, status `PLANNED / NOT STARTED`.
+Current roadmap phase: `v0.3 Phase 7 - Extension Trust & Platform Governance`, status `IN PROGRESS`.
+
+## Phase 7 - Extension Trust & Platform Governance — IN PROGRESS
+
+Pre-implementation audit: `PHASE7_PREIMPLEMENTATION_AUDIT.md`.
+
+Validated implementation evidence:
+
+```text
+Implementation SHA: 64c84ad6e6633c047416aca270d979e4ba5d36a0
+Core Validation run: 35121930140
+Core Validation: PASS
+```
+
+Implemented: fail-closed installed-extension authorization before import, exact identity/provenance/version compatibility binding, durable trust/enable/signature state, identity-change invalidation, PR-triggered Core Validation, and current GitHub Actions runtimes.
+
+Remaining Phase 7 exit blocker: repository-level protection of `main` with authoritative `Core Validation` required before merge. The currently available repository connector does not expose the required administration write. Phase 7 therefore remains IN PROGRESS rather than COMPLETE.
+
+## OpenAI Custom GPT -> Plugin Compatibility Amendment
+
+Current validated `main` additionally includes a backward-compatible ChatGPT release-target correction:
+
+```text
+Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
+Core Validation run: 35124348659
+Python: 3.13.15
+pytest: 149 passed
+branch-aware coverage: 85.63%
+Core Validation: PASS
+```
+
+New ChatGPT-facing projects prefer `CHATGPT_PLUGIN`; `GPT_STORE` remains a legacy compatibility/migration target. Custom Actions are not treated as automatically migrated, selected-model coupling is not introduced, and external sharing/publication remains owner/workspace controlled. Evidence: `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md`.
+
+This amendment does not activate Phase 8.
