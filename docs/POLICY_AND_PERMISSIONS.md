@@ -192,17 +192,22 @@ A blocked gateway decision is not an adapter failure: `DENY` and `REQUIRE_APPROV
 
 ## 15. Validation Baseline
 
-Authoritative Phase 2 baseline:
+Authoritative Phase 3 baseline:
 
 ```text
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
-Core Validation run: 34808287772
-pytest: 103 passed
-branch-aware coverage: 85.23%
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
+Python: 3.13.15
+pytest: 111 passed
+branch-aware coverage: 85.45%
+coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
 ```
 
-Approval expiry, revocation, audit persistence and restart recovery are covered by v0.3 Phase 2 tests while all Phase 11 predecessor policy tests remain green.
+Phase 3 gateway enforcement, approval/no-invocation behavior, Tool permissions, protected references, idempotency and normalized audit are covered by `tests/test_v03_phase3_side_effect_gateway.py`; all predecessor policy tests remain green. Completion evidence is in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
 ## 16. Current Non-Goals
 

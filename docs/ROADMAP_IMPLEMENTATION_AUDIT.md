@@ -1,9 +1,9 @@
 # ROADMAP_IMPLEMENTATION_AUDIT
 Звірка фактичної реалізації K_Supervisor із завершеним ROADMAP v0.2 та посилання на активний successor ROADMAP v0.3.
 
-Version: 2.0
+Version: 2.1
 Status: COMPLETE
-Date: 2026-09-14
+Date: 2026-09-16
 Primary audited scope: ROADMAP v0.2 Phase 0-16
 
 ## v0.2 Audit Result
@@ -64,9 +64,9 @@ ROADMAP v0.3 was explicitly approved on 2026-09-14 and uses revision-local Phase
 v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
-Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
-v0.3 Phase 3: ACTIVE
-v0.3 Phase 4-8: PLANNED / NOT STARTED
+v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
+v0.3 Phase 4 - Runtime Isolation & Cancellation: PLANNED / NOT STARTED
+v0.3 Phase 5-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
@@ -103,6 +103,27 @@ Phase 2 completion record:
 
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`.
 
+### v0.3 Phase 3 validated runtime baseline
+
+```text
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
+Python: 3.13.15
+pytest: 111 passed
+branch-aware coverage: 85.45%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Phase 3 delivered centralized Tool/Provider side-effect enforcement for standard Agent/Workflow paths, mandatory policy/permission/protected-reference checks before invocation, durable idempotency and normalized side-effect audit while preserving replaceable adapter boundaries.
+
+Phase 3 completion record:
+
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
+
 Current supporting contracts:
 
 - `PERSISTENCE.md`;
@@ -117,6 +138,7 @@ Current supporting contracts:
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`;
 - `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
 - `ROADMAP.md`;
 - `PROJECT_STATE.md`;
 - `TEST_MATRIX.md`.

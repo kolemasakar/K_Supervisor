@@ -19,31 +19,24 @@ ROADMAP v0.3: ACTIVE
 v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
 v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
-Current approved phase: v0.3 Phase 3 - Centralized Side-Effect Enforcement
-v0.3 Phase 3: ACTIVE
-v0.3 Phase 3 runtime implementation at handoff: NOT STARTED
-v0.3 Phase 4-8: PLANNED / NOT STARTED
+v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
+v0.3 Phase 4 - Runtime Isolation & Cancellation: PLANNED / NOT STARTED
+v0.3 Phase 5-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-## Session Handoff
+## Current Continuation State
 
-```text
-Handoff prepared: 2026-09-14
-Planned continuation: 2026-09-16 09:00 Europe/Kyiv
-Startup document: docs/PROJECT_HANDOFF_2026_09_16.md
-```
-
-The work pause is for the owner-requested transition to a new chat. It does not change Phase 3 authorization and does not create a new runtime baseline.
+Phase 3 is complete. `docs/PROJECT_HANDOFF_2026_09_16.md` is preserved as the historical Phase 3 startup checkpoint. The next roadmap phase, Phase 4, remains PLANNED / NOT STARTED and is not activated by this checkpoint.
 
 ## Current Runtime Baseline
 
 ```text
-Core Validation run: 34808287772
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 35086116020
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
 Python: 3.13.15
-pytest: 103 passed
-branch-aware coverage: 85.23%
+pytest: 111 passed
+branch-aware coverage: 85.45%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -51,7 +44,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation-only closure/handoff commits after this implementation SHA do not replace the validated runtime baseline.
+Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline.
 
 ## Implemented Platform Baseline
 
@@ -71,9 +64,9 @@ ROADMAP v0.3 Phase 2 additionally delivered:
 
 SQLite physical schema remains version `2`; Phase 2 uses the generic versioned resources/events storage layout.
 
-## Active Phase 3
+## Completed Phase 3
 
-`v0.3 Phase 3 - Centralized Side-Effect Enforcement` targets:
+`v0.3 Phase 3 - Centralized Side-Effect Enforcement` delivered:
 
 - one standard Tool Gateway / side-effect execution gateway;
 - normalized side-effect invocation/result contracts;
@@ -83,9 +76,9 @@ SQLite physical schema remains version `2`; Phase 2 uses the generic versioned r
 - deterministic no-invocation behavior for DENY and REQUIRE_APPROVAL;
 - replaceable concrete tool/provider adapters.
 
-Phase 3 is authorized but its runtime implementation was intentionally left unstarted at the 2026-09-14 handoff. The new chat must first follow `docs/PROJECT_HANDOFF_2026_09_16.md` and verify `main` against the frozen Phase 2 implementation baseline.
+Phase 3 passed its gateway enforcement tests and the full cumulative Core Validation suite on implementation SHA `6868d595b66a6ada91a2e6f2f62866721d0f3560`. Completion evidence is recorded in `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
-Phase 3 completion requires its gateway enforcement tests plus the full cumulative Core Validation suite on the committed implementation baseline.
+Phase 4 remains PLANNED / NOT STARTED.
 
 ## Public Baseline
 
@@ -105,11 +98,11 @@ Extension groups:
 
 Start with:
 
-- `docs/PROJECT_HANDOFF_2026_09_16.md`;
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `docs/PERSISTENCE.md`;
 - `docs/AGENT_RUNTIME.md`;

@@ -1,9 +1,9 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 2.
+Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 3.
 
-Version: 2.2
+Version: 2.3
 Status: ACTIVE
-Date: 2026-09-14
+Date: 2026-09-16
 
 ## Current Baseline
 
@@ -17,33 +17,20 @@ ROADMAP v0.3: ACTIVE
 v0.3 Phase 0: COMPLETE
 v0.3 Phase 1: COMPLETE
 v0.3 Phase 2: COMPLETE
-Current approved phase: v0.3 Phase 3
-v0.3 Phase 3 status: ACTIVE
-v0.3 Phase 3 runtime implementation at handoff: NOT STARTED
+v0.3 Phase 3: COMPLETE
 v0.3 Phase 4-8: PLANNED / NOT STARTED
+Phase 4 activation in this checkpoint: NO
 Phase 17: NOT DEFINED
 ```
-
-## Session Handoff
-
-Owner-directed project handoff is prepared for continuation in a new chat.
-
-```text
-Handoff prepared: 2026-09-14
-Planned resume: 2026-09-16 09:00 Europe/Kyiv
-Canonical handoff: docs/PROJECT_HANDOFF_2026_09_16.md
-```
-
-The temporary work pause does not change roadmap authorization: Phase 3 remains the current approved phase, but no Phase 3 runtime implementation was intentionally started before the handoff.
 
 ## Current Validated Runtime Baseline
 
 ```text
-Core Validation run: 34808287772
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 35086116020
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
 Python: 3.13.15
-pytest: 103 passed
-branch-aware coverage: 85.23%
+pytest: 111 passed
+branch-aware coverage: 85.45%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -51,47 +38,47 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation-only closure/handoff commits after this implementation SHA do not replace the validated runtime baseline unless a later implementation checkpoint explicitly states otherwise.
+The validated implementation baseline passed Core Validation run `35086116020` on the candidate branch before `main` was fast-forwarded.
 
-## Phase 2 Completion
+## Phase 3 Completion
 
-ROADMAP v0.3 Phase 2 completed durable control-state hardening:
+ROADMAP v0.3 Phase 3 completed centralized Agent/Workflow Tool/Provider side-effect enforcement:
 
-- persistence-backed runtime/command idempotency for the standard AgentRuntimeDispatcher path;
-- project-scoped idempotency and restart-safe successful-result replay;
-- durable notification delivery history used for restart-safe duplicate suppression;
-- approval `EXPIRED` and `REVOKED` lifecycle states with policy enforcement;
-- durable approval lifecycle audit;
-- expanded `ProjectRecoverySnapshot` for Human Intervention, notifications/delivery, approvals, runtime idempotency, policy, audit, routing and release-validation state;
-- Project lifecycle/operational changes, ProjectSpec activation, Human Intervention and Approval control writes use atomic state+audit persistence helpers where required;
-- interrupted waiting project/task/workflow state reconstructs after restart and can resume through the normal Human Intervention path.
+- `SideEffectGateway` is the standard Tool/Provider execution boundary for material Agent/Workflow side effects;
+- policy is re-evaluated immediately before the adapter boundary;
+- DENY and REQUIRE_APPROVAL never invoke the external adapter through the standard path;
+- least-privilege Tool operations and protected references are enforced before invocation/use;
+- project/request/agent/capability and idempotency correlation is propagated to adapters and durable records;
+- side-effect attempts and outcomes are durably persisted and audited;
+- supported repeated invocations replay authoritative results without unintended duplicate adapter calls;
+- idempotency input conflicts fail closed;
+- Tool/Provider failures are normalized and auditable;
+- side-effect execution state participates in `ProjectRecoverySnapshot`;
+- concrete Tool/Provider adapters remain replaceable.
 
 Authoritative records:
 
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
+- `PHASE3_PREIMPLEMENTATION_AUDIT.md`;
+- `INTEGRATIONS.md`;
 - `PERSISTENCE.md`;
-- `AGENT_RUNTIME.md`;
-- `POLICY_AND_PERMISSIONS.md`.
+- `POLICY_AND_PERMISSIONS.md`;
+- `TEST_MATRIX.md`.
 
-SQLite schema remains version 2 because Phase 2 control records use the existing generic resources/events storage layout.
+SQLite schema remains version 2 because Phase 3 uses the existing generic resources/events storage layout.
 
-## Active Phase 3 Scope
+## Next Planned Phase
 
-`v0.3 Phase 3 - Centralized Side-Effect Enforcement` is authorized for implementation.
+```text
+v0.3 Phase 4 - Runtime Isolation & Cancellation
+Status: PLANNED / NOT STARTED
+```
 
-Primary scope:
+Phase 4 is not activated by the Phase 3 completion checkpoint. No Phase 4 runtime work is included in the current baseline.
 
-- centralized Tool Gateway / side-effect execution gateway for standard platform paths;
-- normalized invocation/result contract;
-- policy, tool-permission and protected-reference enforcement before external invocation;
-- correlation and idempotency propagation;
-- normalized durable side-effect audit;
-- deterministic no-invocation semantics for denied or approval-required requests;
-- replaceable concrete tool/provider adapters.
+## Historical Handoff
 
-Phase 3 may not be marked COMPLETE until its phase-specific tests and the full cumulative regression suite pass on its committed implementation baseline.
-
-The new chat must first follow `PROJECT_HANDOFF_2026_09_16.md`, verify `main` against the frozen Phase 2 implementation baseline, and perform a pre-implementation audit of current side-effect paths before writing Phase 3 runtime code.
+`PROJECT_HANDOFF_2026_09_16.md` remains the frozen historical start point used to resume and audit Phase 3. Its pre-implementation statements describe the state at handoff and are not the current runtime state.
 
 ## Public Compatibility Baseline
 
@@ -106,22 +93,23 @@ Extension groups:
   k_supervisor.adapters
 ```
 
-`COMPATIBILITY_POLICY.md` remains authoritative. Phase 2 preserved the distribution/CLI/config/entry-point baseline.
+`COMPATIBILITY_POLICY.md` remains authoritative. Phase 3 preserved the distribution/CLI/config/entry-point baseline.
 
 ## Preserved Architecture Rules
 
-Project remains the top-level managed unit; Agent and Capability remain separate; workflows remain capability-oriented; Supervisor owns orchestration; authoritative state is platform-owned; Human Intervention and owner publication remain explicit; email remains the primary required owner notification transport; policy/permission checks precede material external actions; K-Research & Critic remains reference-only.
+Project remains the top-level managed unit; Agent and Capability remain separate; workflows remain capability-oriented; Supervisor owns orchestration; authoritative state is platform-owned; Human Intervention and owner publication remain explicit; email remains the primary required owner notification transport; protected access remains reference-based; policy/permission checks precede material external Agent/Workflow side effects; K-Research & Critic remains reference-only.
 
 ## Remaining Hardening Debt
 
 Completed:
 
 - Phase 1 persistence/resource hygiene;
-- Phase 2 durable control state.
+- Phase 2 durable control state;
+- Phase 3 centralized side-effect enforcement.
 
-Remaining roadmap ownership begins with centralized side-effect enforcement, followed by runtime isolation, service/API boundary, production observability, extension/repository governance and end-to-end operational qualification.
+Remaining roadmap work starts only when the next phase is explicitly activated. Phase 4-8 remain PLANNED / NOT STARTED.
 
-Distributed consensus, cross-region event sourcing and universal provider-level exactly-once guarantees remain explicitly deferred rather than hidden Phase 2 failures.
+Distributed consensus, cross-region event sourcing and universal provider-level exactly-once guarantees remain explicitly deferred rather than hidden Phase 3 failures.
 
 ## Validation Rule
 

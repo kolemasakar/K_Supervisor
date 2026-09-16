@@ -164,12 +164,25 @@ Phase 10 integration coverage verifies:
 - repository provisioning through the existing repository adapter;
 - provider-backed database/service provisioning with access references only.
 
-Committed baseline:
+Committed Phase 10 baseline:
 
 ```text
 Python 3.13.15
 59 tests PASS
 ```
+
+Authoritative v0.3 Phase 3 gateway baseline:
+
+```text
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
+Python: 3.13.15
+pytest: 111 passed
+branch-aware coverage: 85.45%
+ResourceWarning / compileall / wheel build-install / CLI-import smoke: PASS
+```
+
+Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
 ## 12. Historical Phase 10 Deferrals
 

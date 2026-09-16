@@ -4,8 +4,8 @@
 Version: 1.8
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 3
-Phase 3 state: implementation candidate prepared 2026-09-16; completion requires Core Validation PASS on committed SHA
+Current phase: v0.3 Phase 3 COMPLETE; v0.3 Phase 4 PLANNED
+Phase 3 state: COMPLETE on validated implementation SHA 6868d595b66a6ada91a2e6f2f62866721d0f3560
 
 ## v0.2 Regression Matrix
 
@@ -37,7 +37,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 0 | predecessor traceability, compatibility review, full v0.2 regression evidence, documentation consistency | COMPLETE |
 | 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | COMPLETE |
 | 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | COMPLETE |
-| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | ACTIVE / VALIDATION PENDING |
+| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | COMPLETE |
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | PLANNED |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
@@ -96,7 +96,7 @@ Verified behaviors:
 
 Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`.
 
-## Phase 3 Start Gate
+## Phase 3 Start Gate - SATISFIED
 
 Before any Phase 3 runtime code is changed in the new chat:
 
@@ -141,7 +141,22 @@ ResourceWarning gate: PASS
 local interpreter: Python 3.12.3 (non-authoritative)
 ```
 
-The authoritative Phase 3 completion baseline still requires the repository `Core Validation` workflow on Python 3.13 for the committed implementation SHA, including compileall, isolated wheel build/install and public CLI/import smoke.
+Authoritative Phase 3 completion baseline:
+
+```text
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
+Python: 3.13.15
+pytest: 111 passed
+branch-aware coverage: 85.45%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`. Phase 4 remains PLANNED / NOT STARTED.
 
 ## Permanent Quality Gates
 
@@ -165,13 +180,14 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 34808287772
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 35086116020
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
 Python: 3.13.15
-pytest: 103 passed
-branch-aware coverage: 85.23%
+pytest: 111 passed
+branch-aware coverage: 85.45%
 coverage gate: PASS
 ResourceWarning gate: PASS
+compileall including examples: PASS
 wheel build/install: PASS
 public interface smoke: PASS
 ```

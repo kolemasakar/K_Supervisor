@@ -6,7 +6,7 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 3
+Current phase: v0.3 Phase 3 COMPLETE; v0.3 Phase 4 PLANNED
 Phase 3 implementation resumed: 2026-09-16
 
 ## Program Objective
@@ -22,14 +22,14 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 0 | Baseline Freeze & Hardening Contract | COMPLETE |
 | v0.3 Phase 1 | Persistence & Resource Hygiene | COMPLETE |
 | v0.3 Phase 2 | Durable Control State | COMPLETE |
-| v0.3 Phase 3 | Centralized Side-Effect Enforcement | ACTIVE |
+| v0.3 Phase 3 | Centralized Side-Effect Enforcement | COMPLETE |
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | PLANNED |
 | v0.3 Phase 5 | Service/API Boundary | PLANNED |
 | v0.3 Phase 6 | Production Observability | PLANNED |
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-Phase 3 implementation resumed on 2026-09-16 under the canonical continuation instructions in `PROJECT_HANDOFF_2026_09_16.md`. The phase remains ACTIVE until the committed implementation passes Core Validation.
+Phase 3 resumed on 2026-09-16 under the canonical continuation instructions in `PROJECT_HANDOFF_2026_09_16.md` and is now COMPLETE on the validated implementation baseline. Phase 4 remains PLANNED / NOT STARTED.
 
 ## Completed Phase 0
 
@@ -84,7 +84,7 @@ Evidence:
 - `AGENT_RUNTIME.md`;
 - `POLICY_AND_PERMISSIONS.md`.
 
-## Active Phase 3 - Centralized Side-Effect Enforcement
+## Completed Phase 3 - Centralized Side-Effect Enforcement
 
 Goal: establish one standard platform boundary for material external side effects so policy, permissions, protected references, idempotency and audit are enforced before invocation rather than relying on each caller to compose them correctly.
 
@@ -93,11 +93,16 @@ Implementation state:
 ```text
 Authorized: YES
 Pre-implementation audit: COMPLETE
-Runtime implementation: IMPLEMENTATION CANDIDATE PREPARED
-Core Validation on committed implementation SHA: PENDING
+Runtime implementation: COMPLETE
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
+Python: 3.13.15
+pytest: 111 passed
+branch-aware coverage: 85.45%
+Core Validation: PASS
 ```
 
-Pre-implementation evidence: `PHASE3_PREIMPLEMENTATION_AUDIT.md`. Phase 3 remains ACTIVE until the committed implementation passes the complete Core Validation workflow.
+Pre-implementation evidence: `PHASE3_PREIMPLEMENTATION_AUDIT.md`. Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
 Required deliverables:
 
@@ -132,6 +137,8 @@ Exit criteria:
 - Core Validation PASS on the committed Phase 3 implementation baseline.
 
 Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
+
+Next roadmap phase: `v0.3 Phase 4 - Runtime Isolation & Cancellation`, status `PLANNED / NOT STARTED`. Phase 3 completion does not activate Phase 4.
 
 ## Validation Rule
 

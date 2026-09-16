@@ -187,14 +187,14 @@ Distributed database coordination, cross-region replication and mandatory Postgr
 
 ## 12. Validation Baseline
 
-The predecessor authoritative v0.3 Phase 2 baseline remains:
+Authoritative v0.3 Phase 3 runtime baseline:
 
 ```text
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
-Core Validation run: 34808287772
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
 Python: 3.13.15
-pytest: 103 passed
-branch-aware coverage: 85.23%
+pytest: 111 passed
+branch-aware coverage: 85.45%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
@@ -202,7 +202,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Phase-specific Phase 2 evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`. Phase 3 completion evidence is recorded only after Core Validation passes on its committed implementation SHA.
+Phase 2 predecessor evidence remains in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`. Phase 3 completion evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
 
 ## 13. Current Boundary
 
