@@ -1,9 +1,9 @@
 # PERSISTENCE
 Документ описує persistence boundary, SQLite hardening, durable control state, Project Registry та recovery semantics K_Supervisor.
 
-Version: 1.7
+Version: 1.8
 Status: ACTIVE
-Baseline: v0.3 Phase 6 implementation
+Baseline: v0.3 Phase 8 IN PROGRESS
 Date: 2026-09-16
 
 ## 1. Purpose
@@ -219,3 +219,18 @@ Universal distributed transactions, multi-node consensus, distributed databases 
 ## 14. Phase 6 Telemetry Persistence
 
 `TelemetryRecord` is append-only operational telemetry stored in the existing generic `events` layout as `telemetry_record`. It carries project-scoped correlation and redacted attributes, survives reopen/restart and is reconstructed through `ProjectRecoverySnapshot.telemetry_records`. Phase 6 requires no physical schema migration; schema version remains `2`.
+
+## 15. Phase 8 Operational Backup, Restore and Upgrade Qualification
+
+`SQLiteOperationalManager` is the supported persistence-owned operational safety boundary. It does not change the authoritative physical schema version, which remains `2`.
+
+Supported operations:
+
+- `backup_to()` uses the SQLite online backup API and verifies the resulting database before atomic placement at the requested backup path;
+- `verify_backup()` validates SHA-256 when supplied, SQLite `integrity_check`, and persistence schema metadata;
+- `qualify_upgrade()` migrates a temporary copy through the normal `SQLitePersistenceStore` initialization path and proves the source backup remains byte-for-byte unchanged;
+- `restore_from()` requires the authoritative store to be closed, qualifies/migrates a temporary candidate before replacement, performs atomic replacement, and keeps rollback copies of the prior SQLite database family for replacement/post-verify failure recovery.
+
+Unknown/future schemas and corrupt candidates fail closed. A restore candidate never becomes authoritative merely because it is a syntactically valid SQLite file.
+
+Operational procedure and rollback guidance are maintained in `OPERATIONS_RUNBOOK.md`.
