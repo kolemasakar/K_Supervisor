@@ -22,22 +22,23 @@ v0.3 Phase 2 - Durable Control State: COMPLETE
 v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
 v0.3 Phase 4 - Runtime Isolation & Cancellation: COMPLETE
 v0.3 Phase 5 - Service/API Boundary: COMPLETE
-v0.3 Phase 6-8: PLANNED / NOT STARTED
+v0.3 Phase 6 - Production Observability: COMPLETE
+v0.3 Phase 7-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-Phase 5 is complete. `docs/PROJECT_HANDOFF_2026_09_16_PHASE_6.md` is the current new-chat transition handoff. Earlier Phase 3/5 handoffs are historical startup checkpoints. Phase 6 remains PLANNED / NOT STARTED and is not activated by preparing the handoff.
+Phase 6 is complete. `docs/PROJECT_HANDOFF_2026_09_16_PHASE_7.md` is the current transition handoff. Phase 7 remains PLANNED / NOT STARTED.
 
 ## Current Runtime Baseline
 
 ```text
-Core Validation run: 35103131762
-Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35110298258
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
 Python workflow: 3.13
-pytest: 129 passed
-branch-aware coverage: 85.34%
+pytest: 136 passed
+branch-aware coverage: 85.52%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples/service_api: PASS
@@ -54,6 +55,7 @@ Documentation-only closure commits after this implementation SHA do not replace 
 - Phase 3: centralized SideEffectGateway with policy/permission/protected-reference enforcement, idempotency and durable attempt/outcome audit.
 - Phase 4: process-isolated runtime option with parent-owned timeout/cancellation escalation, worker-crash containment and bounded cleanup.
 - Phase 5: versioned `/api/v1` Project read/lifecycle service boundary with injected authentication, independent scopes, normalized errors and durable restart-safe mutation idempotency.
+- Phase 6: persisted operational telemetry, correlation, redaction, deterministic timeline, exporter projections and service health/readiness foundations.
 
 Phase 5 does not expose ProjectSpec administration, workflow/runtime execution, release/publication mutation, Tool/Provider side effects or secret contents. Those authoritative boundaries remain separate.
 
@@ -80,7 +82,10 @@ Start with:
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
-- `docs/PROJECT_HANDOFF_2026_09_16_PHASE_6.md`;
+- `docs/PROJECT_HANDOFF_2026_09_16_PHASE_7.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`;
+- `docs/PHASE6_PREIMPLEMENTATION_AUDIT.md`;
+- `docs/OBSERVABILITY_AND_RELIABILITY.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`;
 - `docs/PHASE5_PREIMPLEMENTATION_AUDIT.md`;
 - `docs/SERVICE_API.md`;

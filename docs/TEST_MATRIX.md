@@ -4,7 +4,7 @@
 Version: 2.1
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 5 COMPLETE; v0.3 Phase 6 PLANNED
+Current phase: v0.3 Phase 6 COMPLETE; v0.3 Phase 7 PLANNED
 Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
 
 ## v0.2 Regression Matrix
@@ -40,7 +40,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | COMPLETE |
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | COMPLETE |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
-| 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
+| 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | COMPLETE |
 | 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | PLANNED |
 | 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
 
@@ -236,7 +236,7 @@ public CLI/import smoke: PASS
 
 Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`.
 
-## Phase 6 Start Gate - REQUIRED / NOT YET SATISFIED
+## Phase 6 Start Gate - SATISFIED
 
 Before any Phase 6 runtime code is changed in the next chat:
 
@@ -249,6 +249,56 @@ Before any Phase 6 runtime code is changed in the next chat:
 - keep Phase 7 extension governance and Phase 8 operational-readiness work outside Phase 6 scope.
 
 Phase 6 required verification remains exactly the approved matrix scope: correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness and redaction.
+
+## Phase 6 Evidence
+
+Phase 6 pre-implementation audit: `PHASE6_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 6 implementation tests:
+
+```text
+tests/test_v03_phase6_observability.py
+```
+
+Verified behaviors:
+
+- runtime/service correlation is persisted on supported instrumented paths;
+- idempotent runtime replay emits complete terminal telemetry;
+- telemetry survives persistence reopen/restart and is included in project recovery;
+- deterministic telemetry timeline reconstruction;
+- recursive redaction before persistence and export;
+- Prometheus/OpenTelemetry-compatible projection contracts;
+- service health/readiness is component-based and independent of Project lifecycle state;
+- telemetry failure is non-fatal to business execution;
+- all completed v0.2 + v0.3 Phase 0-5 regressions remain green.
+
+Authoritative Phase 6 completion baseline:
+
+```text
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
+Core Validation run: 35110298258
+Python workflow: 3.13
+pytest: 136 passed
+branch-aware coverage: 85.52%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples/service_api: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`.
+
+## Phase 7 Start Gate - REQUIRED / NOT YET SATISFIED
+
+Before any Phase 7 runtime code is changed:
+
+- read `PROJECT_HANDOFF_2026_09_16_PHASE_7.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `TEST_MATRIX.md` and `HARDENING_BASELINE_V0_3.md`;
+- verify current `main` is a descendant of Phase 6 completion and distinguish documentation-only closure commits after runtime SHA `8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883`;
+- inventory extension discovery/activation, compatibility metadata, trust/provenance state and CI governance;
+- define trust/signature/activation policy before implementation;
+- preserve all completed v0.2 + v0.3 Phase 0-6 tests as cumulative regression requirements;
+- keep Phase 8 deployment/operational-readiness qualification outside Phase 7 scope.
 
 ## Permanent Quality Gates
 
@@ -272,11 +322,11 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 35103131762
-Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35110298258
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
 Python workflow: 3.13
-pytest: 129 passed
-branch-aware coverage: 85.34%
+pytest: 136 passed
+branch-aware coverage: 85.52%
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS

@@ -1,9 +1,9 @@
 # PERSISTENCE
 Документ описує persistence boundary, SQLite hardening, durable control state, Project Registry та recovery semantics K_Supervisor.
 
-Version: 1.6
+Version: 1.7
 Status: ACTIVE
-Baseline: v0.3 Phase 5 implementation
+Baseline: v0.3 Phase 6 implementation
 Date: 2026-09-16
 
 ## 1. Purpose
@@ -173,6 +173,7 @@ NotificationDeliveryAttempts
 ApprovalRecords
 RuntimeIdempotencyRecords
 ServiceMutationRecords
+TelemetryRecords
 SideEffectExecutionRecords
 PolicyDecisions
 AuditEvents
@@ -192,14 +193,14 @@ Distributed database coordination, cross-region replication and mandatory Postgr
 
 ## 12. Validation Baseline
 
-Authoritative v0.3 Phase 5 runtime baseline:
+Authoritative v0.3 Phase 6 runtime baseline:
 
 ```text
-Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
-Core Validation run: 35103131762
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
+Core Validation run: 35110298258
 Python workflow: 3.13
-pytest: 129 passed
-branch-aware coverage: 85.34%
+pytest: 136 passed
+branch-aware coverage: 85.52%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall including examples/service_api: PASS
@@ -214,3 +215,7 @@ Phase 5 persistence verification covers durable service mutation replay, restart
 Phase 5 adds restart-visible Service/API mutation receipts without introducing a second project state store or new physical schema. A completed receipt is authoritative for same-key replay; a different request signature under the same deterministic scope fails closed. The receipt is committed in the same supported SQLite transaction as the underlying Project transition/audit.
 
 Universal distributed transactions, multi-node consensus, distributed databases and exactly-once guarantees across external systems remain outside this persistence boundary.
+
+## 14. Phase 6 Telemetry Persistence
+
+`TelemetryRecord` is append-only operational telemetry stored in the existing generic `events` layout as `telemetry_record`. It carries project-scoped correlation and redacted attributes, survives reopen/restart and is reconstructed through `ProjectRecoverySnapshot.telemetry_records`. Phase 6 requires no physical schema migration; schema version remains `2`.

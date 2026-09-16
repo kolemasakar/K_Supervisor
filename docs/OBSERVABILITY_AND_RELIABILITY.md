@@ -1,95 +1,55 @@
 # OBSERVABILITY_AND_RELIABILITY
-Канонічний baseline спостережуваності, аудиту, reliability-перевірок і CI quality gates K_Supervisor.
+Production observability and reliability boundary for K_Supervisor.
 
-Version: 1.0
+Version: 2.0
 Status: ACTIVE
-Phase: 15
+Baseline: v0.3 Phase 6 COMPLETE
+Date: 2026-09-16
 
-## Purpose
+## Observability Model
 
-Phase 15 makes platform behavior diagnosable without creating a second business-state store. Project, Task, AgentRun, HumanAction, Notification, Release and policy records remain authoritative. Observability adds append-only normalized records and derived views.
+The platform preserves structured audit/routing/release-validation records and now adds append-only operational `TelemetryRecord` events. Audit remains authoritative decision/control history; telemetry is operational instrumentation and does not replace business state.
 
-## Structured Audit
+## Correlation
 
-`AuditEvent` contains:
+Telemetry can carry project, request, task, workflow-run, run, agent, capability, service-operation and correlation identifiers. Runtime instrumentation propagates its existing request/task/workflow/run/agent/capability identities. Service/API instrumentation records project-scoped operation/status context without redesigning API authorization or idempotency.
 
-```text
-audit_event_id
-project_id
-category
-event_type
-occurred_at
-resource_type
-resource_id
-severity
-correlation_id
-details
-```
+## Persistence and Recovery
 
-Audit payloads must contain identifiers and diagnostic state only. Raw credentials, protected access values, notification bodies and private chain-of-thought are not audit payloads.
+Telemetry is stored through `PersistenceStore.append_telemetry_record()` in the generic append-only event layout. SQLite schema remains `2`. `ProjectRecoverySnapshot.telemetry_records` reconstructs project-scoped operational telemetry after reopen/restart.
 
-The current audited boundaries are:
+## Timeline
 
-- ProjectSpec activation and Project lifecycle/operational transitions;
-- HumanAction open, verify and cancel;
-- notification record, suppression, duplicate suppression and delivery outcome;
-- routing decisions through `ObservableSupervisorKernel`;
-- release readiness validation;
-- release publication-required and publication-confirmed target events.
+`TelemetryTimeline` returns deterministic project-scoped order by event time and telemetry identifier. Existing `AuditTimeline` remains separate for audit semantics.
 
-`AuditTimeline` is an ordered view over the append-only audit stream and does not synthesize duplicate copies of authoritative events.
+## Redaction
 
-## Routing Records
+`TelemetryRecorder` recursively redacts recognized secret/token/credential/authorization/cookie fields and `secret://...` values before persistence. Export projections apply the same redaction boundary. Caller input objects are not mutated.
 
-`RoutingRecord` preserves capability requirement, candidate agent IDs, selected agent/version, Task/Workflow correlation and routing outcome. Phase 15 provides `ObservableSupervisorKernel`, a transparent wrapper around the stable Phase 5 kernel. Platform compositions that require normalized routing records use this wrapper; the underlying Supervisor API is unchanged.
+## Exporter Boundary
 
-## Release Validation Records
+`TelemetryExporter` is SDK-neutral. `PrometheusProjectionExporter` and `OpenTelemetryProjectionExporter` provide deterministic projection structures compatible with future concrete integrations. Phase 6 does not introduce third-party SDK/network collector dependencies.
 
-Every normal `TargetPreparer` readiness check appends `ReleaseValidationRecord` with passed and failed check IDs. Publication handoff and target publication also emit release audit events.
+## Health and Readiness
 
-## Metrics
+`ServiceHealthEvaluator` evaluates explicit required/optional component probes. Liveness/readiness is separate from Project lifecycle and operational state. Optional component degradation does not fail readiness; a failed required probe does.
 
-`MetricsCollector` derives a snapshot from persisted platform state. Current project metrics include transition, task, agent-run, routing, intervention, notification/delivery, release-validation and audit counts. Per-agent metrics include run outcome counts and success rate.
+## Failure Semantics
 
-Metrics are derived and are not a second source of truth.
+Optional Runtime and Service/API telemetry hooks fail non-fatally. Observability failure does not convert otherwise valid business execution into a new failure path.
 
-## Reliability Validation
+## Existing Reliability Baseline
 
-`ReliabilityValidator` checks cross-record integrity for:
+`MetricsCollector`, `ReliabilityValidator`, failure injection, structured audit and release/routing records remain supported. Phase 6 extends rather than replaces those predecessor surfaces.
 
-- AgentRun -> Task and WorkflowRun;
-- RoutingRecord -> Task and WorkflowRun;
-- selected routing agent membership in recorded candidates;
-- NotificationDeliveryAttempt -> NotificationEvent;
-- ReleaseTarget -> Release;
-- ReleaseValidationRecord -> Release and ReleaseTarget.
-
-The validator reports deterministic errors rather than repairing state implicitly.
-
-## Failure Injection and Recovery
-
-`DeterministicFailureInjector` provides call-number-based failure injection for integration tests. Phase 15 uses it to exercise notification-delivery failure behavior.
-
-SQLite restart tests verify that observability event records, including release validation evidence, survive process restart.
-
-## CI Quality Gates
-
-Core Validation now includes:
+## Validation Baseline
 
 ```text
-Python 3.13
-compileall syntax gate
-full pytest regression suite
-branch-aware pytest-cov measurement
-minimum total coverage: 80%
-coverage.xml generation
-routing performance baseline test
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
+Core Validation run: 35110298258
+pytest: 136 passed
+branch-aware coverage: 85.52%
+Core Validation: PASS
 ```
 
-The performance baseline requires 10,000 deterministic provider selections to complete within 3 seconds on the GitHub-hosted CI runner. It is a regression guard, not a throughput guarantee.
-
-## Reliability Boundaries
-
-Normalized audit appends are adjacent to authoritative business writes but are not one cross-component atomic transaction in every path. The authoritative lifecycle, intervention, notification, policy and release records remain the recovery source if a normalized audit append fails.
-
-Phase 15 does not add distributed tracing, OpenTelemetry/Prometheus exporters, remote log aggregation, SLO management, production latency histograms or distributed event streaming. These remain future extensions behind the current contracts.
+Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`.

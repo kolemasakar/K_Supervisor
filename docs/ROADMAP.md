@@ -6,10 +6,10 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 5 COMPLETE; v0.3 Phase 6 PLANNED
-Phase 5 implementation completed: 2026-09-16
-Phase 6 transition handoff prepared: 2026-09-16
-Phase 6 activation: NO
+Current phase: v0.3 Phase 6 COMPLETE; v0.3 Phase 7 PLANNED
+Phase 6 implementation completed: 2026-09-16
+Phase 7 transition handoff prepared: 2026-09-16
+Phase 7 activation: NO
 
 ## Program Objective
 
@@ -27,11 +27,11 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 3 | Centralized Side-Effect Enforcement | COMPLETE |
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | COMPLETE |
 | v0.3 Phase 5 | Service/API Boundary | COMPLETE |
-| v0.3 Phase 6 | Production Observability | PLANNED |
+| v0.3 Phase 6 | Production Observability | COMPLETE |
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-Phase 5 is COMPLETE on the validated implementation baseline. Phase 6 remains PLANNED / NOT STARTED.
+Phase 6 is COMPLETE on the validated implementation baseline. Phase 7 remains PLANNED / NOT STARTED.
 
 ## Completed Phase 0
 
@@ -140,7 +140,7 @@ Exit criteria:
 
 Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
 
-Successor Phase 4 and Phase 5 are now complete. Phase 6 remains PLANNED / NOT STARTED and is not activated by Phase 5 completion.
+Successor Phases 4-6 are complete. Phase 7 remains PLANNED / NOT STARTED and is not activated by Phase 6 completion.
 
 ## Completed Phase 4 - Runtime Isolation & Cancellation
 
@@ -170,7 +170,7 @@ Evidence:
 
 Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
 
-Next roadmap phase: `v0.3 Phase 6 - Production Observability`, status `PLANNED / NOT STARTED`. The new-chat handoff is prepared in `PROJECT_HANDOFF_2026_09_16_PHASE_6.md`; handoff preparation does not activate Phase 6.
+Phase 4 remains complete. Phase 7 is the next planned roadmap phase after completed Phases 5-6; current handoff is `PROJECT_HANDOFF_2026_09_16_PHASE_7.md`.
 
 ## Completed Phase 5 - Service/API Boundary
 
@@ -202,7 +202,7 @@ Evidence:
 
 Phase 5 does not claim production hosting/TLS, external identity-provider integration, health/readiness/SLO telemetry, distributed tracing, extension trust governance or distributed persistence. Those remain outside Phase 5.
 
-Next roadmap phase: `v0.3 Phase 6 - Production Observability`, status `PLANNED / NOT STARTED`.
+Next roadmap phase: `v0.3 Phase 7 - Extension Trust & Platform Governance`, status `PLANNED / NOT STARTED`.
 
 ## Validation Rule
 
@@ -224,3 +224,32 @@ v0.2 compatibility regression  PASS
 Project/Task and Agent/Capability remain separate; ProjectSpec approval remains authoritative for material scope; Supervisor remains the orchestration boundary; platform state remains authoritative and persisted; owner-required actions and publication remain explicit; email remains the primary required notification transport; K-Research & Critic remains reference-only.
 
 Detailed debt ownership and hardening constraints are in `HARDENING_BASELINE_V0_3.md`. Required verification is maintained in `TEST_MATRIX.md`. The completed predecessor roadmap is preserved in `ROADMAP_V0_2_ARCHIVE.md`.
+
+## Completed Phase 6 - Production Observability
+
+Goal: establish persisted operational telemetry, correlation, exporter boundaries, redaction and service health/readiness foundations without changing Project lifecycle semantics.
+
+Validated baseline:
+
+```text
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
+Core Validation run: 35110298258
+Python workflow: 3.13
+pytest: 136 passed
+branch-aware coverage: 85.52%
+Core Validation: PASS
+```
+
+Delivered durable `TelemetryRecord` events, deterministic telemetry timeline reconstruction, recursive pre-persistence/export redaction, optional Runtime and Service/API instrumentation, SDK-neutral Prometheus/OpenTelemetry projection contracts, and component-based service health/readiness evaluation. Telemetry is included in `ProjectRecoverySnapshot`; SQLite physical schema remains `2`.
+
+Evidence:
+
+- `PHASE6_PREIMPLEMENTATION_AUDIT.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`;
+- `OBSERVABILITY_AND_RELIABILITY.md`;
+- `PERSISTENCE.md`;
+- `TEST_MATRIX.md`.
+
+Phase 6 does not add third-party telemetry SDK dependencies, remote collectors, production hosting, deployment qualification or extension trust governance.
+
+Next roadmap phase: `v0.3 Phase 7 - Extension Trust & Platform Governance`, status `PLANNED / NOT STARTED`.
