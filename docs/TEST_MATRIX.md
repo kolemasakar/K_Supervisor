@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 2.3
+Version: 2.4
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 7 COMPLETE; Phase 8 NOT ACTIVATED
+Current phase: v0.3 Phase 8 IN PROGRESS
 Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
 
 ## v0.2 Regression Matrix
@@ -42,7 +42,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | COMPLETE |
 | 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | COMPLETE |
-| 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
+| 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | IN PROGRESS |
 
 ## Phase 1 Evidence
 
@@ -339,7 +339,25 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Phase 8 remains PLANNED / NOT ACTIVATED.
+Phase 8 is IN PROGRESS under `PHASE8_PREIMPLEMENTATION_AUDIT.md`.
+
+
+## Phase 8 Start Gate - SATISFIED
+
+`PHASE8_PREIMPLEMENTATION_AUDIT.md` verifies the Phase 7-complete baseline, inventories existing release/recovery/concurrency mechanisms and freezes the implementation boundary before Phase 8 runtime changes.
+
+Required Phase 8 verification:
+
+- online SQLite backup plus integrity/checksum verification;
+- safe restore and failure rollback/no-authoritative-state damage;
+- non-destructive supported/unsupported upgrade qualification;
+- operational release-readiness evidence integration;
+- approved ProjectSpec -> `RELEASE_READY` end-to-end qualification without automatic publication;
+- restart/recovery and owner-intervention continuity;
+- concurrent-project isolation/progress under restart and owner-wait conditions;
+- manual-only owner/environment-gated package-index publication workflow;
+- operational runbook;
+- full cumulative regression suite and protected `Core Validation` PASS.
 
 ## Permanent Quality Gates
 

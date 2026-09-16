@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 3.4
+Version: 3.5
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -10,24 +10,25 @@ Date: 2026-09-16
 1. `VISION.md` - product direction and scope.
 2. `PROJECT_STATE.md` - canonical current implementation/roadmap state.
 3. `ROADMAP.md` - active ROADMAP v0.3 status and phase sequence.
-4. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md` - Phase 7 completion evidence.
-5. `TEST_MATRIX.md` - permanent regression floor and current validation evidence.
-6. `PHASE7_PREIMPLEMENTATION_AUDIT.md` - Phase 7 audit and trust/governance design.
-7. `PROJECT_HANDOFF_2026_09_16_PHASE_7.md` - preserved Phase 7 start handoff.
-8. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - current ChatGPT Plugin release-target compatibility decision.
-9. `RELEASE_MANAGER.md` - release targets and owner/workspace availability boundary.
-10. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
-11. `COMPATIBILITY_POLICY.md` - public compatibility rules.
-12. `HARDENING_BASELINE_V0_3.md` - frozen predecessor baseline and debt assignment.
-13. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
-14. `ARCHITECTURE.md` - control plane and multi-agent core.
-15. `PERSISTENCE.md` - storage and recovery semantics.
-16. `AGENT_RUNTIME.md` - runtime execution control.
-17. `INTEGRATIONS.md` - tools, providers and side-effect gateway.
-18. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
-19. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability boundary.
-20. `SERVICE_API.md` - versioned Service/API contracts.
-21. `ROADMAP_V0_2_ARCHIVE.md` - completed predecessor roadmap snapshot.
+4. `PHASE8_PREIMPLEMENTATION_AUDIT.md` - active Phase 8 operational-readiness audit and implementation boundary.
+5. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md` - Phase 7 completion evidence.
+6. `TEST_MATRIX.md` - permanent regression floor and current validation evidence.
+7. `PHASE7_PREIMPLEMENTATION_AUDIT.md` - Phase 7 audit and trust/governance design.
+8. `PROJECT_HANDOFF_2026_09_16_PHASE_7.md` - preserved Phase 7 start handoff.
+9. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - current ChatGPT Plugin release-target compatibility decision.
+10. `RELEASE_MANAGER.md` - release targets and owner/workspace availability boundary.
+11. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
+12. `COMPATIBILITY_POLICY.md` - public compatibility rules.
+13. `HARDENING_BASELINE_V0_3.md` - frozen predecessor baseline and debt assignment.
+14. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
+15. `ARCHITECTURE.md` - control plane and multi-agent core.
+16. `PERSISTENCE.md` - storage and recovery semantics.
+17. `AGENT_RUNTIME.md` - runtime execution control.
+18. `INTEGRATIONS.md` - tools, providers and side-effect gateway.
+19. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
+20. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability boundary.
+21. `SERVICE_API.md` - versioned Service/API contracts.
+22. `ROADMAP_V0_2_ARCHIVE.md` - completed predecessor roadmap snapshot.
 
 Historical phase checkpoints and startup handoffs remain preserved and are not rewritten to reflect later platform changes.
 
@@ -38,7 +39,7 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0-6: COMPLETE
 v0.3 Phase 7: COMPLETE
-v0.3 Phase 8: PLANNED / NOT ACTIVATED
+v0.3 Phase 8: IN PROGRESS
 Phase 17: NOT DEFINED
 ```
 

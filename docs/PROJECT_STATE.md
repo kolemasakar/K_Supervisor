@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 7.
+Канонічний поточний знімок K_Supervisor під час ROADMAP v0.3 Phase 8.
 
-Version: 2.9
+Version: 3.0
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -16,7 +16,7 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0-6: COMPLETE
 v0.3 Phase 7: COMPLETE
-v0.3 Phase 8: PLANNED / NOT ACTIVATED
+v0.3 Phase 8: IN PROGRESS
 Phase 17: NOT DEFINED
 ```
 
@@ -86,10 +86,11 @@ SQLite physical schema remains version `2`. Neither Phase 7 nor the Plugin compa
 ```text
 Phase 7: COMPLETE
 Completion checkpoint: PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md
-Phase 8: PLANNED / NOT ACTIVATED
+Phase 8: IN PROGRESS
+Pre-implementation audit: PHASE8_PREIMPLEMENTATION_AUDIT.md
 ```
 
-The existing Phase 7 handoff remains historical start context. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md`, this document, `ROADMAP.md` and `TEST_MATRIX.md` are authoritative for Phase 7 closure. Phase 8 is not activated.
+Phase 7 remains complete. Phase 8 is activated by `PHASE8_PREIMPLEMENTATION_AUDIT.md`; current implementation scope and verification are authoritative in that audit, this document, `ROADMAP.md` and `TEST_MATRIX.md`.
 
 ## Public Compatibility Baseline
 
