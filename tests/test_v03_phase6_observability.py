@@ -144,3 +144,31 @@ def test_runtime_emits_full_correlation_and_telemetry_failure_is_nonfatal(tmp_pa
     )
     assert result2.status.value == "SUCCEEDED"
     store.close()
+
+
+def test_runtime_idempotent_replay_emits_completed_telemetry(tmp_path):
+    from models.agent import AgentRunRequest
+    from runtime import InProcessRuntimeAdapter
+    from registry import AgentRegistry, CapabilityRegistry
+    from agents import register_reference_agents
+    from agent_factory import AgentFactory
+
+    with SQLitePersistenceStore(tmp_path / "state.db") as store:
+        capabilities = CapabilityRegistry()
+        agents = AgentRegistry(capabilities)
+        adapter = InProcessRuntimeAdapter()
+        register_reference_agents(AgentFactory(capabilities, agents, adapter))
+        recorder = TelemetryRecorder(store)
+        dispatcher = AgentRuntimeDispatcher(agents, adapter, persistence_store=store, telemetry=recorder)
+        request = AgentRunRequest(
+            request_id="REQ-P6-REPLAY", project_id="P6R", task_id="TASK-P6R",
+            workflow_run_id="WF-P6R", run_id="RUN-P6R", agent_id="reference.research.alpha",
+            capability_id="research.reference", capability_version="1.0.0", operation="run",
+            input={"query": "replay", "sources": ["A"]}, idempotency_key="same",
+        )
+        first = dispatcher.dispatch(request)
+        replay = dispatcher.dispatch(request)
+        assert first.status.value == replay.status.value == "SUCCEEDED"
+        completed = [x for x in store.list_telemetry_records("P6R") if x.event_name == "runtime.dispatch.completed"]
+        assert len(completed) == 2
+        assert completed[-1].attributes["idempotent_replay"] is True

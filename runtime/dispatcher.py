@@ -59,6 +59,12 @@ class AgentRuntimeDispatcher:
             limits = RuntimeLimits.from_request(request.limits)
             replay = self.idempotency.replay(request)
             if replay is not None:
+                self._telemetry(
+                    request,
+                    "runtime.dispatch.completed",
+                    status=replay.status.value,
+                    attributes={"idempotent_replay": True},
+                )
                 return replay
         except Exception as exc:
             result = self._error(request, exc)
