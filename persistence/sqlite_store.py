@@ -8,7 +8,7 @@ from typing import Iterator, TypeVar
 
 from pydantic import BaseModel
 
-from models.agent import AgentRunRequest, AgentRunResult
+from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
 from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
