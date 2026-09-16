@@ -3,7 +3,7 @@
 Контрольна точка активації ROADMAP v0.4 Phase 1 — Production Model Provider & AI Execution.
 
 Version: 1.0
-Status: ACTIVATION CANDIDATE
+Status: ACTIVE
 Roadmap: v0.4
 Phase: 1
 Date: 2026-09-16
@@ -30,6 +30,15 @@ Provider-hosted tools, remote conversation state, background mode, multi-provide
 - normal protected CI is deterministic and credential-free;
 - live external smoke is required for Phase 1 completion but is not an ordinary PR merge dependency.
 
-## Activation Gate
+## Activation Evidence
 
-This checkpoint becomes ACTIVE only after the audit/activation PR passes protected `Core Validation` and merges to `main`. Until that merge, Phase 1 runtime implementation remains unauthorized.
+```text
+Activation PR: #12
+Activation head SHA: b7f42a8051d730b75e48b811d252f711e8177d64
+Activation tree: 2b47efc5aa56157b1877f8ff2b263d338f1dd250
+Core Validation: 35150309758 — PASS
+Merged main SHA: 9d5b0fc9e0ab82fc7e61b1ebe0303b10a051c8b6
+Runtime paths changed: NONE
+```
+
+The activation gate is satisfied. Phase 1 runtime implementation is authorized only within the audited Phase 1 scope; Phases 2-7 remain inactive.

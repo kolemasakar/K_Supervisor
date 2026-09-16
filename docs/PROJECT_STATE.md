@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 0 completion.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 activation.
 
-Version: 4.1
+Version: 4.2
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -62,7 +62,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 is complete. Its protected activation evidence is PR #10 / `Core Validation` `35143639772` / merged main `b559f3a6158566531e2896e91ced817484d6f152`, with no runtime path changes. Phase 1 pre-implementation audit is complete and activation is being committed through protected governance. Runtime changes are authorized only after the activation PR merges; scope is fixed by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`.
+Phase 0 is complete. Its protected activation evidence is PR #10 / `Core Validation` `35143639772` / merged main `b559f3a6158566531e2896e91ced817484d6f152`, with no runtime path changes. Phase 1 pre-implementation audit and protected activation are complete. Runtime implementation is authorized only within `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; Phases 2-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -76,6 +76,19 @@ Runtime path changes: NONE
 ```
 
 Completion checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
+
+## Phase 1 Activation Evidence
+
+```text
+Activation PR: #12
+Activation head: b7f42a8051d730b75e48b811d252f711e8177d64
+Activation tree: 2b47efc5aa56157b1877f8ff2b263d338f1dd250
+Core Validation: 35150309758 — PASS
+Merged main: 9d5b0fc9e0ab82fc7e61b1ebe0303b10a051c8b6
+Runtime path changes: NONE
+```
+
+Audit: `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`. Activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_ACTIVATED.md`.
 
 ## Repository Governance
 
