@@ -1,317 +1,266 @@
 # ROADMAP
 K_Supervisor active development roadmap.
 
-Version: 0.3
-Status: COMPLETE
-Approved: 2026-09-14
-Roadmap start: 2026-09-14
-Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: NONE — ROADMAP v0.3 COMPLETE
-Phase 6 implementation completed: 2026-09-16
-Phase 7 implementation validated: 2026-09-16
-Phase 7 completed: 2026-09-16
-Phase 8 activation: YES
-Phase 8 completed: 2026-09-16
-Roadmap completed: 2026-09-16
+Version: 0.4
+Status: ACTIVE
+Approved: 2026-09-16
+Roadmap start: 2026-09-16
+Predecessor: ROADMAP v0.3 COMPLETE
+Current phase: v0.4 Phase 0 — Baseline Freeze & Operator Product Contract
+Phase 0 activation: YES
+Runtime implementation authorized: NO — Phase 0 is documentation/baseline only
 
 ## Program Objective
 
-Move K_Supervisor from the completed PRE-ALPHA functional baseline to a hardened autonomous platform foundation while preserving the approved architecture and public compatibility baseline.
+Move K_Supervisor from a validated PRE-ALPHA local-first platform into an owner-operable, production-deployable **single-node** product boundary without introducing distributed execution, multi-tenant SaaS semantics or automatic external publication.
 
-ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v0.3 Phase 8` and does not define Phase 17.
+The v0.4 program will make the existing control plane practically operable through supported API/CLI surfaces, add a governed production model-inference adapter, one real remote repository provider, current Plugin-native release assets, and stronger operational telemetry/supply-chain evidence.
 
-## Phase Status
+## Scope Rules
 
-| Phase | Name | Status |
-| --- | --- | --- |
-| v0.3 Phase 0 | Baseline Freeze & Hardening Contract | COMPLETE |
-| v0.3 Phase 1 | Persistence & Resource Hygiene | COMPLETE |
-| v0.3 Phase 2 | Durable Control State | COMPLETE |
-| v0.3 Phase 3 | Centralized Side-Effect Enforcement | COMPLETE |
-| v0.3 Phase 4 | Runtime Isolation & Cancellation | COMPLETE |
-| v0.3 Phase 5 | Service/API Boundary | COMPLETE |
-| v0.3 Phase 6 | Production Observability | COMPLETE |
-| v0.3 Phase 7 | Extension Trust & Platform Governance | COMPLETE |
-| v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | COMPLETE |
+- revision-local phases are `v0.4 Phase 0` through `v0.4 Phase 7`;
+- v0.3 Phase 9 remains undefined and must not be used;
+- existing public compatibility is preserved unless a phase explicitly defines a versioned migration;
+- owner-controlled publication remains a permanent boundary;
+- each phase requires its own pre-implementation audit before runtime changes;
+- completed v0.2 + v0.3 tests remain the cumulative regression floor.
 
-Phase 0-8 are COMPLETE. ROADMAP v0.3 is COMPLETE; no successor implementation phase is defined by this roadmap.
+## v0.4 Phase 0 — Baseline Freeze & Operator Product Contract
 
-## Completed Phase 0
+**Goal:** freeze the v0.3-complete runtime as the v0.4 predecessor and define the supported single-node product/security/deployment contract before code changes.
 
-Phase 0 froze the predecessor implementation and validation baseline, classified technical debt and established cumulative hardening/compatibility rules.
+**Deliverables:**
 
-Evidence:
+- v0.4 baseline/hardening contract with exact predecessor SHA/tree and permanent gates;
+- supported deployment topology and trust/threat boundaries;
+- operator API/CLI scope and protected-data rules;
+- repository-provider and credential boundary;
+- current Plugin packaging compatibility snapshot;
+- migration/rollback rules and explicit supported Python-version CI policy;
+- approved v0.4 `TEST_MATRIX` additions.
 
-- `HARDENING_BASELINE_V0_3.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md`.
+**Exit criteria:**
 
-## Completed Phase 1
+- current `main` and v0.3 runtime ancestry verified;
+- product gaps assigned to a phase or explicitly deferred;
+- no runtime change in Phase 0;
+- protected `Core Validation` PASS on the committed Phase 0 baseline.
 
-Phase 1 hardened persistence/resource ownership and schema evolution.
+**Deferred:** all runtime implementation assigned to Phases 1-7.
 
-Validated baseline:
+## v0.4 Phase 1 — Production Model Provider & AI Execution
+
+**Goal:** connect the existing vendor-neutral MODEL provider contracts to at least one real production inference service while preserving provider independence, policy enforcement and protected credentials.
+
+**Deliverables:**
+
+- first production MODEL provider adapter, initially targeting the current OpenAI Responses API through the generic Provider contract;
+- protected-reference API credential resolution with no secret persistence in normal project/audit state;
+- vendor-neutral model discovery/profile projection and selection requirements;
+- normalized request/response/usage/error metadata without persisting hidden chain-of-thought;
+- capability/agent adapter path that can invoke the selected model through `SideEffectGateway` / policy controls rather than direct SDK calls;
+- bounded timeout/cancellation/budget accounting and provider availability handling;
+- deterministic fake provider for CI plus a separate owner-controlled live smoke path;
+- documentation for adding another MODEL provider without Supervisor-core modification.
+
+**Exit criteria:**
+
+- at least one non-reference capability can execute against a real MODEL provider through the governed provider boundary;
+- provider credentials remain protected and absent from durable ordinary state/logs;
+- policy DENY/REQUIRE_APPROVAL prevents model invocation before the external call;
+- timeout/rate-limit/provider failure is normalized, audited and recoverable;
+- model selection remains provider-neutral and no specific model is hard-coded as a platform invariant;
+- reference offline agents and predecessor provider tests remain compatible;
+- a minimal owner-controlled live provider smoke succeeds before Phase 1 completion, without becoming an ordinary PR merge dependency;
+- cumulative regression and protected `Core Validation` PASS.
+
+**Deferred:** production-quality bespoke intelligence for every domain/reference agent, mandatory multi-provider routing, model fine-tuning/training and remote-agent federation.
+
+## v0.4 Phase 2 — Operator Control API
+
+**Goal:** let an authenticated owner/operator drive the approved control-plane lifecycle through one versioned service boundary instead of direct Python composition.
+
+**Deliverables:**
+
+- additive `/api/v1` endpoints for Project onboarding/registration and ProjectSpec version submission/approval/activation;
+- Human Intervention / approval read and owner-verification operations;
+- Task/Workflow execution start, status and cancellation operations through existing runtime authority;
+- release/readiness/target status plus owner publication-confirmation operation;
+- redacted recovery/status views that never expose protected secret contents;
+- domain-specific scopes, idempotency and durable mutation receipts for all material writes;
+- normalized conflict/error semantics and service telemetry for new operations.
+
+**Exit criteria:**
+
+- an approved ProjectSpec can be created/approved and advanced through supported lifecycle operations using only Service/API v1 plus existing owner-required external actions;
+- denied scopes and invalid transitions fail before authoritative mutation;
+- retries/restarts do not duplicate material mutations;
+- protected references remain opaque;
+- existing Phase 5 API contracts remain backward-compatible;
+- cumulative regression and protected `Core Validation` PASS.
+
+**Deferred:** raw secret retrieval, direct Tool/Provider invocation endpoints, administrator-wide multi-tenant RBAC.
+
+## v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI
+
+**Goal:** provide a supported long-running service process and operator client for the Phase 2 API without creating a second control path.
+
+**Deliverables:**
+
+- production-capable service-host adapter/process around the versioned service boundary;
+- explicit bind/port/configuration, startup validation, graceful drain/shutdown and bounded request handling;
+- authentication configuration through protected references/environment injection;
+- health/readiness endpoints wired to existing service/deployment qualification contracts;
+- secure reverse-proxy/TLS termination contract and trusted-proxy rules; certificate lifecycle remains external;
+- operator CLI commands that call the same Service/API rather than importing control-plane internals;
+- installed-wheel service/CLI smoke path and deployment example/runbook update.
+
+**Exit criteria:**
+
+- an installed wheel can start, report readiness, serve authenticated API requests and shut down cleanly;
+- CLI and HTTP operations produce equivalent authoritative state transitions;
+- malformed/oversized/unauthorized requests fail closed without leaking internals;
+- restart preserves durable state and does not create duplicate side effects;
+- TLS/reverse-proxy deployment assumptions are explicit and testable at the configuration boundary;
+- cumulative regression and protected `Core Validation` PASS.
+
+**Deferred:** certificate issuance/renewal, Kubernetes/operator orchestration, horizontal scaling and multi-node service coordination.
+
+## v0.4 Phase 4 — GitHub Repository Provider & Governed VCS Handoff
+
+**Goal:** let K_Supervisor bootstrap and update a real GitHub repository through existing Project Factory/provisioning/policy boundaries.
+
+**Deliverables:**
+
+- production GitHub repository adapter behind existing repository/provisioning contracts;
+- protected-reference credential resolution with no token persistence in normal state/audit;
+- repository create/resolve, visibility validation, bootstrap file application and conflict protection;
+- governed branch/commit/pull-request operations for project/release artifacts;
+- optional release tag preparation when permitted by project policy;
+- idempotent retry/recovery semantics for partial provider failures;
+- normalized rate-limit/auth/conflict/provider errors and durable correlation/audit;
+- owner intervention fallback when credentials, permissions or repository policy block automation.
+
+**Exit criteria:**
+
+- an approved ProjectSpec can bootstrap a new or pre-authorized GitHub repository without Supervisor-core changes;
+- repeated/restarted provisioning does not duplicate repositories/commits/PRs unintentionally;
+- protected-branch/policy denial cannot be bypassed by the adapter;
+- release preparation can produce a governed VCS handoff while external merge/publication remains separate;
+- provider failures are normalized, auditable and recoverable;
+- cumulative regression and protected `Core Validation` PASS.
+
+**Deferred:** broad cloud/server/database provisioning, GitLab/Bitbucket production adapters, automatic protected-branch merge and distributed repository transactions.
+
+## v0.4 Phase 5 — Plugin-Native ChatGPT/Codex Release Packaging
+
+**Goal:** evolve `CHATGPT_PLUGIN` from portable migration evidence into a versioned, currently importable Plugin package while preserving owner/workspace control.
+
+**Deliverables:**
+
+- versioned native plugin manifest/package generation aligned with the approved current OpenAI format snapshot;
+- skill source/resources plus required/optional app and app-template declarations where applicable;
+- GitHub marketplace catalog generation/validation for supported import/sync workflows;
+- explicit `.app.json`/native app reference handling where supported and requested by ProjectSpec;
+- migration inventory for legacy Custom Actions with no implicit conversion claim;
+- deterministic package validator and regression-prompt/access evidence;
+- retained legacy `GPT_STORE` compatibility path for persisted historical releases;
+- compatibility policy for future OpenAI manifest/schema changes.
+
+**Exit criteria:**
+
+- a `CHATGPT_PLUGIN` release produces a self-consistent native package and, when configured, a valid marketplace entry;
+- package validation catches missing/invalid skill, app and manifest references before `RELEASE_READY`;
+- existing portable evidence remains available or migratable without breaking persisted release state;
+- plugin installation/sharing/workspace access/public listing remain explicit owner/admin actions;
+- no selected-model pinning or automatic Custom Action migration is introduced;
+- cumulative regression and protected `Core Validation` PASS.
+
+**Deferred:** automatic workspace import, automatic public directory publication, provider-account authorization on behalf of the owner.
+
+## v0.4 Phase 6 — Production Telemetry & Supply-Chain Hardening
+
+**Goal:** make the single-node product diagnosable and release artifacts independently inspectable without making external collectors mandatory.
+
+**Deliverables:**
+
+- production structured-log adapter with correlation/redaction rules;
+- concrete optional Prometheus/OpenTelemetry exporter adapters behind existing projection contracts;
+- exporter failure isolation so telemetry cannot corrupt business/control state;
+- service/auth/provider/repository/release operational metrics and audit correlation;
+- dependency-vulnerability and dependency-inventory/SBOM generation in CI;
+- wheel/artifact provenance/attestation evidence where supported by the repository CI platform;
+- explicit supported-Python test matrix matching package metadata claims;
+- updated operations/security runbook and failure-injection tests.
+
+**Exit criteria:**
+
+- required platform/service events are observable without secret/private-content leakage;
+- exporter/network failure is non-fatal to authoritative control flow and is itself diagnosable;
+- package dependency inventory and vulnerability gate run deterministically in CI;
+- release artifacts have verifiable build/provenance evidence under the supported CI path;
+- every currently released Python minor declared supported by compatibility policy and admitted by package metadata is covered by the approved CI policy;
+- cumulative regression and protected `Core Validation` PASS.
+
+**Deferred:** mandatory remote collector infrastructure, full SIEM product integration, universal package-signature infrastructure and arbitrary-code sandboxing.
+
+## v0.4 Phase 7 — End-to-End Single-Node Product Qualification
+
+**Goal:** prove the complete v0.4 owner/operator journey on the supported topology without claiming distributed or automatic-publication capabilities.
+
+**Deliverables:**
+
+- end-to-end qualification from operator API/CLI ProjectSpec onboarding through approval, repository bootstrap, execution, `FIRST_WORKING`, release preparation and `RELEASE_READY`;
+- model-backed capability and GitHub repository/VCS paths exercised through deterministic provider fixtures plus separately controlled live smoke evidence for the production adapters;
+- Plugin-native package generation/validation in the same lifecycle;
+- restart/recovery, backup/restore/upgrade and owner-intervention qualification across the expanded operator/service/provider state;
+- concurrent-project qualification with one blocked/owner-waiting project and one progressing project;
+- installed-wheel service qualification and final operations runbook;
+- v0.4 completion checkpoint with exact implementation tree and protected CI evidence.
+
+**Exit criteria:**
+
+- owner can operate the supported lifecycle through API/CLI without direct control-plane Python calls;
+- at least one model-backed capability executes through the governed MODEL provider path and one supported remote repository path is provisioned through governed adapters;
+- a Plugin-native release reaches `RELEASE_READY` and stops at the explicit owner/workspace availability/publication boundary;
+- restart/backup/restore preserve the expanded state and do not duplicate external actions;
+- at least two independent projects remain isolated under concurrency and owner-wait conditions;
+- full v0.2 + v0.3 + v0.4 regression suite, packaging, service smoke and protected CI gates PASS;
+- roadmap completion does not claim actual PyPI/Plugin public publication.
+
+**Deferred:** all roadmap-level deferred work below.
+
+## Program-Wide Deferred Work
+
+Unless a later explicit revision reapproves them, v0.4 does not include:
+
+- distributed worker clusters, remote-agent federation or multi-node scheduling;
+- distributed databases, consensus, cross-region replication or universal external exactly-once guarantees;
+- multi-tenant SaaS identity/isolation/billing;
+- WhatsApp, Viber, SMS or social notification transports;
+- universal sandboxing of arbitrary untrusted Python;
+- mandatory event-bus infrastructure;
+- broad cloud/server/database provisioning beyond the GitHub repository-provider path;
+- external vault products as required platform dependencies;
+- certificate issuance/renewal infrastructure;
+- automatic PyPI, Plugin Directory, GPT Store or other external publication;
+- autonomous expansion of project scope without approved ProjectSpec/roadmap authority.
+
+## Phase Order
 
 ```text
-Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
-Core Validation run: 34804141156
-pytest: 95 passed
-branch-aware coverage: 85.66%
-ResourceWarning gate: PASS
+Phase 0  Baseline Freeze & Operator Product Contract
+Phase 1  Production Model Provider & AI Execution
+Phase 2  Operator Control API
+Phase 3  Production Single-Node Service Host & Operator CLI
+Phase 4  GitHub Repository Provider & Governed VCS Handoff
+Phase 5  Plugin-Native ChatGPT/Codex Release Packaging
+Phase 6  Production Telemetry & Supply-Chain Hardening
+Phase 7  End-to-End Single-Node Product Qualification
 ```
 
-Evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md`.
+## Activation Rule
 
-## Completed Phase 2
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is ACTIVE for documentation, baseline and hardening-contract work only. Runtime implementation remains unauthorized until Phase 0 completion is recorded and the next phase passes its required pre-implementation audit and activation gate.
 
-Phase 2 moved critical control state onto durable, restart-safe platform boundaries.
-
-Validated baseline:
-
-```text
-Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
-Core Validation run: 34808287772
-Python: 3.13.15
-pytest: 103 passed
-branch-aware coverage: 85.23%
-coverage gate: >= 80% PASS
-ResourceWarning gate: PASS
-compileall including examples: PASS
-wheel build/install: PASS
-public CLI/import smoke: PASS
-```
-
-Delivered durable runtime idempotency, restart-safe notification deduplication, approval expiry/revocation, richer recovery aggregation, restart/resume verification and atomic state+audit persistence for core Project/Human Intervention/Approval control writes.
-
-Evidence:
-
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
-- `PERSISTENCE.md`;
-- `AGENT_RUNTIME.md`;
-- `POLICY_AND_PERMISSIONS.md`.
-
-## Completed Phase 3 - Centralized Side-Effect Enforcement
-
-Goal: establish one standard platform boundary for material external side effects so policy, permissions, protected references, idempotency and audit are enforced before invocation rather than relying on each caller to compose them correctly.
-
-Implementation state:
-
-```text
-Authorized: YES
-Pre-implementation audit: COMPLETE
-Runtime implementation: COMPLETE
-Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
-Core Validation run: 35086116020
-Python: 3.13.15
-pytest: 111 passed
-branch-aware coverage: 85.45%
-Core Validation: PASS
-```
-
-Pre-implementation evidence: `PHASE3_PREIMPLEMENTATION_AUDIT.md`. Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
-
-Required deliverables:
-
-- centralized Tool Gateway / side-effect execution gateway for standard platform paths;
-- normalized side-effect invocation/result contract;
-- mandatory policy and permission validation before gateway execution;
-- protected-reference authorization before resolution/use;
-- propagation of project/request/agent/capability correlation and idempotency keys;
-- normalized durable side-effect attempt/outcome audit;
-- deterministic denied/approval-required behavior with no external invocation;
-- adapter boundary that keeps concrete tools/providers replaceable.
-
-Required tests:
-
-- ALLOW path invokes the adapter once through the gateway;
-- DENY path never invokes the adapter;
-- REQUIRE_APPROVAL path never invokes the adapter until approved;
-- tool-operation permission enforcement;
-- protected-reference authorization enforcement;
-- repeated invocation/idempotency behavior;
-- provider/tool failure normalization and audit;
-- correlation/audit persistence;
-- full completed v0.2 + v0.3 regression suite.
-
-Exit criteria:
-
-- standard production-composition material side effects have a centralized enforceable gateway path;
-- policy/permission/protected-reference checks occur before external invocation;
-- denied or approval-required requests cannot reach the external adapter through the standard path;
-- side-effect correlation, idempotency and durable audit are explicit and tested;
-- concrete adapters remain replaceable without Supervisor-core rewrites;
-- Core Validation PASS on the committed Phase 3 implementation baseline.
-
-Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
-
-Successor Phases 4-8 are complete. ROADMAP v0.3 is COMPLETE.
-
-## Completed Phase 4 - Runtime Isolation & Cancellation
-
-Goal: replace cooperative-only runtime termination as the sole hardened path with an isolated worker boundary that the parent can terminate within bounded intervals.
-
-Validated baseline:
-
-```text
-Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
-Core Validation run: 35092932820
-Python: 3.13.15
-pytest: 117 passed
-branch-aware coverage: 85.13%
-Core Validation: PASS
-```
-
-Delivered a replaceable `ProcessRuntimeAdapter`, parent-enforced timeout/cancellation escalation, bounded worker cleanup, worker-crash containment and normalized cross-process runtime errors while preserving the in-process compatibility adapter and existing Supervisor/Workflow contracts.
-
-Required Phase 4 tests cover isolated execution, unresponsive timeout, cancellation escalation, abnormal worker exit, runtime-limit normalization and recovery on the next run. Full predecessor regressions remain green.
-
-Evidence:
-
-- `PHASE4_PREIMPLEMENTATION_AUDIT.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
-- `AGENT_RUNTIME.md`;
-- `TEST_MATRIX.md`.
-
-Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
-
-Phase 4 remains complete. Phases 5-8 are also complete; `PROJECT_HANDOFF_2026_09_16_PHASE_7.md` is preserved as historical Phase 7 start context.
-
-## Completed Phase 5 - Service/API Boundary
-
-Goal: introduce a controlled versioned Service/API boundary for Project lifecycle operations without bypassing the existing control plane.
-
-Validated baseline:
-
-```text
-Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
-Core Validation run: 35103131762
-Python workflow: 3.13
-pytest: 129 passed
-branch-aware coverage: 85.34%
-Core Validation: PASS
-```
-
-Delivered `ServiceApiV1`, a thin WSGI adapter, `/api/v1` Project read/lifecycle routes, injected authentication, independent read/write scopes, normalized errors and durable restart-safe `ServiceMutationRecord` idempotency. Mutations delegate to existing `ProjectRegistry` transition methods, and transition/audit/service-receipt persistence is atomic on the supported SQLite path.
-
-Required Phase 5 tests cover API contracts, access control, invalid transitions, idempotent mutations, restart continuity and persistence-failure rollback. Full predecessor regressions remain green.
-
-Evidence:
-
-- `PHASE5_PREIMPLEMENTATION_AUDIT.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`;
-- `SERVICE_API.md`;
-- `PLATFORM_INTERFACES.md`;
-- `PERSISTENCE.md`;
-- `TEST_MATRIX.md`.
-
-Phase 5 does not claim production hosting/TLS, external identity-provider integration, health/readiness/SLO telemetry, distributed tracing, extension trust governance or distributed persistence. Those remain outside Phase 5.
-
-Current roadmap boundary: v0.3 Phase 0-8 are `COMPLETE`; ROADMAP v0.3 is `COMPLETE`.
-
-## Validation Rule
-
-Every runtime implementation phase must preserve the permanent regression floor:
-
-```text
-Core Validation                PASS
-branch-aware coverage          >= 80%
-ResourceWarning gate           PASS
-compileall including examples  PASS
-isolated wheel build           PASS
-wheel install outside checkout PASS
-public CLI/import smoke         PASS
-v0.2 compatibility regression  PASS
-```
-
-## Preserved Baseline
-
-Project/Task and Agent/Capability remain separate; ProjectSpec approval remains authoritative for material scope; Supervisor remains the orchestration boundary; platform state remains authoritative and persisted; owner-required actions and publication remain explicit; email remains the primary required notification transport; K-Research & Critic remains reference-only.
-
-Detailed debt ownership and hardening constraints are in `HARDENING_BASELINE_V0_3.md`. Required verification is maintained in `TEST_MATRIX.md`. The completed predecessor roadmap is preserved in `ROADMAP_V0_2_ARCHIVE.md`.
-
-## Completed Phase 6 - Production Observability
-
-Goal: establish persisted operational telemetry, correlation, exporter boundaries, redaction and service health/readiness foundations without changing Project lifecycle semantics.
-
-Validated baseline:
-
-```text
-Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
-Core Validation run: 35110298258
-Python workflow: 3.13
-pytest: 136 passed
-branch-aware coverage: 85.52%
-Core Validation: PASS
-```
-
-Delivered durable `TelemetryRecord` events, deterministic telemetry timeline reconstruction, recursive pre-persistence/export redaction, optional Runtime and Service/API instrumentation, SDK-neutral Prometheus/OpenTelemetry projection contracts, and component-based service health/readiness evaluation. Telemetry is included in `ProjectRecoverySnapshot`; SQLite physical schema remains `2`.
-
-Evidence:
-
-- `PHASE6_PREIMPLEMENTATION_AUDIT.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`;
-- `OBSERVABILITY_AND_RELIABILITY.md`;
-- `PERSISTENCE.md`;
-- `TEST_MATRIX.md`.
-
-Phase 6 does not add third-party telemetry SDK dependencies, remote collectors, production hosting, deployment qualification or extension trust governance.
-
-Current roadmap boundary: v0.3 Phase 0-8 are `COMPLETE`; ROADMAP v0.3 is `COMPLETE`.
-
-## Completed Phase 7 - Extension Trust & Platform Governance
-
-Pre-implementation audit: `PHASE7_PREIMPLEMENTATION_AUDIT.md`.
-
-Validated implementation evidence:
-
-```text
-Implementation SHA: 64c84ad6e6633c047416aca270d979e4ba5d36a0
-Core Validation run: 35121930140
-Core Validation: PASS
-```
-
-Implemented: fail-closed installed-extension authorization before import, exact identity/provenance/version compatibility binding, durable trust/enable/signature state, identity-change invalidation, PR-triggered Core Validation, and current GitHub Actions runtimes.
-
-Repository governance completion evidence: active ruleset `main-core-validation` (id `23556478`) targets `~DEFAULT_BRANCH`, requires pull requests, requires GitHub Actions status check `Core Validation`, blocks deletion and non-fast-forward pushes, has no bypass actors, and uses non-strict required-status policy. Phase 7 exit criteria are satisfied. Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md`.
-
-## OpenAI Custom GPT -> Plugin Compatibility Amendment
-
-Current validated `main` additionally includes a backward-compatible ChatGPT release-target correction:
-
-```text
-Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
-Core Validation run: 35124348659
-Python: 3.13.15
-pytest: 149 passed
-branch-aware coverage: 85.63%
-Core Validation: PASS
-```
-
-New ChatGPT-facing projects prefer `CHATGPT_PLUGIN`; `GPT_STORE` remains a legacy compatibility/migration target. Custom Actions are not treated as automatically migrated, selected-model coupling is not introduced, and external sharing/publication remains owner/workspace controlled. Evidence: `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md`.
-
-This amendment remains part of the final v0.3 baseline and is preserved by Phase 8 compatibility regression.
-
-## Completed Phase 8 - Operational Readiness & Autonomous Lifecycle Qualification
-
-Pre-implementation audit: `PHASE8_PREIMPLEMENTATION_AUDIT.md`.
-
-Validated implementation evidence:
-
-```text
-Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
-Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
-Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
-Protected PR Core Validation: 35134961231 — PASS
-Merged-main Core Validation: 35135133947 — PASS
-Python workflow: 3.13
-```
-
-Delivered owner-controlled package-index workflow; SQLite backup/restore/upgrade qualification; deployment/runbook qualification; operational release-readiness evidence; full approved ProjectSpec -> `RELEASE_READY` qualification; and concurrent-project restart/recovery/owner-intervention qualification. External publication remains an explicit owner/workspace action.
-
-Completion evidence:
-
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md`;
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`;
-- `OPERATIONS_RUNBOOK.md`;
-- `TEST_MATRIX.md`.
-
-Phase 8 does not claim automatic external publication, distributed execution/federation, non-email owner transports, multi-tenant SaaS scope, production hosting/TLS or universal arbitrary-Python sandboxing. These remain outside ROADMAP v0.3 unless a later explicitly approved roadmap adopts them.
+Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Phase 0 contract: `HARDENING_BASELINE_V0_4.md`.

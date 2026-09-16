@@ -1,0 +1,441 @@
+# TEST_MATRIX
+Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
+
+Version: 2.5
+Status: ACTIVE
+Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE
+Current phase: NONE — ROADMAP v0.3 COMPLETE
+Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+
+## v0.2 Regression Matrix
+
+The completed ROADMAP v0.2 test families remain the minimum regression floor for all v0.3 work.
+
+| v0.2 Phase | Primary verification | Test family |
+| --- | --- | --- |
+| 1 | contracts, schemas, invalid transitions | `test_phase1_*` |
+| 2 | restart recovery, isolation, immutable ProjectSpec | `test_phase2_*` |
+| 3 | intervention, notifications, SMTP adapter, idempotency | `test_phase3_*` |
+| 4 | registries, version compatibility, provider availability | `test_phase4_*` |
+| 5 | dynamic routing, dispatch, retry, task state | `test_phase5_*` |
+| 6 | repository bootstrap, owner boundary, conflict protection | `test_phase6_*` |
+| 7 | workflow graph, conditions, bounded loops, approvals | `test_phase7_*` |
+| 8 | runtime errors, timeout, cancellation, limits, health | `test_phase8_*` |
+| 9 | parallel projects, priorities, locks, budgets, concurrency | `test_phase9_*` |
+| 10 | access references, registries, provisioning, model selection | `test_phase10_*` |
+| 11 | policy allow/deny/approval and durable audit | `test_phase11_*` |
+| 12 | scaffolding, reference agents, provider interchangeability | `test_phase12_*` |
+| 13 | release readiness, publication gate, release recovery | `test_phase13_*` |
+| 14 | profile gate, research-review loop, bounded revision, legacy isolation | `test_phase14_*` |
+| 15 | structured audit, routing records, metrics, failure injection, recovery, performance | `test_phase15_*` |
+| 16 | public config/CLI, extension discovery/activation, examples, package build/install | `test_phase16_*` + CI package smoke |
+
+## v0.3 Phase Status
+
+| Phase | Required verification | Status |
+| --- | --- | --- |
+| 0 | predecessor traceability, compatibility review, full v0.2 regression evidence, documentation consistency | COMPLETE |
+| 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | COMPLETE |
+| 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | COMPLETE |
+| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | COMPLETE |
+| 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | COMPLETE |
+| 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
+| 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | COMPLETE |
+| 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | COMPLETE |
+| 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | COMPLETE |
+
+## Phase 1 Evidence
+
+```text
+Implementation SHA: 661ee7d0ce973a862d9605df18e1b1f52c48aa02
+Core Validation run: 34804141156
+pytest: 95 passed
+branch-aware coverage: 85.66%
+ResourceWarning gate: PASS
+```
+
+Primary Phase 1 tests: `tests/test_v03_phase1_persistence_hardening.py`.
+
+## Phase 2 Evidence
+
+Authoritative implementation baseline:
+
+```text
+Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
+Core Validation run: 34808287772
+Python: 3.13.15
+pytest: 103 passed
+branch-aware coverage: 85.23%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall: PASS
+wheel build/install: PASS
+public interface smoke: PASS
+```
+
+Phase 2 hardening tests:
+
+```text
+tests/test_v03_phase2_durable_control_state.py
+tests/test_v03_phase2_restart_resume.py
+```
+
+Verified behaviors:
+
+- persistence-backed runtime idempotency survives restart;
+- command replay reuses the prior authoritative successful result without invoking the handler again;
+- idempotency scope is isolated by project;
+- notification SENT duplicate suppression survives restart;
+- approval expiry is deterministic and persisted;
+- approval revocation is persisted and rejected by subsequent policy evaluation;
+- expiry/revocation lifecycle changes are durably audited;
+- richer ProjectRecoverySnapshot reconstructs Human Intervention, notification/delivery, approval, runtime-idempotency, policy, audit, routing and release-validation state;
+- interrupted Task/WorkflowRun + WAITING_FOR_OWNER state reconstructs after restart and resumes through Human Intervention;
+- injected audit failure rolls back matching Project transition + Project snapshot;
+- all predecessor regression tests remain green.
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`.
+
+## Phase 3 Start Gate - SATISFIED
+
+Before any Phase 3 runtime code is changed in the new chat:
+
+- read `PROJECT_HANDOFF_2026_09_16.md` and the current canonical roadmap/state documents;
+- verify current `main` against implementation SHA `573cbe433ece8ffae45d83a30fd3287fac40d820`;
+- confirm that any commits after that SHA are documentation-only unless a later explicit implementation checkpoint exists;
+- audit all standard production paths capable of material external side effects;
+- identify current policy, tool-permission, protected-reference, idempotency and audit insertion points;
+- preserve all completed v0.2 + v0.3 Phase 0-2 tests as cumulative regression requirements.
+
+## Phase 3 Required Verification
+
+Phase 3 implementation must prove:
+
+- standard material side effects execute through the centralized gateway path;
+- ALLOW permits one normalized adapter invocation;
+- DENY prevents adapter invocation;
+- REQUIRE_APPROVAL prevents adapter invocation until permission is approved;
+- requested tool/operation permissions are checked before invocation;
+- protected references are authorized before resolution/use;
+- project/request/agent/capability correlation reaches the side-effect record;
+- idempotency is propagated and repeated invocation does not create an unintended duplicate through the supported path;
+- tool/provider failures are normalized and durably audited;
+- concrete adapters remain replaceable behind the gateway contract;
+- all completed v0.2 + v0.3 regression tests remain green.
+
+Phase 3 implementation tests:
+
+```text
+tests/test_v03_phase3_side_effect_gateway.py
+```
+
+Local implementation-candidate verification on 2026-09-16:
+
+```text
+phase-specific: 8 passed
+cumulative pytest: 111 passed
+branch-aware total coverage: 85.45%
+coverage gate >= 80%: PASS
+ResourceWarning gate: PASS
+local interpreter: Python 3.12.3 (non-authoritative)
+```
+
+Authoritative Phase 3 completion baseline:
+
+```text
+Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
+Core Validation run: 35086116020
+Python: 3.13.15
+pytest: 111 passed
+branch-aware coverage: 85.45%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
+
+## Phase 4 Evidence
+
+Phase 4 pre-implementation audit: `PHASE4_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 4 implementation tests:
+
+```text
+tests/test_v03_phase4_runtime_isolation.py
+```
+
+Verified behaviors:
+
+- successful invocation executes in a distinct worker process and preserves usage/correlation;
+- unresponsive worker timeout is bounded and leaves no active worker;
+- cancellation of an unresponsive worker escalates and returns `CANCELLED` within a bounded interval;
+- abnormal worker exit is contained and normalized as `WORKER_CRASH`;
+- runtime-limit errors preserve their normalized status/code/category across the process boundary;
+- a worker failure does not poison the next isolated run;
+- all completed v0.2 + v0.3 Phase 0-3 regression tests remain green.
+
+Authoritative Phase 4 completion baseline:
+
+```text
+Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
+Core Validation run: 35092932820
+Python: 3.13.15
+pytest: 117 passed
+branch-aware coverage: 85.13%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`. Phase 5 is COMPLETE; its evidence follows below.
+
+## Phase 5 Evidence
+
+Phase 5 pre-implementation audit: `PHASE5_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 5 implementation tests:
+
+```text
+tests/test_v03_phase5_service_api.py
+```
+
+Verified behaviors:
+
+- versioned Project list/get contract;
+- authentication failure and independent scope denial;
+- lifecycle/operational mutations through `ProjectRegistry`;
+- invalid transitions do not mutate state/history;
+- mutation `Idempotency-Key` requirement;
+- same-key replay without duplicate transition/audit;
+- same-key/different-body conflict rejection;
+- restart/reopen replay continuity;
+- WSGI Bearer/JSON contract handling;
+- service receipt persistence failure rolls back transition and audit;
+- all completed v0.2 + v0.3 Phase 0-4 regressions remain green.
+
+Authoritative Phase 5 completion baseline:
+
+```text
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35103131762
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples/service_api: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`.
+
+## Phase 6 Start Gate - SATISFIED
+
+Before any Phase 6 runtime code is changed in the next chat:
+
+- read `PROJECT_HANDOFF_2026_09_16_PHASE_6.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `TEST_MATRIX.md` and `HARDENING_BASELINE_V0_3.md`;
+- verify current `main` is a descendant of Phase 5 completion and distinguish documentation-only commits after runtime SHA `0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841`;
+- inventory existing observability records, metric snapshots, correlation identifiers, timeline reconstruction and redaction paths;
+- define persisted telemetry and exporter contracts before implementation;
+- define health/readiness/SLO semantics without conflating service health with Project lifecycle state;
+- preserve all completed v0.2 + v0.3 Phase 0-5 tests as cumulative regression requirements;
+- keep Phase 7 extension governance and Phase 8 operational-readiness work outside Phase 6 scope.
+
+Phase 6 required verification remains exactly the approved matrix scope: correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness and redaction.
+
+## Phase 6 Evidence
+
+Phase 6 pre-implementation audit: `PHASE6_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 6 implementation tests:
+
+```text
+tests/test_v03_phase6_observability.py
+```
+
+Verified behaviors:
+
+- runtime/service correlation is persisted on supported instrumented paths;
+- idempotent runtime replay emits complete terminal telemetry;
+- telemetry survives persistence reopen/restart and is included in project recovery;
+- deterministic telemetry timeline reconstruction;
+- recursive redaction before persistence and export;
+- Prometheus/OpenTelemetry-compatible projection contracts;
+- service health/readiness is component-based and independent of Project lifecycle state;
+- telemetry failure is non-fatal to business execution;
+- all completed v0.2 + v0.3 Phase 0-5 regressions remain green.
+
+Authoritative Phase 6 completion baseline:
+
+```text
+Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
+Core Validation run: 35110298258
+Python workflow: 3.13
+pytest: 136 passed
+branch-aware coverage: 85.52%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples/service_api: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`.
+
+## Phase 7 Start Gate - SATISFIED
+
+Before any Phase 7 runtime code is changed:
+
+- read `PROJECT_HANDOFF_2026_09_16_PHASE_7.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `TEST_MATRIX.md` and `HARDENING_BASELINE_V0_3.md`;
+- verify current `main` is a descendant of Phase 6 completion and distinguish documentation-only closure commits after runtime SHA `8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883`;
+- inventory extension discovery/activation, compatibility metadata, trust/provenance state and CI governance;
+- define trust/signature/activation policy before implementation;
+- preserve all completed v0.2 + v0.3 Phase 0-6 tests as cumulative regression requirements;
+- keep Phase 8 deployment/operational-readiness qualification outside Phase 7 scope.
+
+Phase 7 start gate was satisfied by `PHASE7_PREIMPLEMENTATION_AUDIT.md`.
+
+## Phase 7 Implementation Evidence
+
+```text
+Implementation SHA: 64c84ad6e6633c047416aca270d979e4ba5d36a0
+Core Validation run: 35121930140
+Core Validation: PASS
+```
+
+Phase 7 tests include:
+
+```text
+tests/test_v03_phase7_extension_governance.py
+tests/test_v03_phase7_ci_governance.py
+```
+
+Verified behavior includes pre-import rejection of ungoverned, disabled, untrusted, unverified or incompatible installed extensions; durable governance after restart; exact identity/version trust binding; predecessor entry-point compatibility; PR-triggered Core Validation; and updated action runtimes.
+
+Phase 7 repository governance is verified complete through repository ruleset `main-core-validation` (id `23556478`): target `~DEFAULT_BRANCH`, enforcement `active`, PR required, `Core Validation` required from GitHub Actions, deletion/non-fast-forward blocked, no bypass actors, strict/up-to-date check disabled. Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md`.
+
+## OpenAI Plugin Compatibility Regression
+
+`tests/test_openai_plugin_release_target.py` verifies the additive `CHATGPT_PLUGIN` release profile and legacy `GPT_STORE` compatibility. Custom Action dependencies are explicitly non-auto-migrating, model pinning is absent, and owner/workspace-controlled availability remains intact.
+
+Current post-amendment validation:
+
+```text
+Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
+Core Validation run: 35124348659
+Python: 3.13.15
+pytest: 149 passed
+branch-aware coverage: 85.63%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Phase 8 is COMPLETE. Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md`.
+
+
+## Phase 8 Start Gate - SATISFIED
+
+`PHASE8_PREIMPLEMENTATION_AUDIT.md` verifies the Phase 7-complete baseline, inventories existing release/recovery/concurrency mechanisms and freezes the implementation boundary before Phase 8 runtime changes.
+
+Required Phase 8 verification:
+
+- online SQLite backup plus integrity/checksum verification;
+- safe restore and failure rollback/no-authoritative-state damage;
+- non-destructive supported/unsupported upgrade qualification;
+- operational release-readiness evidence integration;
+- approved ProjectSpec -> `RELEASE_READY` end-to-end qualification without automatic publication;
+- restart/recovery and owner-intervention continuity;
+- concurrent-project isolation/progress under restart and owner-wait conditions;
+- manual-only owner/environment-gated package-index publication workflow;
+- operational runbook;
+- full cumulative regression suite and protected `Core Validation` PASS.
+
+## Phase 8 Implementation Evidence
+
+```text
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Implementation PR: #6
+Protected PR Core Validation: 35134961231 — PASS
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Merged-main Core Validation: 35135133947 — PASS
+Python workflow: 3.13
+```
+
+Exact-tree local cumulative verification before merge:
+
+```text
+local Python: 3.12.3 (non-authoritative)
+pytest: 163 passed
+branch-aware coverage: 85.82%
+coverage gate >= 80%: PASS
+ResourceWarning gate: PASS
+compileall: PASS
+```
+
+GitHub Actions Python 3.13 is authoritative. Both the protected PR run and merged-main push run passed compile, cumulative tests/coverage/ResourceWarning gate, wheel build/install and public CLI/import smoke.
+
+Phase 8 verified:
+
+- online SQLite backup with checksum/schema/integrity evidence;
+- corrupt/unsupported restore rejection and atomic-replacement failure rollback;
+- non-destructive supported legacy upgrade qualification;
+- operational schema/store/recovery release evidence;
+- approved ProjectSpec -> `RELEASE_READY` with `PUBLICATION_REQUIRED` / `WAITING_FOR_OWNER`;
+- restart reconstruction of release/target/Human Intervention/validation state;
+- concurrent-project isolation while one Project waits for owner;
+- manual-only owner-confirmed protected-environment OIDC package publication workflow;
+- deployment qualifier and operational runbook;
+- full cumulative predecessor regression floor.
+
+Completion records: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md` and `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`.
+
+## Permanent Quality Gates
+
+```text
+structured audit        -> material project/control records
+integration             -> Supervisor + registries + runtime + persistence + policy boundaries
+failure injection       -> deterministic transport/runtime/storage/provider failures
+recovery                -> authoritative state reconstruction after supported restart/reopen boundaries
+referential integrity   -> ReliabilityValidator or approved successor boundary
+metrics/telemetry       -> phase-appropriate project/agent/operational metrics
+performance             -> existing v0.2 baseline remains unless explicitly superseded
+coverage                -> branch-aware total coverage >= 80%
+resource hygiene        -> ResourceWarning is a CI error
+syntax                  -> compileall including examples
+packaging               -> isolated wheel build
+installation            -> wheel install outside source checkout
+public interface smoke  -> k-supervisor version + import ksupervisor outside checkout
+compatibility           -> v0.2 public package/CLI/config/entry-point regression
+```
+
+## Current Authoritative Runtime Baseline
+
+```text
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Protected PR Core Validation: 35134961231 — PASS
+Merged-main Core Validation: 35135133947 — PASS
+Python workflow: 3.13
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples: PASS
+wheel build/install: PASS
+public interface smoke: PASS
+```
+
+Exact-tree local cumulative result: `163 passed`, branch-aware coverage `85.82%` on Python 3.12.3; authoritative GitHub Actions Python 3.13 gates passed on PR and merged `main`.
+
+## CI Rule
+
+`Core Validation` remains the authoritative automated regression workflow. No runtime implementation phase may claim completion without a successful full suite on its committed implementation baseline.
