@@ -1,21 +1,22 @@
 # PLATFORM_INTERFACES
-Публічні межі встановлення, CLI, конфігурації та extension discovery для K_Supervisor.
+Публічні межі встановлення, CLI, конфігурації, extension discovery та Service/API для K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
-Baseline Phase: 16
+Baseline: v0.3 Phase 5
+Date: 2026-09-16
 
 ## 1. Public Package Boundary
 
-The installable distribution is `k-supervisor`. The stable public facade introduced in Phase 16 is the `ksupervisor` Python package.
+The installable distribution is `k-supervisor`. The stable public Python facade is `ksupervisor`.
 
-Existing internal top-level packages remain available for the current 0.x baseline, but new external integrations should enter through `ksupervisor` plus the documented contract/registry modules rather than importing Supervisor implementation details.
+Existing internal top-level packages remain available for the current 0.x baseline, but new external integrations should prefer `ksupervisor`, `ksupervisor.service` and explicitly documented contract/registry/adapter modules rather than Supervisor implementation details.
 
 ## 2. CLI
 
 Installation creates the `k-supervisor` console command.
 
-Supported baseline commands:
+Supported commands remain:
 
 ```text
 k-supervisor version
@@ -23,13 +24,46 @@ k-supervisor validate-config PATH
 k-supervisor extensions [--kind agent|capability|project_template|adapter]
 ```
 
-The CLI is intentionally small. It is a stable control/interface boundary, not a replacement for the Project Control Plane.
+Phase 5 does not replace or remove the CLI.
 
-## 3. Configuration Model
+## 3. Service/API Boundary
+
+Phase 5 adds the public Python facade `ksupervisor.service` and versioned API base path:
+
+```text
+/api/v1
+```
+
+Supported v1 routes:
+
+```text
+GET  /api/v1/projects
+GET  /api/v1/projects/{project_id}
+POST /api/v1/projects/{project_id}/lifecycle-transitions
+POST /api/v1/projects/{project_id}/operational-transitions
+```
+
+`ServiceApiV1` is transport-neutral. `WsgiServiceAppV1` is a thin HTTP/WSGI adapter and is not a production hosting stack.
+
+Authentication is injected. The baseline Bearer adapter is `StaticBearerAuthenticator`; tokens are host-owned and are not persisted by the API.
+
+Required scopes are:
+
+```text
+projects:read
+projects:lifecycle:write
+projects:operational:write
+```
+
+All mutation routes require `Idempotency-Key` and use durable service mutation receipts. Lifecycle rules remain owned by `ProjectRegistry` and the existing state models.
+
+Detailed contract: `SERVICE_API.md`.
+
+## 4. Configuration Model
 
 `ksupervisor.config.PlatformConfig` is frozen and rejects unknown fields.
 
-Baseline fields:
+Baseline fields remain:
 
 ```text
 config_version
@@ -38,13 +72,13 @@ extension_groups
 strict_extensions
 ```
 
-JSON and TOML are supported by `load_config()`. `examples/platform.toml` is the canonical minimal example.
+JSON and TOML are supported by `load_config()`. Secrets are not configuration values; protected credentials continue to use `secret://...` references and secret backends.
 
-Secrets are not configuration values. Protected credentials continue to use Phase 10 `secret://...` access references and secret backends.
+Phase 5 does not add persisted API credentials to `PlatformConfig`.
 
-## 4. Extension Discovery
+## 5. Extension Discovery
 
-K_Supervisor uses standard Python package entry points. Phase 16 defines four groups:
+K_Supervisor uses standard Python package entry points:
 
 ```text
 k_supervisor.agents
@@ -53,43 +87,30 @@ k_supervisor.project_templates
 k_supervisor.adapters
 ```
 
-`discover_extensions()` returns deterministic descriptors without importing extension code. `activate_extension()` loads exactly one named entry point and invokes either the loaded callable or its `register(context)` method.
+`discover_extensions()` returns deterministic descriptors without importing extension code. `activate_extension()` loads exactly one named entry point and invokes the loaded callable or its `register(context)` method.
 
-This keeps discovery separate from activation and avoids hard-coded Supervisor imports.
-
-## 5. Extension Context
+## 6. Extension Context
 
 `ExtensionContext` exposes named host services. An extension must request a service explicitly with `context.require(name)` rather than reaching into global process state.
 
-Typical services are existing registries such as AgentRegistry/CapabilityRegistry or host-owned `NamedExtensionRegistry` instances for project templates and adapters.
+Phase 5 does not change extension activation/trust semantics.
 
-The external extension owns construction of its descriptor/adapter object; K_Supervisor owns validation and registration through the target registry contract.
+## 7. Packaging
 
-## 6. Packaging
+`pyproject.toml` defines Python >= 3.13, Pydantic v2, setuptools build backend, explicit package discovery and the console script. Phase 5 adds `service_api*` to the packaged modules and public `ksupervisor.service` exports.
 
-`pyproject.toml` now defines:
+Core Validation builds and installs a wheel, changes outside the repository checkout, and verifies the CLI and `import ksupervisor`.
 
-- setuptools build backend;
-- Python >= 3.13;
-- runtime dependency on Pydantic v2;
-- dev build/test dependencies;
-- explicit package discovery;
-- `k-supervisor` console script.
+## 8. Compatibility Boundary
 
-Core Validation builds a wheel, installs that wheel, changes outside the repository checkout, and verifies both the console command and `import ksupervisor`.
+The service API is additive to the existing package/CLI/config/extension baseline. `/api/v1` request/response meanings and documented scope names are now public compatibility surfaces subject to `COMPATIBILITY_POLICY.md`.
 
-## 7. Examples
-
-Phase 16 includes:
+## 9. Validation Baseline
 
 ```text
-examples/platform.toml
-examples/extension_project_template.py
-examples/workflow_definition.py
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35103131762
+pytest: 129 passed
+branch-aware coverage: 85.34%
+Core Validation: PASS
 ```
-
-The examples are syntax-checked by CI and have direct tests for valid workflow construction and template registration.
-
-## 8. Boundary
-
-Phase 16 does not add a web server or remote API. The ROADMAP requires CLI and/or API; this baseline chooses a CLI plus Python extension interface. A future HTTP/RPC surface can wrap the same contracts without changing Supervisor core behavior.

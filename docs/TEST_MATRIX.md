@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 2.0
+Version: 2.1
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 4 COMPLETE; v0.3 Phase 5 PLANNED
-Phase 4 state: COMPLETE on validated implementation SHA 34049f601fc8116aa12ee15023f1dc20bc25901a
+Current phase: v0.3 Phase 5 COMPLETE; v0.3 Phase 6 PLANNED
+Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
 
 ## v0.2 Regression Matrix
 
@@ -39,7 +39,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | COMPLETE |
 | 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | COMPLETE |
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | COMPLETE |
-| 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
+| 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
 | 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | PLANNED |
 | 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
@@ -193,21 +193,62 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`. Phase 5 remains PLANNED / NOT STARTED.
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`. Phase 5 is COMPLETE; its evidence follows below.
 
-## Phase 5 Start Gate - REQUIRED / NOT YET SATISFIED
+## Phase 5 Evidence
 
-Before any Phase 5 runtime code is changed in the next chat:
+Phase 5 pre-implementation audit: `PHASE5_PREIMPLEMENTATION_AUDIT.md`.
 
-- read `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `TEST_MATRIX.md` and `HARDENING_BASELINE_V0_3.md`;
-- verify current `main` is a descendant of Phase 4 completion and that commits after runtime SHA `34049f601fc8116aa12ee15023f1dc20bc25901a` are documentation-only unless a later explicit runtime checkpoint exists;
-- inventory lifecycle operations that require a service/API surface and the existing control-plane methods they must call rather than bypass;
-- define the versioned API/auth/access-control/idempotency/error contract before implementing transport code;
-- identify invalid-transition and restart-continuity behavior at the service boundary;
-- preserve all completed v0.2 + v0.3 Phase 0-4 tests as cumulative regression requirements;
-- keep Phase 6 observability, Phase 7 extension governance and Phase 8 operational-readiness work outside Phase 5 scope.
+Phase 5 implementation tests:
 
-Phase 5 required verification remains exactly the approved matrix scope: API contracts, access control, invalid transitions, idempotent mutations and restart continuity.
+```text
+tests/test_v03_phase5_service_api.py
+```
+
+Verified behaviors:
+
+- versioned Project list/get contract;
+- authentication failure and independent scope denial;
+- lifecycle/operational mutations through `ProjectRegistry`;
+- invalid transitions do not mutate state/history;
+- mutation `Idempotency-Key` requirement;
+- same-key replay without duplicate transition/audit;
+- same-key/different-body conflict rejection;
+- restart/reopen replay continuity;
+- WSGI Bearer/JSON contract handling;
+- service receipt persistence failure rolls back transition and audit;
+- all completed v0.2 + v0.3 Phase 0-4 regressions remain green.
+
+Authoritative Phase 5 completion baseline:
+
+```text
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35103131762
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall including examples/service_api: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`.
+
+## Phase 6 Start Gate - REQUIRED / NOT YET SATISFIED
+
+Before any Phase 6 runtime code is changed in the next chat:
+
+- read `PROJECT_HANDOFF_2026_09_16_PHASE_6.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `TEST_MATRIX.md` and `HARDENING_BASELINE_V0_3.md`;
+- verify current `main` is a descendant of Phase 5 completion and distinguish documentation-only commits after runtime SHA `0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841`;
+- inventory existing observability records, metric snapshots, correlation identifiers, timeline reconstruction and redaction paths;
+- define persisted telemetry and exporter contracts before implementation;
+- define health/readiness/SLO semantics without conflating service health with Project lifecycle state;
+- preserve all completed v0.2 + v0.3 Phase 0-5 tests as cumulative regression requirements;
+- keep Phase 7 extension governance and Phase 8 operational-readiness work outside Phase 6 scope.
+
+Phase 6 required verification remains exactly the approved matrix scope: correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness and redaction.
 
 ## Permanent Quality Gates
 
@@ -231,11 +272,11 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 35092932820
-Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
-Python: 3.13.15
-pytest: 117 passed
-branch-aware coverage: 85.13%
+Core Validation run: 35103131762
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS

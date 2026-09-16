@@ -6,10 +6,10 @@ Status: ACTIVE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 4 COMPLETE; v0.3 Phase 5 PLANNED
-Phase 4 implementation completed: 2026-09-16
-Phase 5 transition handoff prepared: 2026-09-16
-Phase 5 activation: NO
+Current phase: v0.3 Phase 5 COMPLETE; v0.3 Phase 6 PLANNED
+Phase 5 implementation completed: 2026-09-16
+Phase 6 transition handoff prepared: 2026-09-16
+Phase 6 activation: NO
 
 ## Program Objective
 
@@ -26,12 +26,12 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 2 | Durable Control State | COMPLETE |
 | v0.3 Phase 3 | Centralized Side-Effect Enforcement | COMPLETE |
 | v0.3 Phase 4 | Runtime Isolation & Cancellation | COMPLETE |
-| v0.3 Phase 5 | Service/API Boundary | PLANNED |
+| v0.3 Phase 5 | Service/API Boundary | COMPLETE |
 | v0.3 Phase 6 | Production Observability | PLANNED |
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-Phase 4 is COMPLETE on the validated implementation baseline. Phase 5 remains PLANNED / NOT STARTED.
+Phase 5 is COMPLETE on the validated implementation baseline. Phase 6 remains PLANNED / NOT STARTED.
 
 ## Completed Phase 0
 
@@ -140,7 +140,7 @@ Exit criteria:
 
 Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
 
-Successor Phase 4 is now complete. Phase 5 remains PLANNED / NOT STARTED and is not activated by Phase 4 completion.
+Successor Phase 4 and Phase 5 are now complete. Phase 6 remains PLANNED / NOT STARTED and is not activated by Phase 5 completion.
 
 ## Completed Phase 4 - Runtime Isolation & Cancellation
 
@@ -170,7 +170,39 @@ Evidence:
 
 Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
 
-Next roadmap phase: `v0.3 Phase 5 - Service/API Boundary`, status `PLANNED / NOT STARTED`. The new-chat handoff is prepared in `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`; handoff preparation does not activate Phase 5.
+Next roadmap phase: `v0.3 Phase 6 - Production Observability`, status `PLANNED / NOT STARTED`. The new-chat handoff is prepared in `PROJECT_HANDOFF_2026_09_16_PHASE_6.md`; handoff preparation does not activate Phase 6.
+
+## Completed Phase 5 - Service/API Boundary
+
+Goal: introduce a controlled versioned Service/API boundary for Project lifecycle operations without bypassing the existing control plane.
+
+Validated baseline:
+
+```text
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35103131762
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
+Core Validation: PASS
+```
+
+Delivered `ServiceApiV1`, a thin WSGI adapter, `/api/v1` Project read/lifecycle routes, injected authentication, independent read/write scopes, normalized errors and durable restart-safe `ServiceMutationRecord` idempotency. Mutations delegate to existing `ProjectRegistry` transition methods, and transition/audit/service-receipt persistence is atomic on the supported SQLite path.
+
+Required Phase 5 tests cover API contracts, access control, invalid transitions, idempotent mutations, restart continuity and persistence-failure rollback. Full predecessor regressions remain green.
+
+Evidence:
+
+- `PHASE5_PREIMPLEMENTATION_AUDIT.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`;
+- `SERVICE_API.md`;
+- `PLATFORM_INTERFACES.md`;
+- `PERSISTENCE.md`;
+- `TEST_MATRIX.md`.
+
+Phase 5 does not claim production hosting/TLS, external identity-provider integration, health/readiness/SLO telemetry, distributed tracing, extension trust governance or distributed persistence. Those remain outside Phase 5.
+
+Next roadmap phase: `v0.3 Phase 6 - Production Observability`, status `PLANNED / NOT STARTED`.
 
 ## Validation Rule
 

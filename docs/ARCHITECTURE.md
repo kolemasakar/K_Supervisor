@@ -1,7 +1,7 @@
 # ARCHITECTURE
 Архітектура K_Supervisor як керуючого рівня AI-проєктів поверх модульного мультиагентного ядра.
 
-Version: 0.2
+Version: 0.3
 Status: ACTIVE
 Phase: 0
 
@@ -42,6 +42,7 @@ OWNER / ONBOARDING
         v
 +---------------------------+
 | PROJECT CONTROL PLANE     |
+| Service/API v1            |
 | Project Factory           |
 | Project Registry          |
 | Project Scheduler         |
@@ -80,6 +81,10 @@ OWNER / ONBOARDING
 ```
 
 ## 4. Control Plane Components
+
+### Service/API v1
+
+Provides authenticated/scoped external Project reads and lifecycle/operational transitions while delegating authoritative state changes to Project Registry. Durable mutation idempotency is service-owned; state-machine semantics remain control-plane-owned.
 
 ### Project Factory
 

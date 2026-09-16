@@ -1,14 +1,14 @@
 # PERSISTENCE
 Документ описує persistence boundary, SQLite hardening, durable control state, Project Registry та recovery semantics K_Supervisor.
 
-Version: 1.5
+Version: 1.6
 Status: ACTIVE
-Baseline: v0.3 Phase 3 implementation
+Baseline: v0.3 Phase 5 implementation
 Date: 2026-09-16
 
 ## 1. Purpose
 
-Persistence is platform-owned authoritative state. v0.3 Phase 1 hardened storage lifecycle/schema evolution; v0.3 Phase 2 moved critical control state onto durable restart-safe records and strengthened atomic state+audit writes. v0.3 Phase 3 adds authoritative side-effect attempt/outcome state for the centralized Tool/Provider gateway.
+Persistence is platform-owned authoritative state. v0.3 Phase 1 hardened storage lifecycle/schema evolution; Phase 2 moved critical control state onto durable restart-safe records and strengthened atomic state+audit writes; Phase 3 added authoritative side-effect attempt/outcome state; Phase 5 adds durable Service/API mutation replay receipts and uses the same transaction boundary as Project lifecycle writes.
 
 Agents do not access SQLite directly.
 
@@ -38,7 +38,7 @@ Current physical schema version remains:
 2
 ```
 
-The tested v1 -> v2 migration remains authoritative. Phase 2 required no new physical schema because durable control records use the existing generic `resources` / `events` layout. Phase 3 also uses that generic layout, so physical schema version remains `2`.
+The tested v1 -> v2 migration remains authoritative. Phases 2, 3 and 5 use the existing generic `resources` / `events` layout, so physical schema version remains `2`.
 
 Unknown/future schema versions fail closed.
 
@@ -75,14 +75,17 @@ HumanActionRequest
 NotificationEvent
 ApprovalRecord
 RuntimeIdempotencyRecord
+ServiceMutationRecord
 SideEffectExecutionRecord
 ```
 
 `RuntimeIdempotencyRecord` stores the project-scoped semantic command scope, canonical input signature and prior successful `AgentRunResult`. This supports replay after supported store/process restart without invoking the handler again.
 
+`ServiceMutationRecord` stores the project/API/operation/idempotency-key scope, canonical request signature and resulting `Project` snapshot for completed Service/API mutations. It is immutable by deterministic identifier and supports restart-safe replay without a second lifecycle transition.
+
 `SideEffectExecutionRecord` stores the normalized Tool/Provider attempt identity, project/request/agent/capability/component correlation, idempotency key, canonical input signature, policy decision, status, normalized output/error and completion time.
 
-ProjectSpec, ArtifactReference and RuntimeIdempotencyRecord are immutable by identifier. Conflicting immutable payloads raise `PersistenceConflictError`.
+ProjectSpec, ArtifactReference, RuntimeIdempotencyRecord and ServiceMutationRecord are immutable by identifier. Conflicting immutable payloads raise `PersistenceConflictError`.
 
 ## 6. Durable Events
 
@@ -104,7 +107,7 @@ Notification SENT attempt history is authoritative for restart-safe duplicate su
 
 Top-level SQLite transactions use `BEGIN IMMEDIATE`, commit on success and roll back on failure. Nested store operations participate in the existing transaction.
 
-Phase 2/3 add and use atomic persistence helpers for:
+Phase 2/3/5 add and use atomic persistence helpers for:
 
 - Project snapshot + required audit;
 - Project lifecycle transition + Project snapshot + required audit;
@@ -113,13 +116,14 @@ Phase 2/3 add and use atomic persistence helpers for:
 - HumanActionRequest-only mutation + required audit;
 - ApprovalRecord mutation + required audit;
 - side-effect PENDING claim + `SIDE_EFFECT_ATTEMPTED` audit;
-- side-effect terminal outcome + `SIDE_EFFECT_SUCCEEDED` / `SIDE_EFFECT_FAILED` audit.
+- side-effect terminal outcome + `SIDE_EFFECT_SUCCEEDED` / `SIDE_EFFECT_FAILED` audit;
+- Service/API lifecycle/operational transition + resulting Project snapshot + transition audit + immutable ServiceMutationRecord receipt through one outer transaction.
 
 ProjectSpec activation builds the audit record before committing the resulting active Project snapshot and audit together. The immutable ProjectSpec record itself remains independently durable history.
 
 Failure-injection tests prove that an audit failure inside the lifecycle transaction rolls back both the transition event and resulting Project snapshot.
 
-This is not a universal distributed transaction across repositories or external providers. Phase 3 owns centralized external side-effect enforcement.
+This is not a universal distributed transaction across repositories or external providers. Phase 3 owns centralized external side-effect enforcement; Phase 5 only extends local authoritative transactionality to Service/API mutation receipts.
 
 ## 8. Approval Control State
 
@@ -168,6 +172,7 @@ NotificationEvents
 NotificationDeliveryAttempts
 ApprovalRecords
 RuntimeIdempotencyRecords
+ServiceMutationRecords
 SideEffectExecutionRecords
 PolicyDecisions
 AuditEvents
@@ -187,23 +192,25 @@ Distributed database coordination, cross-region replication and mandatory Postgr
 
 ## 12. Validation Baseline
 
-Authoritative v0.3 Phase 3 runtime baseline:
+Authoritative v0.3 Phase 5 runtime baseline:
 
 ```text
-Implementation SHA: 6868d595b66a6ada91a2e6f2f62866721d0f3560
-Core Validation run: 35086116020
-Python: 3.13.15
-pytest: 111 passed
-branch-aware coverage: 85.45%
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Core Validation run: 35103131762
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
-compileall including examples: PASS
+compileall including examples/service_api: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Phase 2 predecessor evidence remains in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`. Phase 3 completion evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
+Phase 5 persistence verification covers durable service mutation replay, restart continuity, immutable replay conflicts and failure-injection rollback of Project transition + audit when the service receipt cannot be persisted.
 
 ## 13. Current Boundary
 
-Phase 3 adds restart-visible side-effect execution records and atomic attempt/outcome audit without claiming a distributed transaction with an external provider. A PENDING record after interruption is authoritative evidence that the platform cannot safely infer whether an external system completed the operation; supported-path retries therefore fail closed/replay the authoritative state rather than silently issuing a duplicate. Universal exactly-once external delivery remains out of scope.
+Phase 5 adds restart-visible Service/API mutation receipts without introducing a second project state store or new physical schema. A completed receipt is authoritative for same-key replay; a different request signature under the same deterministic scope fails closed. The receipt is committed in the same supported SQLite transaction as the underlying Project transition/audit.
+
+Universal distributed transactions, multi-node consensus, distributed databases and exactly-once guarantees across external systems remain outside this persistence boundary.

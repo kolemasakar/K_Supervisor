@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 4.
+Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 5.
 
-Version: 2.5
+Version: 2.6
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -19,103 +19,91 @@ v0.3 Phase 1: COMPLETE
 v0.3 Phase 2: COMPLETE
 v0.3 Phase 3: COMPLETE
 v0.3 Phase 4: COMPLETE
-v0.3 Phase 5-8: PLANNED / NOT STARTED
-Phase 5 activation in this checkpoint: NO
+v0.3 Phase 5: COMPLETE
+v0.3 Phase 6-8: PLANNED / NOT STARTED
+Phase 6 activation in this checkpoint: NO
 Phase 17: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Core Validation run: 35092932820
-Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
-Python: 3.13.15
-pytest: 117 passed
-branch-aware coverage: 85.13%
+Core Validation run: 35103131762
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
-compileall including examples: PASS
+compileall including examples/service_api: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-The validated implementation baseline passed Core Validation run `35092932820` on the candidate branch before `main` was fast-forwarded.
+The final Phase 5 implementation SHA passed GitHub Core Validation. Documentation-only closure commits do not replace this runtime baseline.
 
-## Phase 3 Completion
+## Phase 5 Completion
 
-ROADMAP v0.3 Phase 3 completed centralized Agent/Workflow Tool/Provider side-effect enforcement:
+ROADMAP v0.3 Phase 5 established the Service/API boundary without bypassing the Project Control Plane:
 
-- `SideEffectGateway` is the standard Tool/Provider execution boundary for material Agent/Workflow side effects;
-- policy is re-evaluated immediately before the adapter boundary;
-- DENY and REQUIRE_APPROVAL never invoke the external adapter through the standard path;
-- least-privilege Tool operations and protected references are enforced before invocation/use;
-- project/request/agent/capability and idempotency correlation is propagated to adapters and durable records;
-- side-effect attempts and outcomes are durably persisted and audited;
-- supported repeated invocations replay authoritative results without unintended duplicate adapter calls;
-- idempotency input conflicts fail closed;
-- Tool/Provider failures are normalized and auditable;
-- side-effect execution state participates in `ProjectRecoverySnapshot`;
-- concrete Tool/Provider adapters remain replaceable.
+- `ServiceApiV1` is the transport-neutral v1 service core;
+- `WsgiServiceAppV1` is the thin HTTP/WSGI adapter;
+- Project list/get and lifecycle/operational transition operations are exposed under `/api/v1`;
+- mutations delegate to `ProjectRegistry` and existing state models;
+- authentication is injected and Bearer support is host-configured;
+- read/lifecycle-write/operational-write scopes are independent;
+- Project read responses do not expose ProjectSpec protected configuration;
+- every mutation requires an idempotency key;
+- `ServiceMutationRecord` provides durable restart-safe replay;
+- transition + transition audit + service receipt share one persistence transaction;
+- duplicate replay and conflicting replay semantics are explicitly tested.
 
-Authoritative records:
+Authoritative Phase 5 records:
 
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
-- `PHASE3_PREIMPLEMENTATION_AUDIT.md`;
-- `INTEGRATIONS.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`;
+- `PHASE5_PREIMPLEMENTATION_AUDIT.md`;
+- `SERVICE_API.md`;
+- `PLATFORM_INTERFACES.md`;
 - `PERSISTENCE.md`;
-- `POLICY_AND_PERMISSIONS.md`;
 - `TEST_MATRIX.md`.
 
-SQLite schema remains version 2 because Phase 3 uses the existing generic resources/events storage layout.
+SQLite physical schema remains version `2`; the service receipt uses the generic resources/events storage layout.
 
-## Phase 4 Completion
+## Preserved Completed Hardening
 
-ROADMAP v0.3 Phase 4 hardened the runtime execution boundary:
-
-- `ProcessRuntimeAdapter` runs each supported isolated invocation in a dedicated worker process;
-- parent-side timeout/cancellation owns escalation and bounded cleanup;
-- unresponsive workers are terminated rather than being allowed to continue after timeout/cancel return;
-- abnormal worker exit is contained and normalized as a runtime worker failure;
-- child runtime errors and resource-limit failures preserve normalized `AgentRunResult` semantics;
-- a failed/crashed worker does not poison a subsequent run;
-- `InProcessRuntimeAdapter` remains available for compatibility and trusted scenarios.
-
-Authoritative Phase 4 records:
-
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
-- `PHASE4_PREIMPLEMENTATION_AUDIT.md`;
-- `AGENT_RUNTIME.md`;
-- `TEST_MATRIX.md`.
+- Phase 1 persistence/resource hygiene remains authoritative.
+- Phase 2 durable control state remains authoritative.
+- Phase 3 centralized side-effect enforcement remains authoritative.
+- Phase 4 runtime isolation/cancellation remains authoritative.
+- Phase 5 does not alter ProjectSpec approval, Human Intervention, owner publication, SideEffectGateway or RuntimeAdapter semantics.
 
 ## Next Planned Phase
 
 ```text
-v0.3 Phase 5 - Service/API Boundary
+v0.3 Phase 6 - Production Observability
 Status: PLANNED / NOT STARTED
 ```
 
-Phase 5 is not activated by the Phase 4 completion checkpoint. No Phase 5 runtime work is included in the current baseline.
+Phase 6 is not activated by the Phase 5 completion checkpoint. No Phase 6 runtime work is included in the current baseline.
 
 ## New-Chat Handoff
 
-Current transition record: `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`.
+Current transition record: `PROJECT_HANDOFF_2026_09_16_PHASE_6.md`.
 
 Decision fixed for the next chat:
 
-- Phase 4 remains COMPLETE on validated runtime SHA `34049f601fc8116aa12ee15023f1dc20bc25901a`;
-- Phase 5 remains PLANNED / NOT STARTED until an explicit user instruction activates it;
-- before any Phase 5 runtime change, verify current `main`, read the canonical records and complete a Phase 5 pre-implementation audit;
-- the Phase 5 audit must preserve the existing control plane and define the versioned Service/API boundary without creating a parallel orchestration path;
-- Phase 6-8 work is outside the Phase 5 transition scope.
-
-## Historical Handoff
-
-`PROJECT_HANDOFF_2026_09_16.md` remains the frozen historical start point used to resume and audit Phase 3. Its pre-implementation statements describe the state at handoff and are not the current runtime state.
+- Phase 5 remains COMPLETE on validated runtime SHA `0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841`;
+- Phase 6 remains PLANNED / NOT STARTED until explicit activation;
+- before Phase 6 runtime changes, verify current `main` and complete a Phase 6 pre-implementation audit;
+- Phase 6 must address only its observability assignment and preserve the completed Service/API boundary;
+- Phase 7-8 work remains outside Phase 6 scope.
 
 ## Public Compatibility Baseline
 
 ```text
 Python facade: ksupervisor
+Service facade: ksupervisor.service
+Service API: /api/v1
 CLI: k-supervisor
 Config version: 1
 Extension groups:
@@ -125,24 +113,7 @@ Extension groups:
   k_supervisor.adapters
 ```
 
-`COMPATIBILITY_POLICY.md` remains authoritative. Phase 4 preserved the distribution/CLI/config/entry-point baseline.
-
-## Preserved Architecture Rules
-
-Project remains the top-level managed unit; Agent and Capability remain separate; workflows remain capability-oriented; Supervisor owns orchestration; authoritative state is platform-owned; Human Intervention and owner publication remain explicit; email remains the primary required owner notification transport; protected access remains reference-based; policy/permission checks precede material external Agent/Workflow side effects; K-Research & Critic remains reference-only.
-
-## Remaining Hardening Debt
-
-Completed:
-
-- Phase 1 persistence/resource hygiene;
-- Phase 2 durable control state;
-- Phase 3 centralized side-effect enforcement;
-- Phase 4 runtime isolation and bounded cancellation/termination.
-
-Remaining roadmap work starts only when the next phase is explicitly activated. Phase 5-8 remain PLANNED / NOT STARTED.
-
-Distributed consensus, cross-region event sourcing and universal provider-level exactly-once guarantees remain explicitly deferred rather than hidden Phase 4 failures.
+`COMPATIBILITY_POLICY.md` remains authoritative.
 
 ## Validation Rule
 

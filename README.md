@@ -7,7 +7,7 @@ Repository: `kolemasakar/K_Supervisor`
 
 ## Purpose
 
-K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, observability/reliability, packaging and external extension discovery.
+K_Supervisor combines an AI Project Lifecycle Supervisor with a modular multi-agent platform. It manages approved projects, orchestration, workflows, controlled execution, parallel scheduling, integrations, owner intervention, notifications, policy enforcement, reusable agent creation, release preparation, owner-controlled publication handoff, observability/reliability, packaging, external extension discovery and a controlled lifecycle Service/API boundary.
 
 K_Supervisor is separate from K-Research & Critic, which remains reference-only.
 
@@ -21,81 +21,49 @@ v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
 v0.3 Phase 2 - Durable Control State: COMPLETE
 v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
 v0.3 Phase 4 - Runtime Isolation & Cancellation: COMPLETE
-v0.3 Phase 5-8: PLANNED / NOT STARTED
+v0.3 Phase 5 - Service/API Boundary: COMPLETE
+v0.3 Phase 6-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-Phase 4 is complete. `docs/PROJECT_HANDOFF_2026_09_16_PHASE_5.md` is the current new-chat transition handoff. `docs/PROJECT_HANDOFF_2026_09_16.md` remains a historical Phase 3 startup checkpoint. Phase 5 remains PLANNED / NOT STARTED and is not activated by preparing the handoff.
+Phase 5 is complete. `docs/PROJECT_HANDOFF_2026_09_16_PHASE_6.md` is the current new-chat transition handoff. Earlier Phase 3/5 handoffs are historical startup checkpoints. Phase 6 remains PLANNED / NOT STARTED and is not activated by preparing the handoff.
 
 ## Current Runtime Baseline
 
 ```text
-Core Validation run: 35092932820
-Implementation SHA: 34049f601fc8116aa12ee15023f1dc20bc25901a
-Python: 3.13.15
-pytest: 117 passed
-branch-aware coverage: 85.13%
+Core Validation run: 35103131762
+Implementation SHA: 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
+Python workflow: 3.13
+pytest: 129 passed
+branch-aware coverage: 85.34%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
-compileall including examples: PASS
+compileall including examples/service_api: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
 Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline.
 
-## Implemented Platform Baseline
+## Completed v0.3 Hardening
 
-The completed v0.2 platform includes Project lifecycle/control plane, machine contracts, persistence/registry, Human Intervention and email notifications, dynamic Agent/Capability routing, Supervisor orchestration, Project Factory, Workflow Engine, Agent Runtime, Scheduler, tools/providers/provisioning boundaries, policy/approval, Agent Factory, Release Manager, reference Research-Critic composition, observability/reliability, packaging, CLI/config and extension discovery.
+- Phase 1: explicit SQLite lifecycle ownership, schema migration, rollback/concurrency/resource-hygiene gates.
+- Phase 2: durable runtime idempotency, notification deduplication, approval lifecycle, richer restart recovery and atomic control-state writes.
+- Phase 3: centralized SideEffectGateway with policy/permission/protected-reference enforcement, idempotency and durable attempt/outcome audit.
+- Phase 4: process-isolated runtime option with parent-owned timeout/cancellation escalation, worker-crash containment and bounded cleanup.
+- Phase 5: versioned `/api/v1` Project read/lifecycle service boundary with injected authentication, independent scopes, normalized errors and durable restart-safe mutation idempotency.
 
-ROADMAP v0.3 Phase 1 additionally hardened persistence with explicit SQLite lifecycle ownership, transaction/rollback behavior, schema version 2 with tested v1 -> v2 migration, supported local concurrent writers and a permanent `ResourceWarning` CI gate.
-
-ROADMAP v0.3 Phase 2 additionally delivered:
-
-- persistence-backed runtime/command idempotency on the standard AgentRuntimeDispatcher path;
-- project-scoped restart-safe successful-result replay;
-- restart-safe notification duplicate suppression from durable delivery history;
-- approval expiry and revocation with policy enforcement and durable audit;
-- richer Project recovery aggregation for Human Intervention, notifications, approvals, runtime idempotency, policy/audit/routing/release-validation state;
-- atomic state+audit persistence for core Project, Human Intervention and Approval control mutations;
-- verified interrupted Task/WorkflowRun + owner-wait reconstruction and resume after restart.
-
-SQLite physical schema remains version `2`; Phase 2 uses the generic versioned resources/events storage layout.
-
-## Completed Phase 3
-
-`v0.3 Phase 3 - Centralized Side-Effect Enforcement` delivered:
-
-- one standard Tool Gateway / side-effect execution gateway;
-- normalized side-effect invocation/result contracts;
-- policy, tool-operation and protected-reference checks before external invocation;
-- correlation and idempotency propagation;
-- durable normalized side-effect attempt/outcome audit;
-- deterministic no-invocation behavior for DENY and REQUIRE_APPROVAL;
-- replaceable concrete tool/provider adapters.
-
-Phase 3 passed its gateway enforcement tests and the full cumulative Core Validation suite on implementation SHA `6868d595b66a6ada91a2e6f2f62866721d0f3560`. Completion evidence is recorded in `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`.
-
-Phase 4 is complete on implementation SHA `34049f601fc8116aa12ee15023f1dc20bc25901a`. Completion evidence is recorded in `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`.
-
-## Completed Phase 4
-
-`v0.3 Phase 4 - Runtime Isolation & Cancellation` delivered:
-
-- `ProcessRuntimeAdapter` with one isolated worker process per invocation;
-- parent-enforced timeout and cancellation with bounded escalation from cooperative signal to terminate/kill;
-- contained worker-process crashes and normalized runtime failure semantics;
-- child runtime-limit/error normalization across the process boundary;
-- bounded worker cleanup with no live worker left on supported completion paths;
-- compatibility preservation for `InProcessRuntimeAdapter` and the existing `RuntimeAdapter` contract.
+Phase 5 does not expose ProjectSpec administration, workflow/runtime execution, release/publication mutation, Tool/Provider side effects or secret contents. Those authoritative boundaries remain separate.
 
 ## Public Baseline
 
 ```text
 Distribution: k-supervisor==0.1.0
 Python facade: ksupervisor
+Service facade: ksupervisor.service
+Service API: /api/v1
 CLI: k-supervisor
 Config version: 1
 Extension groups:
@@ -112,14 +80,13 @@ Start with:
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
-- `docs/PROJECT_HANDOFF_2026_09_16_PHASE_5.md`;
+- `docs/PROJECT_HANDOFF_2026_09_16_PHASE_6.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`;
+- `docs/PHASE5_PREIMPLEMENTATION_AUDIT.md`;
+- `docs/SERVICE_API.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`;
 - `docs/PERSISTENCE.md`;
-- `docs/AGENT_RUNTIME.md`;
-- `docs/POLICY_AND_PERMISSIONS.md`;
+- `docs/COMPATIBILITY_POLICY.md`;
 - `docs/CHAT_HANDOFF.md`.
 
 The completed v0.2 roadmap remains archived in `docs/ROADMAP_V0_2_ARCHIVE.md`.

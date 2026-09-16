@@ -1,9 +1,9 @@
 # PROJECT_CONTROL_PLANE
 Опис керуючого рівня K_Supervisor для автоматизованого життєвого циклу AI-проєктів.
 
-Version: 0.1
+Version: 0.2
 Status: ACTIVE
-Phase: 0
+Baseline: v0.3 Phase 5
 
 ## 1. Purpose
 
@@ -306,7 +306,22 @@ Multi-Agent Core          Notification Broker
                              Email
 ```
 
-## 14. Design Boundary
+## 14. Service/API Boundary
+
+Phase 5 adds a narrow versioned interface in front of existing Project Registry lifecycle operations.
+
+```text
+ServiceApiV1
+    -> ProjectRegistry.get/list
+    -> ProjectRegistry.transition_lifecycle
+    -> ProjectRegistry.transition_operational
+```
+
+The Service/API boundary does not own a second state machine. Authentication/scopes and durable mutation idempotency are enforced at the service boundary, while lifecycle validity, Project snapshot mutation, transition history and audit remain owned by existing control-plane contracts.
+
+The Phase 5 surface intentionally excludes ProjectSpec administration, Human Intervention/Approval mutation, Workflow/Runtime dispatch, release/publication actions, Tool/Provider side effects and secret resolution.
+
+## 15. Design Boundary
 
 The Control Plane does not replace the Multi-Agent Core.
 
