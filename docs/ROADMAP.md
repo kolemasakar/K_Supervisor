@@ -6,10 +6,10 @@ Status: ACTIVE
 Approved: 2026-09-16
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 1 — READY FOR PRE-IMPLEMENTATION AUDIT
+Current phase: v0.4 Phase 1 — Production Model Provider & AI Execution
 Phase 0: COMPLETE
-Phase 1 activation: NO — pre-implementation audit pending
-Runtime implementation authorized: NO
+Phase 1 activation: YES — audit/activation gate approved
+Runtime implementation authorized: YES — Phase 1 scope only
 
 ## Program Objective
 
@@ -264,6 +264,6 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is READY FOR PRE-IMPLEMENTATION AUDIT but is not runtime-active. Runtime implementation remains unauthorized until the Phase 1 audit is committed and its activation gate is satisfied through protected governance.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is ACTIVE after its pre-implementation audit/activation gate. Runtime implementation is authorized only for Phase 1 scope defined by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; later phases remain inactive.
 
 Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Frozen Phase 0 contract: `HARDENING_BASELINE_V0_4.md`. Phase 0 completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
