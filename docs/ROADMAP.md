@@ -7,7 +7,7 @@ Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
 Current phase: v0.3 Phase 3
-Session handoff: prepared 2026-09-14; planned resume 2026-09-16 09:00 Europe/Kyiv
+Phase 3 implementation resumed: 2026-09-16
 
 ## Program Objective
 
@@ -29,7 +29,7 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 7 | Extension Trust & Platform Governance | PLANNED |
 | v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | PLANNED |
 
-The owner-directed handoff pause does not change the active phase. At the 2026-09-14 handoff, Phase 3 is authorized but its runtime implementation has not intentionally started. Canonical continuation instructions are in `PROJECT_HANDOFF_2026_09_16.md`.
+Phase 3 implementation resumed on 2026-09-16 under the canonical continuation instructions in `PROJECT_HANDOFF_2026_09_16.md`. The phase remains ACTIVE until the committed implementation passes Core Validation.
 
 ## Completed Phase 0
 
@@ -88,14 +88,16 @@ Evidence:
 
 Goal: establish one standard platform boundary for material external side effects so policy, permissions, protected references, idempotency and audit are enforced before invocation rather than relying on each caller to compose them correctly.
 
-Implementation state at handoff:
+Implementation state:
 
 ```text
 Authorized: YES
-Runtime implementation started: NO
-Resume protocol: docs/PROJECT_HANDOFF_2026_09_16.md
-Planned continuation: 2026-09-16 09:00 Europe/Kyiv
+Pre-implementation audit: COMPLETE
+Runtime implementation: IMPLEMENTATION CANDIDATE PREPARED
+Core Validation on committed implementation SHA: PENDING
 ```
+
+Pre-implementation evidence: `PHASE3_PREIMPLEMENTATION_AUDIT.md`. Phase 3 remains ACTIVE until the committed implementation passes the complete Core Validation workflow.
 
 Required deliverables:
 

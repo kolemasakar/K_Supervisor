@@ -30,6 +30,11 @@ class ProviderRequest(ContractModel):
     operation: str
     payload: JsonObject = {}
     access_refs: tuple[AccessReference, ...] = ()
+    request_id: str | None = None
+    agent_id: str | None = None
+    capability_id: str | None = None
+    capability_version: str | None = None
+    idempotency_key: str | None = None
 
 
 class ProviderResponse(ContractModel):

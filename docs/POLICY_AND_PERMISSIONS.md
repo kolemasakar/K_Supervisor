@@ -1,10 +1,10 @@
 # POLICY_AND_PERMISSIONS
 Політика контрольованої автономності, дозволів, ризику та явного погодження у K_Supervisor.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
-Baseline: v0.3 Phase 2 COMPLETE
-Date: 2026-09-14
+Baseline: v0.3 Phase 3 implementation
+Date: 2026-09-16
 
 ## 1. Purpose
 
@@ -66,7 +66,7 @@ Project policy is resolved from the active approved ProjectSpec. Workflow overla
 
 Tool operations are scoped by agent/tool/operation. Protected access uses canonical protected references rather than plaintext secrets.
 
-`require_tool_operation()` and `require_access_reference()` remain enforcement helpers. v0.3 Phase 3 is responsible for centralizing these checks inside the standard side-effect gateway so callers do not have to compose them independently.
+`require_tool_operation()` and `require_access_reference()` remain reusable enforcement helpers. v0.3 Phase 3 invokes them inside the standard `SideEffectGateway` immediately before Tool/Provider resolution/use, so Agent/Workflow callers do not compose authorization independently.
 
 ## 6. Least-Privilege Execution Context
 
@@ -83,7 +83,7 @@ access_refs
 approval_id
 ```
 
-Production dispatch replaces broad caller policy with this least-privilege context before execution.
+Production policy dispatch attaches this authoritative least-privilege context before execution. Original requested policy fields may remain only as input for deterministic re-evaluation; downstream authority comes from the resolved execution context, not from caller-provided scope.
 
 ## 7. Approval Scope
 
@@ -186,7 +186,9 @@ SupervisorKernel
         -> AgentDispatcher / AgentRuntimeDispatcher only when ALLOW
 ```
 
-Phase 3 adds the centralized side-effect gateway underneath/alongside the approved execution context without bypassing this policy ownership.
+Phase 3 adds `SideEffectGateway` underneath the approved execution context. The gateway evaluates policy at the invocation boundary, requires `ALLOW`, validates correlation and least-privilege tool/access scope, then invokes the replaceable Tool/Provider adapter. `PolicyEnforcedDispatcher` preserves the original requested permission/approval fields when attaching the authoritative ALLOW context so the gateway can re-evaluate the same scope.
+
+A blocked gateway decision is not an adapter failure: `DENY` and `REQUIRE_APPROVAL` never reach the external adapter. Allowed attempts/outcomes receive durable normalized side-effect audit through the persistence boundary.
 
 ## 15. Validation Baseline
 
@@ -206,7 +208,6 @@ Approval expiry, revocation, audit persistence and restart recovery are covered 
 
 Not yet implemented here:
 
-- universal centralized Tool Gateway (Phase 3);
 - organization-wide RBAC/ABAC administration UI;
 - cryptographic approval signing;
 - provider-specific authorization administration;

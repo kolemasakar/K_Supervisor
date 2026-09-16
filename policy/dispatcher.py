@@ -58,6 +58,7 @@ class PolicyEnforcedDispatcher:
         authorized = request.model_copy(
             update={
                 "policy": {
+                    **request.policy,
                     "decision_id": decision.decision_id,
                     "effect": PolicyEffect.ALLOW.value,
                     "execution_context": decision.execution_context.model_dump(mode="json"),

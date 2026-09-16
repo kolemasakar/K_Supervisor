@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 1.7
+Version: 1.8
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
 Current phase: v0.3 Phase 3
-Handoff state: Phase 3 authorized; runtime implementation NOT STARTED as of 2026-09-14
+Phase 3 state: implementation candidate prepared 2026-09-16; completion requires Core Validation PASS on committed SHA
 
 ## v0.2 Regression Matrix
 
@@ -37,7 +37,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 0 | predecessor traceability, compatibility review, full v0.2 regression evidence, documentation consistency | COMPLETE |
 | 1 | storage lifecycle, reopen/restart, migration, rollback, supported concurrency, ResourceWarning cleanup | COMPLETE |
 | 2 | durable idempotency, command replay, approval lifecycle, restart recovery, aggregate reconstruction | COMPLETE |
-| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | ACTIVE / NOT STARTED AT HANDOFF |
+| 3 | centralized Tool Gateway policy paths, protected references, repeated invocation handling, normalized audit | ACTIVE / VALIDATION PENDING |
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | PLANNED |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | PLANNED |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | PLANNED |
@@ -122,6 +122,26 @@ Phase 3 implementation must prove:
 - tool/provider failures are normalized and durably audited;
 - concrete adapters remain replaceable behind the gateway contract;
 - all completed v0.2 + v0.3 regression tests remain green.
+
+
+Phase 3 implementation tests:
+
+```text
+tests/test_v03_phase3_side_effect_gateway.py
+```
+
+Local implementation-candidate verification on 2026-09-16:
+
+```text
+phase-specific: 8 passed
+cumulative pytest: 111 passed
+branch-aware total coverage: 85.45%
+coverage gate >= 80%: PASS
+ResourceWarning gate: PASS
+local interpreter: Python 3.12.3 (non-authoritative)
+```
+
+The authoritative Phase 3 completion baseline still requires the repository `Core Validation` workflow on Python 3.13 for the committed implementation SHA, including compileall, isolated wheel build/install and public CLI/import smoke.
 
 ## Permanent Quality Gates
 

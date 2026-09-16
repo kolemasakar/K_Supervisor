@@ -12,6 +12,7 @@ from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
 from models.control import RuntimeIdempotencyRecord
+from models.side_effect import SideEffectExecutionRecord
 from models.intervention import (
     HumanActionRequest,
     NotificationDeliveryAttempt,
@@ -239,6 +240,21 @@ class SQLitePersistenceStore(PersistenceStore):
             (kind, resource_id, project_id, payload, stamp),
         )
 
+    def _create(self, kind, resource_id, project_id, value, commit=True):
+        if commit:
+            with self.transaction():
+                return self._create(kind, resource_id, project_id, value, commit=False)
+        payload = self._json(value)
+        stamp = str(getattr(value, "updated_at", getattr(value, "created_at", "")))
+        try:
+            self.conn.execute(
+                "INSERT INTO resources(kind,resource_id,project_id,payload,updated_at) "
+                "VALUES(?,?,?,?,?)",
+                (kind, resource_id, project_id, payload, stamp),
+            )
+        except sqlite3.IntegrityError as exc:
+            raise PersistenceConflictError(f"{kind} already exists: {resource_id}") from exc
+
     def _get(self, kind, resource_id, cls: type[T]) -> T | None:
         row = self.conn.execute(
             "SELECT payload FROM resources WHERE kind=? AND resource_id=?",
@@ -359,6 +375,16 @@ class SQLitePersistenceStore(PersistenceStore):
     def save_runtime_idempotency(self, value): self._save("runtime_idempotency", value.record_id, value.project_id, value, True)
     def get_runtime_idempotency(self, record_id): return self._get("runtime_idempotency", record_id, RuntimeIdempotencyRecord)
     def list_runtime_idempotency(self, project_id): return self._list("runtime_idempotency", project_id, RuntimeIdempotencyRecord)
+    def claim_side_effect_execution(self, value, audit):
+        with self.transaction():
+            self._create("side_effect_execution", value.execution_id, value.project_id, value, commit=False)
+            self._audit(audit)
+    def complete_side_effect_execution(self, value, audit):
+        with self.transaction():
+            self._save("side_effect_execution", value.execution_id, value.project_id, value, commit=False)
+            self._audit(audit)
+    def get_side_effect_execution(self, execution_id): return self._get("side_effect_execution", execution_id, SideEffectExecutionRecord)
+    def list_side_effect_executions(self, project_id): return self._list("side_effect_execution", project_id, SideEffectExecutionRecord)
     def append_policy_decision(self, value): self._event("policy_decision", value.project_id, value.evaluated_at.isoformat(), value)
     def list_policy_decisions(self, project_id): return self._events("policy_decision", project_id, PolicyDecision)
     def append_audit_event(self, value): self._event("audit_event", value.project_id, value.occurred_at.isoformat(), value)

@@ -1,9 +1,9 @@
 # INTEGRATIONS
 Контракти інструментів, провайдерів, provisioning та захищених посилань доступу K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
-Phase: 10
+Baseline: v0.3 Phase 3 implementation
 
 ## 1. Purpose
 
@@ -19,7 +19,7 @@ AccessReference / SecretBackend
 ModelSelectionHook
 ```
 
-Phase 11 remains responsible for permissions, risk classes, approval policy, and least-privilege authorization before side effects.
+Phase 11 defines permissions, risk classes, approval policy and least-privilege authorization. v0.3 Phase 3 centralizes enforcement of those decisions at the standard Tool/Provider side-effect invocation boundary.
 
 ## 2. Tool Contract
 
@@ -33,7 +33,7 @@ dependencies
 metadata
 ```
 
-`ToolRequest` contains project context, operation, input, and protected access references. Raw credentials are not part of the request contract.
+`ToolRequest` contains project context, operation, input, protected access references, and optional request/agent/capability/idempotency correlation. Raw credentials are not part of the request contract. Existing callers remain compatible because the added correlation fields are optional.
 
 `Tool` exposes:
 
@@ -58,11 +58,29 @@ models
 metadata
 ```
 
-`ProviderRequest` carries only `AccessReference` values when protected access is required.
+`ProviderRequest` carries only `AccessReference` values when protected access is required and can carry the same optional request/agent/capability/idempotency correlation used by the centralized gateway.
 
 `ProviderRegistry` supports versioned registration and resolution independently of vendor implementation.
 
-## 4. Dependencies and Availability
+## 4. Centralized Side-Effect Gateway
+
+The standard Agent/Workflow path for material Tool/Provider side effects is now:
+
+```text
+Agent / Workflow
+    -> Supervisor + PolicyEngine
+    -> SideEffectGateway
+    -> ToolRegistry / ProviderRegistry
+    -> replaceable Tool / Provider adapter
+```
+
+`SideEffectGateway` re-evaluates policy immediately before the external adapter boundary, requires `ALLOW`, enforces requested tool operations and protected references against the resolved least-privilege context, and only then resolves/invokes the adapter. `DENY` and `REQUIRE_APPROVAL` return a normalized blocked result and never call the adapter.
+
+The gateway propagates project/request/agent/capability correlation and idempotency keys into Tool/Provider requests. Allowed attempts are durably claimed before invocation and completed with normalized success/failure state plus structured audit. Supported repeated invocation with the same semantic idempotency key and signature reuses the authoritative prior record without calling the adapter again.
+
+Concrete Tool/Provider implementations remain replaceable. Low-level adapter contracts are retained for backward compatibility but are not the standard production authorization boundary for Agent/Workflow side effects.
+
+## 5. Dependencies and Availability
 
 Dependencies use `DependencyRequirement` with:
 
@@ -83,7 +101,7 @@ UNAVAILABLE
 
 Tools and providers own their concrete availability checks. Generic dependency resolution treats `UNAVAILABLE` as unavailable without importing vendor-specific code.
 
-## 5. Protected Access References
+## 6. Protected Access References
 
 The canonical logical reference is:
 
@@ -97,13 +115,13 @@ The initial `EnvironmentSecretBackend` maps references to runtime environment ke
 
 This backend is intentionally replaceable. Phase 10 does not claim durable encrypted secret storage inside the application database.
 
-## 6. ProjectSpec Guard
+## 7. ProjectSpec Guard
 
 Credential-like fields in `ProjectSpec.repository`, `integrations`, `notifications`, and `release` are rejected when they contain plaintext values.
 
 Sensitive nested values must use `secret://...` references. This is a persistence/document boundary guard, not a substitute for Phase 11 authorization policy.
 
-## 7. Provisioning
+## 8. Provisioning
 
 `ProvisioningAdapter` supports provider-neutral resource kinds:
 
@@ -121,19 +139,19 @@ CLOUD_RESOURCE
 
 `ProvisioningRegistry` resolves adapters by provider and supported resource kind.
 
-## 8. Provider-Independent Model Selection
+## 9. Provider-Independent Model Selection
 
 MODEL providers may expose `ModelProfile` entries. `model_candidates()` projects registered available model providers into vendor-neutral candidate records.
 
 `ModelSelectionHook` is replaceable and receives only candidate records plus requirements. No Supervisor code needs to import a specific model vendor.
 
-## 9. Security Boundary
+## 10. Security Boundary
 
 Normal documentation, ProjectSpec persisted configuration, notification events, tool/provider request metadata, and provisioning configuration must use access references rather than resolved secrets.
 
 Resolved secret values exist only transiently at a concrete adapter boundary.
 
-## 10. Validation
+## 11. Validation
 
 Phase 10 integration coverage verifies:
 
@@ -153,14 +171,8 @@ Python 3.13.15
 59 tests PASS
 ```
 
-## 11. Deferred to Phase 11
+## 12. Historical Phase 10 Deferrals
 
-Not implemented as Phase 10 responsibilities:
+The original Phase 10 integration baseline intentionally deferred side-effect authorization, per-agent tool permissions, capability risk classes, approval policy, permission expansion review, least-privilege execution context and policy decision audit to Phase 11. Those policy primitives are now implemented and v0.3 Phase 3 centralizes their standard Tool/Provider invocation enforcement.
 
-- side-effect authorization;
-- per-agent tool permissions;
-- capability risk classes;
-- approval policy;
-- permission expansion review;
-- least-privilege execution context;
-- policy decision audit.
+Remaining limits include provider-specific authorization administration, universal encrypted secret storage and universal exactly-once external delivery.

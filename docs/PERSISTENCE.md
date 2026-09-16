@@ -1,14 +1,14 @@
 # PERSISTENCE
 Документ описує persistence boundary, SQLite hardening, durable control state, Project Registry та recovery semantics K_Supervisor.
 
-Version: 1.4
+Version: 1.5
 Status: ACTIVE
-Baseline: v0.3 Phase 2 COMPLETE
-Date: 2026-09-14
+Baseline: v0.3 Phase 3 implementation
+Date: 2026-09-16
 
 ## 1. Purpose
 
-Persistence is platform-owned authoritative state. v0.3 Phase 1 hardened storage lifecycle/schema evolution; v0.3 Phase 2 moved critical control state onto durable restart-safe records and strengthened atomic state+audit writes.
+Persistence is platform-owned authoritative state. v0.3 Phase 1 hardened storage lifecycle/schema evolution; v0.3 Phase 2 moved critical control state onto durable restart-safe records and strengthened atomic state+audit writes. v0.3 Phase 3 adds authoritative side-effect attempt/outcome state for the centralized Tool/Provider gateway.
 
 Agents do not access SQLite directly.
 
@@ -38,7 +38,7 @@ Current physical schema version remains:
 2
 ```
 
-The tested v1 -> v2 migration remains authoritative. Phase 2 required no new physical schema because durable control records use the existing generic `resources` / `events` layout.
+The tested v1 -> v2 migration remains authoritative. Phase 2 required no new physical schema because durable control records use the existing generic `resources` / `events` layout. Phase 3 also uses that generic layout, so physical schema version remains `2`.
 
 Unknown/future schema versions fail closed.
 
@@ -75,9 +75,12 @@ HumanActionRequest
 NotificationEvent
 ApprovalRecord
 RuntimeIdempotencyRecord
+SideEffectExecutionRecord
 ```
 
 `RuntimeIdempotencyRecord` stores the project-scoped semantic command scope, canonical input signature and prior successful `AgentRunResult`. This supports replay after supported store/process restart without invoking the handler again.
+
+`SideEffectExecutionRecord` stores the normalized Tool/Provider attempt identity, project/request/agent/capability/component correlation, idempotency key, canonical input signature, policy decision, status, normalized output/error and completion time.
 
 ProjectSpec, ArtifactReference and RuntimeIdempotencyRecord are immutable by identifier. Conflicting immutable payloads raise `PersistenceConflictError`.
 
@@ -101,14 +104,16 @@ Notification SENT attempt history is authoritative for restart-safe duplicate su
 
 Top-level SQLite transactions use `BEGIN IMMEDIATE`, commit on success and roll back on failure. Nested store operations participate in the existing transaction.
 
-Phase 2 adds/uses atomic persistence helpers for:
+Phase 2/3 add and use atomic persistence helpers for:
 
 - Project snapshot + required audit;
 - Project lifecycle transition + Project snapshot + required audit;
 - Project operational transition + Project snapshot + required audit;
 - HumanActionRequest + Project operational transition/snapshot + required audit where applicable;
 - HumanActionRequest-only mutation + required audit;
-- ApprovalRecord mutation + required audit.
+- ApprovalRecord mutation + required audit;
+- side-effect PENDING claim + `SIDE_EFFECT_ATTEMPTED` audit;
+- side-effect terminal outcome + `SIDE_EFFECT_SUCCEEDED` / `SIDE_EFFECT_FAILED` audit.
 
 ProjectSpec activation builds the audit record before committing the resulting active Project snapshot and audit together. The immutable ProjectSpec record itself remains independently durable history.
 
@@ -163,6 +168,7 @@ NotificationEvents
 NotificationDeliveryAttempts
 ApprovalRecords
 RuntimeIdempotencyRecords
+SideEffectExecutionRecords
 PolicyDecisions
 AuditEvents
 RoutingRecords
@@ -181,7 +187,7 @@ Distributed database coordination, cross-region replication and mandatory Postgr
 
 ## 12. Validation Baseline
 
-Authoritative v0.3 Phase 2 implementation baseline:
+The predecessor authoritative v0.3 Phase 2 baseline remains:
 
 ```text
 Implementation SHA: 573cbe433ece8ffae45d83a30fd3287fac40d820
@@ -196,8 +202,8 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Phase-specific evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`.
+Phase-specific Phase 2 evidence is recorded in `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md`. Phase 3 completion evidence is recorded only after Core Validation passes on its committed implementation SHA.
 
 ## 13. Current Boundary
 
-Persistence/resource hygiene and durable control-state scope are complete through Phase 2. Phase 3 must build centralized external side-effect enforcement on top of these durable policy/idempotency/audit primitives; it must not create a bypass around authoritative persistence.
+Phase 3 adds restart-visible side-effect execution records and atomic attempt/outcome audit without claiming a distributed transaction with an external provider. A PENDING record after interruption is authoritative evidence that the platform cannot safely infer whether an external system completed the operation; supported-path retries therefore fail closed/replay the authoritative state rather than silently issuing a duplicate. Universal exactly-once external delivery remains out of scope.
