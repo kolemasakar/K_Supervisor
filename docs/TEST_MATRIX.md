@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 2.1
+Version: 2.2
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 6 COMPLETE; v0.3 Phase 7 PLANNED
+Current phase: v0.3 Phase 7 IN PROGRESS; Phase 8 NOT ACTIVATED
 Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
 
 ## v0.2 Regression Matrix
@@ -41,7 +41,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 4 | unresponsive worker, cancellation escalation, timeout, crash isolation, bounded termination | COMPLETE |
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | COMPLETE |
-| 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | PLANNED |
+| 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | IN PROGRESS |
 | 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | PLANNED |
 
 ## Phase 1 Evidence
@@ -122,7 +122,6 @@ Phase 3 implementation must prove:
 - tool/provider failures are normalized and durably audited;
 - concrete adapters remain replaceable behind the gateway contract;
 - all completed v0.2 + v0.3 regression tests remain green.
-
 
 Phase 3 implementation tests:
 
@@ -289,7 +288,7 @@ public CLI/import smoke: PASS
 
 Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`.
 
-## Phase 7 Start Gate - REQUIRED / NOT YET SATISFIED
+## Phase 7 Start Gate - SATISFIED
 
 Before any Phase 7 runtime code is changed:
 
@@ -299,6 +298,48 @@ Before any Phase 7 runtime code is changed:
 - define trust/signature/activation policy before implementation;
 - preserve all completed v0.2 + v0.3 Phase 0-6 tests as cumulative regression requirements;
 - keep Phase 8 deployment/operational-readiness qualification outside Phase 7 scope.
+
+Phase 7 start gate was satisfied by `PHASE7_PREIMPLEMENTATION_AUDIT.md`.
+
+## Phase 7 Implementation Evidence
+
+```text
+Implementation SHA: 64c84ad6e6633c047416aca270d979e4ba5d36a0
+Core Validation run: 35121930140
+Core Validation: PASS
+```
+
+Phase 7 tests include:
+
+```text
+tests/test_v03_phase7_extension_governance.py
+tests/test_v03_phase7_ci_governance.py
+```
+
+Verified behavior includes pre-import rejection of ungoverned, disabled, untrusted, unverified or incompatible installed extensions; durable governance after restart; exact identity/version trust binding; predecessor entry-point compatibility; PR-triggered Core Validation; and updated action runtimes.
+
+Phase 7 completion remains blocked only by repository-level `main` protection / required-status-check administration, not by runtime or CI test failure.
+
+## OpenAI Plugin Compatibility Regression
+
+`tests/test_openai_plugin_release_target.py` verifies the additive `CHATGPT_PLUGIN` release profile and legacy `GPT_STORE` compatibility. Custom Action dependencies are explicitly non-auto-migrating, model pinning is absent, and owner/workspace-controlled availability remains intact.
+
+Current post-amendment validation:
+
+```text
+Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
+Core Validation run: 35124348659
+Python: 3.13.15
+pytest: 149 passed
+branch-aware coverage: 85.63%
+coverage gate: PASS
+ResourceWarning gate: PASS
+compileall: PASS
+wheel build/install: PASS
+public CLI/import smoke: PASS
+```
+
+Phase 8 remains PLANNED / NOT ACTIVATED.
 
 ## Permanent Quality Gates
 
@@ -322,11 +363,11 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 35110298258
-Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
-Python workflow: 3.13
-pytest: 136 passed
-branch-aware coverage: 85.52%
+Core Validation run: 35124348659
+Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
+Python: 3.13.15
+pytest: 149 passed
+branch-aware coverage: 85.63%
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
