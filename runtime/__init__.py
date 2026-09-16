@@ -9,10 +9,14 @@ from .errors import (
     RuntimeTimeout,
     RuntimeToolError,
     RuntimeValidationError,
+    RuntimeWorkerCrashed,
+    RuntimeWorkerReportedError,
+    RuntimeWorkerTerminationError,
 )
 from .health import AgentHealth, RuntimeHealthTracker
 from .idempotency import MemoryIdempotencyStore, PersistenceIdempotencyStore
 from .in_process import AgentRuntimeHandler, InProcessRuntimeAdapter
+from .process_isolated import ProcessRuntimeAdapter
 
 __all__ = [
     "AgentHealth",
@@ -23,6 +27,7 @@ __all__ = [
     "InProcessRuntimeAdapter",
     "MemoryIdempotencyStore",
     "PersistenceIdempotencyStore",
+    "ProcessRuntimeAdapter",
     "RuntimeAdapter",
     "RuntimeCancelled",
     "RuntimeDependencyUnavailable",
@@ -33,4 +38,7 @@ __all__ = [
     "RuntimeTimeout",
     "RuntimeToolError",
     "RuntimeValidationError",
+    "RuntimeWorkerCrashed",
+    "RuntimeWorkerReportedError",
+    "RuntimeWorkerTerminationError",
 ]
