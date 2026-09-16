@@ -53,3 +53,23 @@ class RuntimeValidationError(AgentRuntimeError):
 
 class IdempotencyConflictError(RuntimeValidationError):
     code = "RUNTIME_IDEMPOTENCY_CONFLICT"
+
+
+class RuntimeWorkerCrashed(AgentRuntimeError):
+    code = "RUNTIME_WORKER_CRASH"
+    category = "WORKER_CRASH"
+    retryable = True
+
+
+class RuntimeWorkerTerminationError(AgentRuntimeError):
+    code = "RUNTIME_WORKER_TERMINATION_ERROR"
+    category = "TERMINATION_ERROR"
+
+
+class RuntimeWorkerReportedError(AgentRuntimeError):
+    def __init__(self, message: str, *, code: str, category: str, retryable: bool, status: ExecutionStatus):
+        super().__init__(message)
+        self.code = code
+        self.category = category
+        self.retryable = retryable
+        self.status = status
