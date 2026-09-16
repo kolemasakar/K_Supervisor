@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from factory.contracts import BootstrapFile
 
+from .chatgpt_plugin import ChatGPTPluginPreparationProfile
 from .gpt_store import GPTStorePreparationProfile
 
 
@@ -37,6 +38,8 @@ class GenericReleasePreparationProfile:
 
 
 def profile_for(target_type: str):
+    if target_type.upper() == "CHATGPT_PLUGIN":
+        return ChatGPTPluginPreparationProfile()
     if target_type.upper() == "GPT_STORE":
         return GPTStorePreparationProfile()
     return GenericReleasePreparationProfile(target_type)

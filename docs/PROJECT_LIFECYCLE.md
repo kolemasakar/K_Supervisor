@@ -129,7 +129,7 @@ RELEASE_PREPARATION
 
 Release preparation creates target-specific assets, validation results, checklists, and explicit owner-action requirements.
 
-For GPT Store targets, K_Supervisor should automate all feasible preparation and validation. Actual publication remains a per-project owner action.
+For ChatGPT-facing projects, `CHATGPT_PLUGIN` is the preferred target. K_Supervisor prepares portable skill/workflow, integration, regression and access evidence; legacy `GPT_STORE` remains available only for compatibility/migration. Actual external availability remains a per-project owner or workspace-admin action.
 
 ## 9. Release State
 

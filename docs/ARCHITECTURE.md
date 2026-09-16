@@ -121,7 +121,7 @@ Provides a replaceable protected reference boundary for integration access data.
 
 ### Release Manager
 
-Prepares and validates release targets and performs publication handoff. GPT Store preparation should be automated where feasible; publication remains a per-project owner action.
+Prepares and validates release targets and performs publication/availability handoff. ChatGPT-facing releases are Plugin-first (`CHATGPT_PLUGIN`) with portable skill, integration, regression and access evidence; legacy `GPT_STORE` remains a compatibility path. External availability remains owner/workspace controlled.
 
 ## 5. Multi-Agent Core
 

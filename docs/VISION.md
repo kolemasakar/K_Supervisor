@@ -176,14 +176,15 @@ Secrets must not be stored in project documentation, repositories, notification 
 
 Projects and platform components use secret references through a replaceable Secret Manager boundary.
 
-## 12. Release and GPT Store Strategy
+## 12. Release and ChatGPT Plugin Strategy
 
 Release Manager treats publication destinations as release targets.
 
 Potential targets include:
 
 ```text
-GPT Store
+ChatGPT Plugin
+GPT Store (legacy migration compatibility)
 API service
 web application
 CLI/package
@@ -191,11 +192,11 @@ internal agent
 other targets
 ```
 
-For GPT Store projects, K_Supervisor should automate all feasible preparation and validation needed to reach publication readiness.
+For new ChatGPT-facing projects, K_Supervisor should prepare Plugin-first reusable skill/workflow assets plus explicit app/connector/MCP, regression and access evidence. Legacy Custom Actions are not treated as automatically portable.
 
-Automatic publication is not required.
+Automatic external publication is not required.
 
-Publication remains a separate per-project owner action unless a future explicitly approved capability changes that boundary.
+Plugin sharing/installation/publication remains a separate per-project owner or workspace-administrator action unless a future explicitly approved capability changes that boundary.
 
 ## 13. First Working State
 
@@ -249,7 +250,7 @@ The core must not:
 - persist hidden chain-of-thought;
 - assume every project has the same roadmap or release target;
 - silently expand permissions;
-- treat GPT Store publication as automatic by default.
+- treat Plugin Directory, GPT Store, or other external publication as automatic by default.
 
 ## 17. Success Definition
 

@@ -14,6 +14,8 @@ _REQUIRED_GPT_FILES = (
 
 
 class GPTStorePreparationProfile:
+    """Legacy Custom GPT / GPT Store preparation retained for migration compatibility."""
+
     target_type = "GPT_STORE"
 
     def generate(self, spec, release, target) -> tuple[BootstrapFile, ...]:
@@ -26,6 +28,8 @@ class GPTStorePreparationProfile:
         profile = {
             "schema_version": "1.0",
             "target": self.target_type,
+            "legacy_target": True,
+            "replacement_target": "CHATGPT_PLUGIN",
             "release_id": release.release_id,
             "name": config.get("name") or spec.name,
             "description": config.get("description") or spec.purpose,
