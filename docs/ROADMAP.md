@@ -2,15 +2,17 @@
 K_Supervisor active development roadmap.
 
 Version: 0.3
-Status: ACTIVE
+Status: COMPLETE
 Approved: 2026-09-14
 Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
-Current phase: v0.3 Phase 8 IN PROGRESS
+Current phase: NONE — ROADMAP v0.3 COMPLETE
 Phase 6 implementation completed: 2026-09-16
 Phase 7 implementation validated: 2026-09-16
 Phase 7 completed: 2026-09-16
 Phase 8 activation: YES
+Phase 8 completed: 2026-09-16
+Roadmap completed: 2026-09-16
 
 ## Program Objective
 
@@ -30,9 +32,9 @@ ROADMAP v0.3 uses revision-local numbering. It defines `v0.3 Phase 0` through `v
 | v0.3 Phase 5 | Service/API Boundary | COMPLETE |
 | v0.3 Phase 6 | Production Observability | COMPLETE |
 | v0.3 Phase 7 | Extension Trust & Platform Governance | COMPLETE |
-| v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | IN PROGRESS |
+| v0.3 Phase 8 | Operational Readiness & Autonomous Lifecycle Qualification | COMPLETE |
 
-Phase 0-7 are COMPLETE. Phase 8 is IN PROGRESS following `PHASE8_PREIMPLEMENTATION_AUDIT.md`; implementation is limited to the approved operational-readiness and lifecycle-qualification scope.
+Phase 0-8 are COMPLETE. ROADMAP v0.3 is COMPLETE; no successor implementation phase is defined by this roadmap.
 
 ## Completed Phase 0
 
@@ -141,7 +143,7 @@ Exit criteria:
 
 Deferred from Phase 3: arbitrary third-party Python sandboxing, distributed transaction guarantees and universal exactly-once semantics across external systems.
 
-Successor Phases 4-7 are complete. Phase 8 is now IN PROGRESS under `PHASE8_PREIMPLEMENTATION_AUDIT.md`.
+Successor Phases 4-8 are complete. ROADMAP v0.3 is COMPLETE.
 
 ## Completed Phase 4 - Runtime Isolation & Cancellation
 
@@ -171,7 +173,7 @@ Evidence:
 
 Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
 
-Phase 4 remains complete. Phases 5-7 are also complete; `PROJECT_HANDOFF_2026_09_16_PHASE_7.md` is preserved as historical Phase 7 start context. Phase 8 is now IN PROGRESS under its pre-implementation audit.
+Phase 4 remains complete. Phases 5-8 are also complete; `PROJECT_HANDOFF_2026_09_16_PHASE_7.md` is preserved as historical Phase 7 start context.
 
 ## Completed Phase 5 - Service/API Boundary
 
@@ -203,7 +205,7 @@ Evidence:
 
 Phase 5 does not claim production hosting/TLS, external identity-provider integration, health/readiness/SLO telemetry, distributed tracing, extension trust governance or distributed persistence. Those remain outside Phase 5.
 
-Current roadmap boundary: Phase 7 is `COMPLETE`; v0.3 Phase 8 is `IN PROGRESS`.
+Current roadmap boundary: v0.3 Phase 0-8 are `COMPLETE`; ROADMAP v0.3 is `COMPLETE`.
 
 ## Validation Rule
 
@@ -253,7 +255,7 @@ Evidence:
 
 Phase 6 does not add third-party telemetry SDK dependencies, remote collectors, production hosting, deployment qualification or extension trust governance.
 
-Current roadmap boundary: Phase 7 is `COMPLETE`; v0.3 Phase 8 is `IN PROGRESS`.
+Current roadmap boundary: v0.3 Phase 0-8 are `COMPLETE`; ROADMAP v0.3 is `COMPLETE`.
 
 ## Completed Phase 7 - Extension Trust & Platform Governance
 
@@ -286,12 +288,30 @@ Core Validation: PASS
 
 New ChatGPT-facing projects prefer `CHATGPT_PLUGIN`; `GPT_STORE` remains a legacy compatibility/migration target. Custom Actions are not treated as automatically migrated, selected-model coupling is not introduced, and external sharing/publication remains owner/workspace controlled. Evidence: `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md`.
 
-This amendment remains part of the Phase 8 baseline; Phase 8 is now activated separately by `PHASE8_PREIMPLEMENTATION_AUDIT.md`.
+This amendment remains part of the final v0.3 baseline and is preserved by Phase 8 compatibility regression.
 
-## Phase 8 - Operational Readiness & Autonomous Lifecycle Qualification — IN PROGRESS
+## Completed Phase 8 - Operational Readiness & Autonomous Lifecycle Qualification
 
 Pre-implementation audit: `PHASE8_PREIMPLEMENTATION_AUDIT.md`.
 
-Approved implementation scope is limited to owner-controlled package-index workflow; deployment/runbook/backup/restore/upgrade qualification; operational release-readiness evidence; full approved ProjectSpec -> `RELEASE_READY` qualification; and concurrent-project restart/recovery/owner-intervention qualification.
+Validated implementation evidence:
 
-Phase 8 does not authorize automatic external publication, distributed execution/federation, non-email owner transports, multi-tenant SaaS scope or universal arbitrary-Python sandboxing.
+```text
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Protected PR Core Validation: 35134961231 — PASS
+Merged-main Core Validation: 35135133947 — PASS
+Python workflow: 3.13
+```
+
+Delivered owner-controlled package-index workflow; SQLite backup/restore/upgrade qualification; deployment/runbook qualification; operational release-readiness evidence; full approved ProjectSpec -> `RELEASE_READY` qualification; and concurrent-project restart/recovery/owner-intervention qualification. External publication remains an explicit owner/workspace action.
+
+Completion evidence:
+
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md`;
+- `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`;
+- `OPERATIONS_RUNBOOK.md`;
+- `TEST_MATRIX.md`.
+
+Phase 8 does not claim automatic external publication, distributed execution/federation, non-email owner transports, multi-tenant SaaS scope, production hosting/TLS or universal arbitrary-Python sandboxing. These remain outside ROADMAP v0.3 unless a later explicitly approved roadmap adopts them.

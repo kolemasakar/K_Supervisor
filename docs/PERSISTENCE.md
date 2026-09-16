@@ -3,7 +3,7 @@
 
 Version: 1.8
 Status: ACTIVE
-Baseline: v0.3 Phase 8 IN PROGRESS
+Baseline: ROADMAP v0.3 COMPLETE — Phase 8 operational persistence qualified
 Date: 2026-09-16
 
 ## 1. Purpose
