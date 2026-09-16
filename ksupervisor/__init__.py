@@ -1,4 +1,14 @@
 from .config import PlatformConfig, load_config
+from .service import (
+    API_VERSION,
+    LIFECYCLE_WRITE_SCOPE,
+    OPERATIONAL_WRITE_SCOPE,
+    READ_SCOPE,
+    ServiceApiV1,
+    ServicePrincipal,
+    StaticBearerAuthenticator,
+    WsgiServiceAppV1,
+)
 from .extensions import (
     EXTENSION_GROUPS,
     DiscoveredExtension,
@@ -15,6 +25,14 @@ __all__ = [
     "DiscoveredExtension",
     "ExtensionContext",
     "NamedExtensionRegistry",
+    "API_VERSION",
+    "LIFECYCLE_WRITE_SCOPE",
+    "OPERATIONAL_WRITE_SCOPE",
+    "READ_SCOPE",
+    "ServiceApiV1",
+    "ServicePrincipal",
+    "StaticBearerAuthenticator",
+    "WsgiServiceAppV1",
     "PlatformConfig",
     "activate_extension",
     "discover_extensions",

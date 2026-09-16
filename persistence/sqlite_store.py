@@ -8,10 +8,10 @@ from typing import Iterator, TypeVar
 
 from pydantic import BaseModel
 
-from models.agent import AgentRunResult
+from models.agent import AgentRunRequest, AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
-from models.control import RuntimeIdempotencyRecord
+from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
 from models.side_effect import SideEffectExecutionRecord
 from models.intervention import (
     HumanActionRequest,
@@ -375,6 +375,9 @@ class SQLitePersistenceStore(PersistenceStore):
     def save_runtime_idempotency(self, value): self._save("runtime_idempotency", value.record_id, value.project_id, value, True)
     def get_runtime_idempotency(self, record_id): return self._get("runtime_idempotency", record_id, RuntimeIdempotencyRecord)
     def list_runtime_idempotency(self, project_id): return self._list("runtime_idempotency", project_id, RuntimeIdempotencyRecord)
+    def save_service_mutation(self, value): self._save("service_mutation", value.record_id, value.project_id, value, True)
+    def get_service_mutation(self, record_id): return self._get("service_mutation", record_id, ServiceMutationRecord)
+    def list_service_mutations(self, project_id): return self._list("service_mutation", project_id, ServiceMutationRecord)
     def claim_side_effect_execution(self, value, audit):
         with self.transaction():
             self._create("side_effect_execution", value.execution_id, value.project_id, value, commit=False)

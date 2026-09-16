@@ -8,7 +8,7 @@ from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
 from models.base import ensure_tz
-from models.control import RuntimeIdempotencyRecord
+from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
 from models.side_effect import SideEffectExecutionRecord
 from models.enums import ProjectLifecycleState, ProjectOperationalState, ProjectSpecStatus
 from models.intervention import (
@@ -46,6 +46,7 @@ class ProjectRecoverySnapshot(BaseModel):
     notification_delivery_attempts: tuple[NotificationDeliveryAttempt, ...] = ()
     approvals: tuple[ApprovalRecord, ...] = ()
     runtime_idempotency: tuple[RuntimeIdempotencyRecord, ...] = ()
+    service_mutations: tuple[ServiceMutationRecord, ...] = ()
     side_effect_executions: tuple[SideEffectExecutionRecord, ...] = ()
     policy_decisions: tuple[PolicyDecision, ...] = ()
     audit_events: tuple[AuditEvent, ...] = ()
@@ -201,6 +202,7 @@ class ProjectRegistry:
             notification_delivery_attempts=self.store.list_notification_delivery_attempts(project_id),
             approvals=self.store.list_approvals(project_id),
             runtime_idempotency=self.store.list_runtime_idempotency(project_id),
+            service_mutations=self.store.list_service_mutations(project_id),
             side_effect_executions=self.store.list_side_effect_executions(project_id),
             policy_decisions=self.store.list_policy_decisions(project_id),
             audit_events=self.store.list_audit_events(project_id),

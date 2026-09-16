@@ -22,6 +22,7 @@ on:
       - "release_manager/**"
       - "runtime/**"
       - "scheduler/**"
+      - "service_api/**"
       - "schemas/**"
       - "supervisor/**"
       - "tools/**"
@@ -40,7 +41,7 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: python -m pip install "pydantic>=2.10,<3" "pytest>=8.3,<10" "jsonschema>=4.23,<5" "pytest-cov>=6,<8" "build>=1.2,<2"
       - name: Compile Python sources
-        run: python -m compileall -q access agent_factory agents examples factory integrations ksupervisor models observability persistence policy providers provisioning registry release_manager runtime scheduler supervisor tools workflows
+        run: python -m compileall -q access agent_factory agents examples factory integrations ksupervisor models observability persistence policy providers provisioning registry release_manager runtime scheduler service_api supervisor tools workflows
       - name: Test with coverage gate and resource-warning gate
         run: python -m pytest -q -W error::ResourceWarning --cov=. --cov-report=term-missing --cov-report=xml --cov-fail-under=80
       - name: Build wheel
