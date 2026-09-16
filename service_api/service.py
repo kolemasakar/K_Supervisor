@@ -39,11 +39,12 @@ class ServiceApiV1:
     BASE_PATH = "/api/v1"
     MAX_IDEMPOTENCY_KEY_LENGTH = 256
 
-    def __init__(self, projects: ProjectRegistry, store: PersistenceStore):
+    def __init__(self, projects: ProjectRegistry, store: PersistenceStore, telemetry=None):
         if projects.store is not store:
             raise ValueError("ProjectRegistry and ServiceApiV1 must share one PersistenceStore")
         self.projects = projects
         self.store = store
+        self.telemetry = telemetry
 
     def dispatch(
         self,
@@ -54,22 +55,51 @@ class ServiceApiV1:
         body: Any = None,
         idempotency_key: str | None = None,
     ) -> ApiResponse:
+        method = method.upper()
+        project_id = self._project_id_from_path(path)
         try:
-            return self._dispatch(
-                method.upper(),
+            response = self._dispatch(
+                method,
                 path,
                 principal=principal,
                 body=body,
                 idempotency_key=idempotency_key,
             )
         except ServiceApiError as exc:
-            return self.error_response(exc.code, exc.status_code, exc.message)
+            response = self.error_response(exc.code, exc.status_code, exc.message)
         except Exception:
-            return self.error_response(
+            response = self.error_response(
                 "INTERNAL_ERROR",
                 500,
                 "internal service error",
             )
+        self._telemetry(project_id, method, path, response.status_code, principal)
+        return response
+
+
+    def _telemetry(self, project_id, method, path, status_code, principal) -> None:
+        if self.telemetry is None or project_id is None:
+            return
+        try:
+            self.telemetry.record(
+                project_id=project_id,
+                event_name="service.request.completed",
+                correlation_id=None,
+                service_operation=f"{method} {path}",
+                status=str(status_code),
+                attributes={"method": method, "path": path, "principal_id": None if principal is None else principal.principal_id},
+            )
+        except Exception:
+            pass
+
+    @classmethod
+    def _project_id_from_path(cls, path: str) -> str | None:
+        normalized = path.rstrip("/")
+        prefix = f"{cls.BASE_PATH}/projects/"
+        if not normalized.startswith(prefix):
+            return None
+        value = normalized[len(prefix):].split("/", 1)[0]
+        return value or None
 
     def _dispatch(
         self,

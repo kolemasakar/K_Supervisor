@@ -18,6 +18,7 @@ from models.intervention import (
 )
 from models.lifecycle import ProjectLifecycleTransition
 from models.observability_records import RoutingRecord, ReleaseValidationRecord
+from models.telemetry import TelemetryRecord
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
@@ -52,6 +53,7 @@ class ProjectRecoverySnapshot(BaseModel):
     audit_events: tuple[AuditEvent, ...] = ()
     routing_records: tuple[RoutingRecord, ...] = ()
     release_validation_records: tuple[ReleaseValidationRecord, ...] = ()
+    telemetry_records: tuple[TelemetryRecord, ...] = ()
 
 
 class ProjectRegistry:
@@ -208,6 +210,7 @@ class ProjectRegistry:
             audit_events=self.store.list_audit_events(project_id),
             routing_records=self.store.list_routing_records(project_id),
             release_validation_records=self.store.list_release_validation_records(project_id),
+            telemetry_records=self.store.list_telemetry_records(project_id),
         )
 
     def _require(self, project_id: str) -> Project:

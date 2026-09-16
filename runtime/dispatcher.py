@@ -21,6 +21,7 @@ class AgentRuntimeDispatcher:
         *,
         unavailable_after: int = 3,
         persistence_store: PersistenceStore | None = None,
+        telemetry=None,
     ):
         self.registry = registry
         self.adapter = adapter
@@ -30,6 +31,7 @@ class AgentRuntimeDispatcher:
             else MemoryIdempotencyStore()
         )
         self.health = RuntimeHealthTracker(registry, unavailable_after)
+        self.telemetry = telemetry
         self._controls: dict[str, ExecutionControl] = {}
         self._lock = RLock()
 
@@ -42,11 +44,16 @@ class AgentRuntimeDispatcher:
         return True
 
     def dispatch(self, request: AgentRunRequest) -> AgentRunResult:
+        self._telemetry(request, "runtime.dispatch.started", status="STARTED")
         if self.registry.get(request.agent_id) is None:
-            return self._error(request, RuntimeValidationError("agent is not registered"))
+            result = self._error(request, RuntimeValidationError("agent is not registered"))
+            self._telemetry(request, "runtime.dispatch.completed", status=result.status.value)
+            return result
         availability = self.registry.availability(request.agent_id)
         if availability not in {AgentAvailability.AVAILABLE, AgentAvailability.DEGRADED}:
-            return self._blocked(request, f"agent is not runnable: {availability}")
+            result = self._blocked(request, f"agent is not runnable: {availability}")
+            self._telemetry(request, "runtime.dispatch.completed", status=result.status.value)
+            return result
 
         try:
             limits = RuntimeLimits.from_request(request.limits)
@@ -54,7 +61,9 @@ class AgentRuntimeDispatcher:
             if replay is not None:
                 return replay
         except Exception as exc:
-            return self._error(request, exc)
+            result = self._error(request, exc)
+            self._telemetry(request, "runtime.dispatch.completed", status=result.status.value)
+            return result
 
         control = ExecutionControl(limits)
         with self._lock:
@@ -80,7 +89,29 @@ class AgentRuntimeDispatcher:
             except Exception as exc:
                 result = self._error(request, exc)
         self.health.record(result)
+        self._telemetry(request, "runtime.dispatch.completed", status=result.status.value, attributes={"runtime_usage": dict(control.usage)})
         return result
+
+
+    def _telemetry(self, request: AgentRunRequest, event_name: str, *, status: str | None = None, attributes: dict | None = None) -> None:
+        if self.telemetry is None:
+            return
+        try:
+            self.telemetry.record(
+                project_id=request.project_id,
+                event_name=event_name,
+                correlation_id=request.request_id,
+                request_id=request.request_id,
+                task_id=request.task_id,
+                workflow_run_id=request.workflow_run_id,
+                run_id=request.run_id,
+                agent_id=request.agent_id,
+                capability_id=request.capability_id,
+                status=status,
+                attributes=attributes,
+            )
+        except Exception:
+            pass
 
     @staticmethod
     def _validate_result(request: AgentRunRequest, result: AgentRunResult) -> None:

@@ -20,6 +20,7 @@ from models.intervention import (
 )
 from models.lifecycle import ProjectLifecycleTransition
 from models.observability_records import RoutingRecord, ReleaseValidationRecord
+from models.telemetry import TelemetryRecord
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
@@ -396,3 +397,5 @@ class SQLitePersistenceStore(PersistenceStore):
     def list_routing_records(self, project_id): return self._events("routing_record", project_id, RoutingRecord)
     def append_release_validation_record(self, value): self._event("release_validation", value.project_id, value.created_at.isoformat(), value)
     def list_release_validation_records(self, project_id): return self._events("release_validation", project_id, ReleaseValidationRecord)
+    def append_telemetry_record(self, value): self._event("telemetry_record", value.project_id, value.occurred_at.isoformat(), value)
+    def list_telemetry_records(self, project_id): return self._events("telemetry_record", project_id, TelemetryRecord)

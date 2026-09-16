@@ -8,6 +8,7 @@ from models.side_effect import SideEffectExecutionRecord
 from models.intervention import HumanActionRequest, NotificationDeliveryAttempt, NotificationEvent
 from models.lifecycle import ProjectLifecycleTransition
 from models.observability_records import RoutingRecord, ReleaseValidationRecord
+from models.telemetry import TelemetryRecord
 from models.operational import ProjectOperationalTransition
 from models.project import Project, ProjectSpec
 from models.release import Release, ReleaseTarget
@@ -142,3 +143,7 @@ class PersistenceStore(ABC):
     def append_release_validation_record(self, value: ReleaseValidationRecord) -> None: ...
     @abstractmethod
     def list_release_validation_records(self, project_id: str) -> tuple[ReleaseValidationRecord, ...]: ...
+    @abstractmethod
+    def append_telemetry_record(self, value: TelemetryRecord) -> None: ...
+    @abstractmethod
+    def list_telemetry_records(self, project_id: str) -> tuple[TelemetryRecord, ...]: ...
