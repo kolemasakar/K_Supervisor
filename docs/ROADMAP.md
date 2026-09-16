@@ -8,6 +8,8 @@ Roadmap start: 2026-09-14
 Predecessor: ROADMAP v0.2 COMPLETE
 Current phase: v0.3 Phase 4 COMPLETE; v0.3 Phase 5 PLANNED
 Phase 4 implementation completed: 2026-09-16
+Phase 5 transition handoff prepared: 2026-09-16
+Phase 5 activation: NO
 
 ## Program Objective
 
@@ -168,7 +170,7 @@ Evidence:
 
 Phase 4 does not claim universal sandboxing for arbitrary untrusted Python, distributed worker clusters, container orchestration or remote execution. Those remain outside this phase.
 
-Next roadmap phase: `v0.3 Phase 5 - Service/API Boundary`, status `PLANNED / NOT STARTED`.
+Next roadmap phase: `v0.3 Phase 5 - Service/API Boundary`, status `PLANNED / NOT STARTED`. The new-chat handoff is prepared in `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`; handoff preparation does not activate Phase 5.
 
 ## Validation Rule
 

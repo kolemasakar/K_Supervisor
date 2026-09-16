@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
 Канонічний компактний контекст для продовження роботи над K_Supervisor після завершення ROADMAP v0.3 Phase 4.
 
-Version: 1.7
+Version: 1.8
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -10,6 +10,7 @@ Date: 2026-09-16
 Read from `main` in this order:
 
 ```text
+docs/PROJECT_HANDOFF_2026_09_16_PHASE_5.md
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
@@ -26,7 +27,7 @@ docs/INTEGRATIONS.md
 docs/ROADMAP_IMPLEMENTATION_AUDIT.md
 ```
 
-`PROJECT_HANDOFF_2026_09_16.md` is preserved as the historical Phase 3 startup checkpoint; it is no longer the current-state document.
+`PROJECT_HANDOFF_2026_09_16_PHASE_5.md` is the current transition handoff for the next chat. `PROJECT_HANDOFF_2026_09_16.md` is preserved as the historical Phase 3 startup checkpoint.
 
 Repository:
 
@@ -51,7 +52,7 @@ v0.3 Phase 5-8: PLANNED / NOT STARTED
 Phase 17: NOT DEFINED
 ```
 
-Phase 4 runtime implementation is complete. Phase 5 is not activated by this checkpoint.
+Phase 4 runtime implementation is complete. The transition to a new chat is prepared, but Phase 5 is not activated by the handoff itself.
 
 ## Current Runtime Baseline
 
@@ -102,7 +103,7 @@ Authoritative completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLE
 
 ## Next Planned Work
 
-The next roadmap item is `v0.3 Phase 5 - Service/API Boundary`, status PLANNED / NOT STARTED. Before any Phase 5 runtime change, establish an explicit Phase 5 start instruction and perform its phase-specific pre-implementation review required by the roadmap/test matrix.
+The next roadmap item is `v0.3 Phase 5 - Service/API Boundary`, status PLANNED / NOT STARTED. The next chat must start from `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`, verify current `main`, and perform the Phase 5 pre-implementation audit before any runtime change.
 
 ## Preserved Architecture
 

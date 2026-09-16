@@ -1,7 +1,7 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 1.9
+Version: 2.0
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
 Current phase: v0.3 Phase 4 COMPLETE; v0.3 Phase 5 PLANNED
@@ -194,6 +194,20 @@ public CLI/import smoke: PASS
 ```
 
 Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`. Phase 5 remains PLANNED / NOT STARTED.
+
+## Phase 5 Start Gate - REQUIRED / NOT YET SATISFIED
+
+Before any Phase 5 runtime code is changed in the next chat:
+
+- read `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `TEST_MATRIX.md` and `HARDENING_BASELINE_V0_3.md`;
+- verify current `main` is a descendant of Phase 4 completion and that commits after runtime SHA `34049f601fc8116aa12ee15023f1dc20bc25901a` are documentation-only unless a later explicit runtime checkpoint exists;
+- inventory lifecycle operations that require a service/API surface and the existing control-plane methods they must call rather than bypass;
+- define the versioned API/auth/access-control/idempotency/error contract before implementing transport code;
+- identify invalid-transition and restart-continuity behavior at the service boundary;
+- preserve all completed v0.2 + v0.3 Phase 0-4 tests as cumulative regression requirements;
+- keep Phase 6 observability, Phase 7 extension governance and Phase 8 operational-readiness work outside Phase 5 scope.
+
+Phase 5 required verification remains exactly the approved matrix scope: API contracts, access control, invalid transitions, idempotent mutations and restart continuity.
 
 ## Permanent Quality Gates
 

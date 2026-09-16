@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 2.9
+Version: 3.0
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -10,47 +10,48 @@ Date: 2026-09-16
 1. `VISION.md` - product direction and scope.
 2. `PROJECT_STATE.md` - canonical current implementation/roadmap state.
 3. `ROADMAP.md` - active ROADMAP v0.3 status and phase sequence.
-4. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md` - Phase 4 completion evidence.
-5. `PHASE4_PREIMPLEMENTATION_AUDIT.md` - Phase 4 pre-implementation runtime-isolation audit.
-6. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md` - Phase 3 completion evidence.
-7. `PHASE3_PREIMPLEMENTATION_AUDIT.md` - Phase 3 pre-implementation side-effect-path audit.
-8. `PROJECT_HANDOFF_2026_09_16.md` - frozen historical Phase 3 startup checkpoint.
-9. `HARDENING_BASELINE_V0_3.md` - frozen predecessor baseline, debt assignment, migration and hardening rules.
-10. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md` - Phase 0 completion evidence.
-11. `PERSISTENCE.md` - persistence, schema migration, durable control state and recovery boundary.
-12. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md` - Phase 1 completion evidence.
-13. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md` - Phase 2 completion evidence.
-14. `PROJECT_CONTRACT.md` - ProjectSpec and approval contract.
-15. `PROJECT_LIFECYCLE.md` - lifecycle and operational states.
-16. `PROJECT_CONTROL_PLANE.md` - factory, registry, scheduler, intervention, notifications, access boundaries and release.
-17. `ARCHITECTURE.md` - control plane and multi-agent core.
-18. `AGENT_CONTRACT.md` - common agent execution contract.
-19. `CAPABILITY_MODEL.md` - capability discovery and routing.
-20. `MACHINE_CONTRACTS.md` - machine-readable baseline.
-21. `NOTIFICATIONS.md` - intervention and email notifications.
-22. `REGISTRIES.md` - agent and capability registries.
-23. `SUPERVISOR_KERNEL.md` - task orchestration and routing.
-24. `PROJECT_FACTORY.md` - repository bootstrap.
-25. `WORKFLOW_ENGINE.md` - multi-agent workflow composition.
-26. `AGENT_RUNTIME.md` - runtime execution control and durable idempotency.
-27. `PROJECT_SCHEDULER.md` - parallel project execution.
-28. `INTEGRATIONS.md` - tools, providers, protected access, provisioning and model-selection hooks.
-29. `POLICY_AND_PERMISSIONS.md` - policy decisions, approval lifecycle, permissions and audit.
-30. `AGENT_FACTORY.md` - agent blueprints, scaffolding and reference agents.
-31. `RELEASE_MANAGER.md` - release state, readiness and publication handoff.
-32. `REFERENCE_RESEARCH_CRITIC_WORKFLOW.md` - reference capability composition.
-33. `OBSERVABILITY_AND_RELIABILITY.md` - structured audit, metrics and CI baseline.
-34. `TEST_MATRIX.md` - permanent regression floor and active v0.3 verification plan.
-35. `PLATFORM_INTERFACES.md` - public package, CLI, config and extension discovery.
-36. `DEVELOPER_GUIDE.md` - extension authoring/registration patterns.
-37. `COMPATIBILITY_POLICY.md` - public compatibility rules.
-38. `NOTIFICATION_ADAPTER_INTERFACE.md` - future notification transport boundary.
-39. `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md` - v0.3 approval record.
-40. `ROADMAP_V0_2_ARCHIVE.md` - completed predecessor roadmap snapshot.
-41. `ROADMAP_IMPLEMENTATION_AUDIT.md` - completed v0.2 audit with current v0.3 successor reference.
-42. `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md` - v0.2 closure record.
-43. `CHAT_HANDOFF.md` - compact context for continuation.
-44. `PROJECT_FILE_STANDARD.md` - repository file standard.
+4. `PROJECT_HANDOFF_2026_09_16_PHASE_5.md` - current new-chat transition handoff for Phase 5 preparation.
+5. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md` - Phase 4 completion evidence.
+6. `PHASE4_PREIMPLEMENTATION_AUDIT.md` - Phase 4 pre-implementation runtime-isolation audit.
+7. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md` - Phase 3 completion evidence.
+8. `PHASE3_PREIMPLEMENTATION_AUDIT.md` - Phase 3 pre-implementation side-effect-path audit.
+9. `PROJECT_HANDOFF_2026_09_16.md` - frozen historical Phase 3 startup checkpoint.
+10. `HARDENING_BASELINE_V0_3.md` - frozen predecessor baseline, debt assignment, migration and hardening rules.
+11. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_0_COMPLETE.md` - Phase 0 completion evidence.
+12. `PERSISTENCE.md` - persistence, schema migration, durable control state and recovery boundary.
+13. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_1_COMPLETE.md` - Phase 1 completion evidence.
+14. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_2_COMPLETE.md` - Phase 2 completion evidence.
+15. `PROJECT_CONTRACT.md` - ProjectSpec and approval contract.
+16. `PROJECT_LIFECYCLE.md` - lifecycle and operational states.
+17. `PROJECT_CONTROL_PLANE.md` - factory, registry, scheduler, intervention, notifications, access boundaries and release.
+18. `ARCHITECTURE.md` - control plane and multi-agent core.
+19. `AGENT_CONTRACT.md` - common agent execution contract.
+20. `CAPABILITY_MODEL.md` - capability discovery and routing.
+21. `MACHINE_CONTRACTS.md` - machine-readable baseline.
+22. `NOTIFICATIONS.md` - intervention and email notifications.
+23. `REGISTRIES.md` - agent and capability registries.
+24. `SUPERVISOR_KERNEL.md` - task orchestration and routing.
+25. `PROJECT_FACTORY.md` - repository bootstrap.
+26. `WORKFLOW_ENGINE.md` - multi-agent workflow composition.
+27. `AGENT_RUNTIME.md` - runtime execution control and durable idempotency.
+28. `PROJECT_SCHEDULER.md` - parallel project execution.
+29. `INTEGRATIONS.md` - tools, providers, protected access, provisioning and model-selection hooks.
+30. `POLICY_AND_PERMISSIONS.md` - policy decisions, approval lifecycle, permissions and audit.
+31. `AGENT_FACTORY.md` - agent blueprints, scaffolding and reference agents.
+32. `RELEASE_MANAGER.md` - release state, readiness and publication handoff.
+33. `REFERENCE_RESEARCH_CRITIC_WORKFLOW.md` - reference capability composition.
+34. `OBSERVABILITY_AND_RELIABILITY.md` - structured audit, metrics and CI baseline.
+35. `TEST_MATRIX.md` - permanent regression floor and active v0.3 verification plan.
+36. `PLATFORM_INTERFACES.md` - public package, CLI, config and extension discovery.
+37. `DEVELOPER_GUIDE.md` - extension authoring/registration patterns.
+38. `COMPATIBILITY_POLICY.md` - public compatibility rules.
+39. `NOTIFICATION_ADAPTER_INTERFACE.md` - future notification transport boundary.
+40. `PROJECT_CHECKPOINT_ROADMAP_V0_3_APPROVED.md` - v0.3 approval record.
+41. `ROADMAP_V0_2_ARCHIVE.md` - completed predecessor roadmap snapshot.
+42. `ROADMAP_IMPLEMENTATION_AUDIT.md` - completed v0.2 audit with current v0.3 successor reference.
+43. `PROJECT_CHECKPOINT_ROADMAP_V0_2_COMPLETE.md` - v0.2 closure record.
+44. `CHAT_HANDOFF.md` - compact context for continuation.
+45. `PROJECT_FILE_STANDARD.md` - repository file standard.
 
 ## Current Roadmap State
 
@@ -68,7 +69,7 @@ Phase 17: NOT DEFINED
 
 ## Current Continuation State
 
-Phase 4 is complete. `PROJECT_HANDOFF_2026_09_16.md` remains a frozen historical Phase 3 startup record. Phase 5 remains PLANNED / NOT STARTED.
+Phase 4 is complete. `PROJECT_HANDOFF_2026_09_16_PHASE_5.md` is the current transition handoff for the next chat. `PROJECT_HANDOFF_2026_09_16.md` remains a frozen historical Phase 3 startup record. Phase 5 remains PLANNED / NOT STARTED.
 
 ## Current Runtime Baseline
 

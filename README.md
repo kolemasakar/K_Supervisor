@@ -27,7 +27,7 @@ Phase 17: NOT DEFINED
 
 ## Current Continuation State
 
-Phase 4 is complete. `docs/PROJECT_HANDOFF_2026_09_16.md` remains a historical Phase 3 startup checkpoint. The next roadmap phase, Phase 5, remains PLANNED / NOT STARTED.
+Phase 4 is complete. `docs/PROJECT_HANDOFF_2026_09_16_PHASE_5.md` is the current new-chat transition handoff. `docs/PROJECT_HANDOFF_2026_09_16.md` remains a historical Phase 3 startup checkpoint. Phase 5 remains PLANNED / NOT STARTED and is not activated by preparing the handoff.
 
 ## Current Runtime Baseline
 
@@ -112,6 +112,7 @@ Start with:
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
+- `docs/PROJECT_HANDOFF_2026_09_16_PHASE_5.md`;
 - `docs/HARDENING_BASELINE_V0_3.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_4_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_3_COMPLETE.md`;

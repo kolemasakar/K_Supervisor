@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 4.
 
-Version: 2.4
+Version: 2.5
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -95,6 +95,18 @@ Status: PLANNED / NOT STARTED
 ```
 
 Phase 5 is not activated by the Phase 4 completion checkpoint. No Phase 5 runtime work is included in the current baseline.
+
+## New-Chat Handoff
+
+Current transition record: `PROJECT_HANDOFF_2026_09_16_PHASE_5.md`.
+
+Decision fixed for the next chat:
+
+- Phase 4 remains COMPLETE on validated runtime SHA `34049f601fc8116aa12ee15023f1dc20bc25901a`;
+- Phase 5 remains PLANNED / NOT STARTED until an explicit user instruction activates it;
+- before any Phase 5 runtime change, verify current `main`, read the canonical records and complete a Phase 5 pre-implementation audit;
+- the Phase 5 audit must preserve the existing control plane and define the versioned Service/API boundary without creating a parallel orchestration path;
+- Phase 6-8 work is outside the Phase 5 transition scope.
 
 ## Historical Handoff
 
