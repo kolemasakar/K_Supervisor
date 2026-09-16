@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after explicit ROADMAP v0.4 approval and Phase 0 activation.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 0 completion.
 
-Version: 4.0
+Version: 4.1
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -15,9 +15,10 @@ Package: k-supervisor==0.1.0
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
-v0.4 Phase 0: ACTIVE — documentation/baseline only
-v0.4 Phase 1-7: PLANNED
-Current approved implementation phase: v0.4 Phase 0
+v0.4 Phase 0: COMPLETE
+v0.4 Phase 1: READY FOR PRE-IMPLEMENTATION AUDIT
+v0.4 Phase 2-7: PLANNED
+Current approved planning phase: v0.4 Phase 1 pre-implementation audit
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
@@ -38,7 +39,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Exact-tree local cumulative verification before v0.3 merge produced `163 passed` and branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 remains authoritative. The v0.4 activation work changes documentation only and does not replace this runtime baseline.
+Exact-tree local cumulative verification before v0.3 merge produced `163 passed` and branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 remains authoritative. The completed v0.4 Phase 0 changed documentation only and does not replace this runtime baseline.
 
 ## v0.4 Approval State
 
@@ -51,8 +52,8 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 ## v0.4 Phase State
 
 ```text
-Phase 0  Baseline Freeze & Operator Product Contract                 ACTIVE
-Phase 1  Production Model Provider & AI Execution                   PLANNED
+Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
+Phase 1  Production Model Provider & AI Execution                   READY — AUDIT PENDING
 Phase 2  Operator Control API                                       PLANNED
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
@@ -61,7 +62,20 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 authorizes documentation/baseline/hardening-contract work only. Runtime changes begin only after Phase 0 completion and the next active phase's pre-implementation audit/activation gate.
+Phase 0 is complete. Its protected activation evidence is PR #10 / `Core Validation` `35143639772` / merged main `b559f3a6158566531e2896e91ced817484d6f152`, with no runtime path changes. Phase 1 is ready for its mandatory pre-implementation audit; runtime changes remain unauthorized until that audit and activation gate are committed.
+
+## Phase 0 Completion Evidence
+
+```text
+Activation PR: #10
+Activation head: 78ad31bb7df0b654be3477b0be3136db2270abad
+Activation tree: c19e76192ab98003060bd86e5a193676029b358b
+Core Validation: 35143639772 — PASS
+Merged main: b559f3a6158566531e2896e91ced817484d6f152
+Runtime path changes: NONE
+```
+
+Completion checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
 
 ## Repository Governance
 

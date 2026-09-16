@@ -16,15 +16,17 @@ K_Supervisor is separate from K-Research & Critic, which remains reference-only.
 ```text
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
-v0.3 Phase 0-8: COMPLETE
-Current approved implementation phase: NONE
-Phase 9: NOT DEFINED
-Phase 17: NOT DEFINED
+ROADMAP v0.4: ACTIVE
+v0.4 Phase 0: COMPLETE
+v0.4 Phase 1: READY FOR PRE-IMPLEMENTATION AUDIT
+v0.4 Phase 2-7: PLANNED
+Runtime implementation phase: NONE
+v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.3 is complete. `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` is the final v0.3 checkpoint. No successor implementation phase is currently approved.
+ROADMAP v0.4 is approved and Phase 0 is complete. `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` is the current phase checkpoint. Phase 1 — Production Model Provider & AI Execution — is ready for its mandatory pre-implementation audit; runtime implementation is not yet active.
 
 ## Current Runtime Baseline
 
