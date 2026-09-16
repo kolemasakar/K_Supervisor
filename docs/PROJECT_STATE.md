@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor під час ROADMAP v0.3 Phase 8.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.3 completion.
 
-Version: 3.0
+Version: 3.1
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -13,21 +13,22 @@ Branch: main
 Product status: PRE-ALPHA
 Package: k-supervisor==0.1.0
 ROADMAP v0.2: COMPLETE
-ROADMAP v0.3: ACTIVE
-v0.3 Phase 0-6: COMPLETE
-v0.3 Phase 7: COMPLETE
-v0.3 Phase 8: IN PROGRESS
+ROADMAP v0.3: COMPLETE
+v0.3 Phase 0-8: COMPLETE
+Current approved implementation phase: NONE
+Phase 9: NOT DEFINED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
-Core Validation run: 35124348659
-Python: 3.13.15
-pytest: 149 passed
-branch-aware coverage: 85.63%
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Protected PR Core Validation: 35134961231 — PASS
+Merged-main Core Validation: 35135133947 — PASS
+Python workflow: 3.13
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall: PASS
@@ -35,35 +36,29 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-This baseline includes the validated Phase 7 runtime implementation plus the additive OpenAI Custom GPT -> Plugin compatibility correction.
+Exact-tree local cumulative verification before merge produced `163 passed` and branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 is authoritative and passed on both PR and merged `main`.
 
-## Phase 7 State
+## Phase 8 Completion State
 
-Phase 7 pre-implementation audit is complete and the extension-governance runtime is implemented and validated.
+Phase 8 completed the approved Operational Readiness & Autonomous Lifecycle Qualification scope:
 
-Validated Phase 7 implementation evidence before the later compatibility patch:
+- verified online SQLite backup, restore and non-destructive upgrade qualification;
+- deployment qualification using existing health/reliability contracts;
+- authoritative operational release-readiness evidence;
+- approved ProjectSpec -> `RELEASE_READY` qualification with publication still owner-gated;
+- restart/recovery plus concurrent-project owner-wait isolation;
+- manual-only protected package-index publication workflow using OIDC Trusted Publishing;
+- operational runbook covering deployment, backup/restore/upgrade, rollback and publication procedures.
 
-```text
-Implementation SHA: 64c84ad6e6633c047416aca270d979e4ba5d36a0
-Core Validation run: 35121930140
-Core Validation: PASS
-```
+SQLite physical schema remains version `2`. `RELEASE_READY` remains distinct from external publication.
 
-Delivered Phase 7 runtime/CI work includes:
+Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md`.
 
-- fail-closed installed-extension activation before `EntryPoint.load()`;
-- exact extension identity/provenance/version/compatibility binding;
-- durable enabled/trusted/signature-verification governance state;
-- trust invalidation on identity-bearing metadata change;
-- PR-triggered authoritative `Core Validation` and current GitHub Actions runtime lines.
+## Repository Governance
 
-Phase 7 repository governance is now complete: active repository ruleset `main-core-validation` (ruleset id `23556478`) targets the default branch, requires pull requests and the GitHub Actions check `Core Validation`, blocks deletion and non-fast-forward pushes, has no bypass actors, and does not require branches to be up to date before merge.
+Repository ruleset `main-core-validation` (id `23556478`) protects the default branch, requires pull requests and GitHub Actions `Core Validation`, blocks deletion/non-fast-forward updates, and has no bypass actors. Phase 8 implementation passed the protected PR gate before merge and the merged-main push validation after merge.
 
-## OpenAI Platform Compatibility Correction
-
-OpenAI's announced Custom GPT retirement requires ChatGPT-facing release preparation to be Plugin-first.
-
-K_Supervisor now uses:
+## ChatGPT Compatibility Boundary
 
 ```text
 Preferred ChatGPT release target: CHATGPT_PLUGIN
@@ -73,24 +68,9 @@ Selected ChatGPT model pinning: NO
 External availability/publication: owner/workspace-admin controlled
 ```
 
-`CHATGPT_PLUGIN` generates portable skill, reference/integration inventory, regression prompts and access/migration evidence. `GPT_STORE` remains supported so historical/persisted release state stays resumable.
+`CHATGPT_PLUGIN` generates portable skill/reference/integration and migration evidence. `GPT_STORE` remains a legacy compatibility target so historical persisted release state remains resumable.
 
 Authoritative impact record: `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md`.
-
-## Persistence
-
-SQLite physical schema remains version `2`. Neither Phase 7 nor the Plugin compatibility correction activates Phase 8 migration/backup/restore qualification.
-
-## Current Roadmap Boundary
-
-```text
-Phase 7: COMPLETE
-Completion checkpoint: PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md
-Phase 8: IN PROGRESS
-Pre-implementation audit: PHASE8_PREIMPLEMENTATION_AUDIT.md
-```
-
-Phase 7 remains complete. Phase 8 is activated by `PHASE8_PREIMPLEMENTATION_AUDIT.md`; current implementation scope and verification are authoritative in that audit, this document, `ROADMAP.md` and `TEST_MATRIX.md`.
 
 ## Public Compatibility Baseline
 
@@ -100,8 +80,6 @@ Service facade: ksupervisor.service
 Service API: /api/v1
 CLI: k-supervisor
 Config version: 1
-Preferred ChatGPT release target: CHATGPT_PLUGIN
-Legacy ChatGPT migration target: GPT_STORE
 Extension groups:
   k_supervisor.agents
   k_supervisor.capabilities
@@ -109,6 +87,17 @@ Extension groups:
   k_supervisor.adapters
 ```
 
+## Roadmap Boundary
+
+```text
+ROADMAP v0.3: COMPLETE
+Phase 8 checkpoint: PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md
+Roadmap checkpoint: PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md
+Next implementation phase: NONE
+```
+
+Roadmap completion is not an external publication or universal production-readiness claim. Explicitly deferred items in `HARDENING_BASELINE_V0_3.md` remain deferred. New implementation work requires a new explicitly approved roadmap/revision; Phase 9 is not implicitly activated.
+
 ## Validation Rule
 
-Completed v0.2 plus completed v0.3 phase tests remain cumulative. Runtime changes require successful Core Validation on the committed implementation SHA. Phase completion additionally requires all phase-specific non-code governance exit criteria.
+The completed v0.2 and v0.3 suites remain the cumulative regression floor. Any future runtime change under a newly approved roadmap must establish a new committed implementation baseline and pass protected `Core Validation` before claiming completion.

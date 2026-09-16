@@ -15,38 +15,34 @@ K_Supervisor is separate from K-Research & Critic, which remains reference-only.
 
 ```text
 ROADMAP v0.2: COMPLETE
-ROADMAP v0.3: ACTIVE
-v0.3 Phase 0 - Baseline Freeze & Hardening Contract: COMPLETE
-v0.3 Phase 1 - Persistence & Resource Hygiene: COMPLETE
-v0.3 Phase 2 - Durable Control State: COMPLETE
-v0.3 Phase 3 - Centralized Side-Effect Enforcement: COMPLETE
-v0.3 Phase 4 - Runtime Isolation & Cancellation: COMPLETE
-v0.3 Phase 5 - Service/API Boundary: COMPLETE
-v0.3 Phase 6 - Production Observability: COMPLETE
-v0.3 Phase 7-8: PLANNED / NOT STARTED
+ROADMAP v0.3: COMPLETE
+v0.3 Phase 0-8: COMPLETE
+Current approved implementation phase: NONE
+Phase 9: NOT DEFINED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-Phase 6 is complete. `docs/PROJECT_HANDOFF_2026_09_16_PHASE_7.md` is the current transition handoff. Phase 7 remains PLANNED / NOT STARTED.
+ROADMAP v0.3 is complete. `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` is the final v0.3 checkpoint. No successor implementation phase is currently approved.
 
 ## Current Runtime Baseline
 
 ```text
-Core Validation run: 35110298258
-Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Protected PR Core Validation: 35134961231 — PASS
+Merged-main Core Validation: 35135133947 — PASS
 Python workflow: 3.13
-pytest: 136 passed
-branch-aware coverage: 85.52%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
-compileall including examples/service_api: PASS
+compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation-only closure commits after this implementation SHA do not replace the validated runtime baseline.
+Exact-tree local cumulative verification before merge: `163 passed`, branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 is authoritative and passed on PR and merged `main`. Documentation-only closure commits do not replace this runtime baseline.
 
 ## Completed v0.3 Hardening
 
@@ -56,6 +52,8 @@ Documentation-only closure commits after this implementation SHA do not replace 
 - Phase 4: process-isolated runtime option with parent-owned timeout/cancellation escalation, worker-crash containment and bounded cleanup.
 - Phase 5: versioned `/api/v1` Project read/lifecycle service boundary with injected authentication, independent scopes, normalized errors and durable restart-safe mutation idempotency.
 - Phase 6: persisted operational telemetry, correlation, redaction, deterministic timeline, exporter projections and service health/readiness foundations.
+- Phase 7: fail-closed installed-extension trust/provenance/compatibility governance plus protected-main required-CI governance.
+- Phase 8: operational backup/restore/upgrade qualification, deployment/readiness evidence, lifecycle/recovery concurrency qualification, runbook and manual owner-gated package publication workflow.
 
 Phase 5 does not expose ProjectSpec administration, workflow/runtime execution, release/publication mutation, Tool/Provider side effects or secret contents. Those authoritative boundaries remain separate.
 
@@ -82,9 +80,9 @@ Start with:
 - `docs/PROJECT_STATE.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
-- `docs/PROJECT_HANDOFF_2026_09_16_PHASE_7.md`;
-- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`;
-- `docs/PHASE6_PREIMPLEMENTATION_AUDIT.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md`;
+- `docs/OPERATIONS_RUNBOOK.md`;
 - `docs/OBSERVABILITY_AND_RELIABILITY.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_5_COMPLETE.md`;
 - `docs/PHASE5_PREIMPLEMENTATION_AUDIT.md`;

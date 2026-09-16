@@ -1,22 +1,20 @@
 # CHAT_HANDOFF
-Канонічний компактний контекст для продовження роботи над K_Supervisor після завершення ROADMAP v0.3 Phase 6.
+Canonical compact context for continuing K_Supervisor after ROADMAP v0.3 completion.
 
-Version: 2.0
+Version: 3.0
 Status: ACTIVE
 Date: 2026-09-16
 
 ## Start Here
 
 ```text
-docs/PROJECT_HANDOFF_2026_09_16_PHASE_7.md
 docs/PROJECT_STATE.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md
-docs/PHASE6_PREIMPLEMENTATION_AUDIT.md
+docs/OPERATIONS_RUNBOOK.md
 docs/HARDENING_BASELINE_V0_3.md
-docs/OBSERVABILITY_AND_RELIABILITY.md
-docs/PLATFORM_INTERFACES.md
 docs/COMPATIBILITY_POLICY.md
 ```
 
@@ -24,40 +22,40 @@ docs/COMPATIBILITY_POLICY.md
 
 ```text
 ROADMAP v0.2: COMPLETE
-ROADMAP v0.3: ACTIVE
-v0.3 Phase 0-6: COMPLETE
-v0.3 Phase 7-8: PLANNED / NOT STARTED
+ROADMAP v0.3: COMPLETE
+v0.3 Phase 0-8: COMPLETE
+Current approved implementation phase: NONE
+Phase 9: NOT DEFINED
 ```
 
 ## Current Runtime Baseline
 
 ```text
-Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
-Core Validation run: 35110298258
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Protected PR Core Validation: 35134961231 — PASS
+Merged-main Core Validation: 35135133947 — PASS
 Python workflow: 3.13
-pytest: 136 passed
-branch-aware coverage: 85.52%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
-compileall including examples/service_api: PASS
+compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-## Completed Phase 6
+Exact-tree local cumulative result before merge: `163 passed`, branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 is authoritative.
 
-- persisted `TelemetryRecord` operational events;
-- Runtime/Service correlation instrumentation;
-- deterministic telemetry timeline/recovery;
-- recursive redaction before persistence/export;
-- SDK-neutral Prometheus/OpenTelemetry projections;
-- component-based service health/readiness independent of Project state;
-- observability failure remains non-fatal.
+## Completed Phase 8
 
-## Next Planned Work
+Phase 8 delivered verified SQLite backup/restore/upgrade qualification, deployment qualification, operational release evidence, approved ProjectSpec -> `RELEASE_READY` qualification, restart/recovery and owner-wait concurrency isolation, an operations runbook, and a manual owner-confirmed OIDC package publication workflow.
 
-`v0.3 Phase 7 - Extension Trust & Platform Governance` is PLANNED / NOT STARTED. A pre-implementation audit is mandatory before runtime changes.
+External publication remains an owner/workspace action and was not automatically performed. SQLite schema remains version `2`.
+
+## Repository Governance
+
+Ruleset `main-core-validation` (id `23556478`) is active on the default branch, requires pull requests and `Core Validation`, blocks deletion/non-fast-forward updates and has no bypass actors.
 
 ## Working Rule
 
-Implement only the explicitly active roadmap phase. Phase 8 remains outside Phase 7 scope.
+ROADMAP v0.3 is closed. Do not create or implement a Phase 9 implicitly. Any new implementation cycle must start by explicitly approving a new roadmap/revision, then establishing its baseline audit, scope, test matrix and exit criteria before runtime changes.

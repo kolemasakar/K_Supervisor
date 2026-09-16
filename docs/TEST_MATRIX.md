@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Матриця regression-перевірок K_Supervisor для завершеного ROADMAP v0.2 та активного ROADMAP v0.3.
 
-Version: 2.4
+Version: 2.5
 Status: ACTIVE
-Roadmap baseline: v0.2 COMPLETE + v0.3 ACTIVE
-Current phase: v0.3 Phase 8 IN PROGRESS
+Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE
+Current phase: NONE — ROADMAP v0.3 COMPLETE
 Phase 5 state: COMPLETE on validated implementation SHA 0c92ae8328c99bc3219a51b16c5e5fb7ef3c3841
 
 ## v0.2 Regression Matrix
@@ -42,7 +42,7 @@ The completed ROADMAP v0.2 test families remain the minimum regression floor for
 | 5 | API contracts, access control, invalid transitions, idempotent mutations, restart continuity | COMPLETE |
 | 6 | correlation, persisted telemetry, timeline reconstruction, exporter contracts, health/readiness, redaction | COMPLETE |
 | 7 | extension compatibility/trust state, disabled extension behavior, entry-point regression, CI governance | COMPLETE |
-| 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | IN PROGRESS |
+| 8 | deployment, complete lifecycle qualification, failure injection, backup/restore, migration, parallel-project isolation | COMPLETE |
 
 ## Phase 1 Evidence
 
@@ -339,7 +339,7 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Phase 8 is IN PROGRESS under `PHASE8_PREIMPLEMENTATION_AUDIT.md`.
+Phase 8 is COMPLETE. Completion record: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md`.
 
 
 ## Phase 8 Start Gate - SATISFIED
@@ -358,6 +358,46 @@ Required Phase 8 verification:
 - manual-only owner/environment-gated package-index publication workflow;
 - operational runbook;
 - full cumulative regression suite and protected `Core Validation` PASS.
+
+## Phase 8 Implementation Evidence
+
+```text
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Implementation PR: #6
+Protected PR Core Validation: 35134961231 — PASS
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Merged-main Core Validation: 35135133947 — PASS
+Python workflow: 3.13
+```
+
+Exact-tree local cumulative verification before merge:
+
+```text
+local Python: 3.12.3 (non-authoritative)
+pytest: 163 passed
+branch-aware coverage: 85.82%
+coverage gate >= 80%: PASS
+ResourceWarning gate: PASS
+compileall: PASS
+```
+
+GitHub Actions Python 3.13 is authoritative. Both the protected PR run and merged-main push run passed compile, cumulative tests/coverage/ResourceWarning gate, wheel build/install and public CLI/import smoke.
+
+Phase 8 verified:
+
+- online SQLite backup with checksum/schema/integrity evidence;
+- corrupt/unsupported restore rejection and atomic-replacement failure rollback;
+- non-destructive supported legacy upgrade qualification;
+- operational schema/store/recovery release evidence;
+- approved ProjectSpec -> `RELEASE_READY` with `PUBLICATION_REQUIRED` / `WAITING_FOR_OWNER`;
+- restart reconstruction of release/target/Human Intervention/validation state;
+- concurrent-project isolation while one Project waits for owner;
+- manual-only owner-confirmed protected-environment OIDC package publication workflow;
+- deployment qualifier and operational runbook;
+- full cumulative predecessor regression floor.
+
+Completion records: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md` and `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`.
 
 ## Permanent Quality Gates
 
@@ -381,17 +421,20 @@ compatibility           -> v0.2 public package/CLI/config/entry-point regression
 ## Current Authoritative Runtime Baseline
 
 ```text
-Core Validation run: 35124348659
-Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
-Python: 3.13.15
-pytest: 149 passed
-branch-aware coverage: 85.63%
+Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
+Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
+Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Protected PR Core Validation: 35134961231 — PASS
+Merged-main Core Validation: 35135133947 — PASS
+Python workflow: 3.13
 coverage gate: PASS
 ResourceWarning gate: PASS
 compileall including examples: PASS
 wheel build/install: PASS
 public interface smoke: PASS
 ```
+
+Exact-tree local cumulative result: `163 passed`, branch-aware coverage `85.82%` on Python 3.12.3; authoritative GitHub Actions Python 3.13 gates passed on PR and merged `main`.
 
 ## CI Rule
 
