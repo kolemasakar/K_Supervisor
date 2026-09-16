@@ -12,6 +12,7 @@ from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
 from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
+from models.extension import ExtensionTrustRecord
 from models.side_effect import SideEffectExecutionRecord
 from models.intervention import (
     HumanActionRequest,
@@ -399,3 +400,6 @@ class SQLitePersistenceStore(PersistenceStore):
     def list_release_validation_records(self, project_id): return self._events("release_validation", project_id, ReleaseValidationRecord)
     def append_telemetry_record(self, value): self._event("telemetry_record", value.project_id, value.occurred_at.isoformat(), value)
     def list_telemetry_records(self, project_id): return self._events("telemetry_record", project_id, TelemetryRecord)
+    def save_extension_trust(self, value): self._save("extension_trust", value.record_id, "__platform__", value)
+    def get_extension_trust(self, record_id): return self._get("extension_trust", record_id, ExtensionTrustRecord)
+    def list_extension_trust(self): return self._list("extension_trust", "__platform__", ExtensionTrustRecord)

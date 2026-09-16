@@ -4,6 +4,7 @@ from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
 from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
+from models.extension import ExtensionTrustRecord
 from models.side_effect import SideEffectExecutionRecord
 from models.intervention import HumanActionRequest, NotificationDeliveryAttempt, NotificationEvent
 from models.lifecycle import ProjectLifecycleTransition
@@ -147,3 +148,9 @@ class PersistenceStore(ABC):
     def append_telemetry_record(self, value: TelemetryRecord) -> None: ...
     @abstractmethod
     def list_telemetry_records(self, project_id: str) -> tuple[TelemetryRecord, ...]: ...
+    @abstractmethod
+    def save_extension_trust(self, value: ExtensionTrustRecord) -> None: ...
+    @abstractmethod
+    def get_extension_trust(self, record_id: str) -> ExtensionTrustRecord | None: ...
+    @abstractmethod
+    def list_extension_trust(self) -> tuple[ExtensionTrustRecord, ...]: ...
