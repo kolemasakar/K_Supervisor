@@ -16,10 +16,10 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: READY FOR PRE-IMPLEMENTATION AUDIT
+v0.4 Phase 1: ACTIVE — Production Model Provider & AI Execution
 v0.4 Phase 2-7: PLANNED
-Current approved planning phase: v0.4 Phase 1 pre-implementation audit
-Runtime implementation phase: NONE
+Current approved implementation phase: v0.4 Phase 1
+Runtime implementation phase: v0.4 Phase 1
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -53,7 +53,7 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
-Phase 1  Production Model Provider & AI Execution                   READY — AUDIT PENDING
+Phase 1  Production Model Provider & AI Execution                   ACTIVE
 Phase 2  Operator Control API                                       PLANNED
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
@@ -62,7 +62,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 is complete. Its protected activation evidence is PR #10 / `Core Validation` `35143639772` / merged main `b559f3a6158566531e2896e91ced817484d6f152`, with no runtime path changes. Phase 1 is ready for its mandatory pre-implementation audit; runtime changes remain unauthorized until that audit and activation gate are committed.
+Phase 0 is complete. Its protected activation evidence is PR #10 / `Core Validation` `35143639772` / merged main `b559f3a6158566531e2896e91ced817484d6f152`, with no runtime path changes. Phase 1 pre-implementation audit is complete and activation is being committed through protected governance. Runtime changes are authorized only after the activation PR merges; scope is fixed by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`.
 
 ## Phase 0 Completion Evidence
 
