@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Канонічний поточний знімок K_Supervisor після завершення ROADMAP v0.3 Phase 6.
+Канонічний поточний знімок K_Supervisor під час ROADMAP v0.3 Phase 7.
 
-Version: 2.7
+Version: 2.8
 Status: ACTIVE
 Date: 2026-09-16
 
@@ -15,63 +15,81 @@ Package: k-supervisor==0.1.0
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: ACTIVE
 v0.3 Phase 0-6: COMPLETE
-v0.3 Phase 7-8: PLANNED / NOT STARTED
-Phase 7 activation in this checkpoint: NO
+v0.3 Phase 7: IN PROGRESS — implementation validated; repository governance blocker remains
+v0.3 Phase 8: PLANNED / NOT ACTIVATED
 Phase 17: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Core Validation run: 35110298258
-Implementation SHA: 8f3d9a85abd68e1ab83dbf7ca87f3dadfe549883
-Python workflow: 3.13
-pytest: 136 passed
-branch-aware coverage: 85.52%
+Implementation SHA: 97f454a11d1b5e5afb1334fb06d54d5abffdf004
+Core Validation run: 35124348659
+Python: 3.13.15
+pytest: 149 passed
+branch-aware coverage: 85.63%
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
-compileall including examples/service_api: PASS
+compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Documentation-only closure commits do not replace this runtime baseline.
+This baseline includes the validated Phase 7 runtime implementation plus the additive OpenAI Custom GPT -> Plugin compatibility correction.
 
-## Phase 6 Completion
+## Phase 7 State
 
-Phase 6 delivered:
+Phase 7 pre-implementation audit is complete and the extension-governance runtime is implemented and validated.
 
-- durable append-only `TelemetryRecord` operational telemetry on existing persistence;
-- runtime/service correlation with optional instrumentation hooks;
-- deterministic telemetry timeline reconstruction;
-- recursive redaction before persistence/export;
-- SDK-neutral Prometheus/OpenTelemetry projection contracts;
-- component-based service liveness/readiness independent of Project lifecycle state;
-- telemetry in `ProjectRecoverySnapshot`;
-- non-fatal telemetry failure semantics.
-
-SQLite physical schema remains version `2`.
-
-Authoritative records:
-
-- `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`;
-- `PHASE6_PREIMPLEMENTATION_AUDIT.md`;
-- `OBSERVABILITY_AND_RELIABILITY.md`;
-- `PERSISTENCE.md`;
-- `TEST_MATRIX.md`.
-
-## Next Planned Phase
+Validated Phase 7 implementation evidence before the later compatibility patch:
 
 ```text
-v0.3 Phase 7 - Extension Trust & Platform Governance
-Status: PLANNED / NOT STARTED
+Implementation SHA: 64c84ad6e6633c047416aca270d979e4ba5d36a0
+Core Validation run: 35121930140
+Core Validation: PASS
 ```
 
-Phase 7 is not activated by this checkpoint.
+Delivered Phase 7 runtime/CI work includes:
 
-## New-Chat Handoff
+- fail-closed installed-extension activation before `EntryPoint.load()`;
+- exact extension identity/provenance/version/compatibility binding;
+- durable enabled/trusted/signature-verification governance state;
+- trust invalidation on identity-bearing metadata change;
+- PR-triggered authoritative `Core Validation` and current GitHub Actions runtime lines.
 
-Current transition record: `PROJECT_HANDOFF_2026_09_16_PHASE_7.md`. Phase 7 requires a pre-implementation audit before runtime changes; Phase 8 remains outside scope.
+Phase 7 is not COMPLETE because repository-level `main` protection and a required `Core Validation` rule have not been applied/verified through an administrative repository interface available to this session.
+
+## OpenAI Platform Compatibility Correction
+
+OpenAI's announced Custom GPT retirement requires ChatGPT-facing release preparation to be Plugin-first.
+
+K_Supervisor now uses:
+
+```text
+Preferred ChatGPT release target: CHATGPT_PLUGIN
+Legacy migration compatibility: GPT_STORE
+Custom Action auto-migration: NO
+Selected ChatGPT model pinning: NO
+External availability/publication: owner/workspace-admin controlled
+```
+
+`CHATGPT_PLUGIN` generates portable skill, reference/integration inventory, regression prompts and access/migration evidence. `GPT_STORE` remains supported so historical/persisted release state stays resumable.
+
+Authoritative impact record: `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md`.
+
+## Persistence
+
+SQLite physical schema remains version `2`. Neither Phase 7 nor the Plugin compatibility correction activates Phase 8 migration/backup/restore qualification.
+
+## Current Roadmap Boundary
+
+```text
+Phase 7: IN PROGRESS
+Remaining blocker: repository-level main protection + required Core Validation rule
+Phase 8: PLANNED / NOT ACTIVATED
+```
+
+The existing Phase 7 handoff remains historical start context; current state is authoritative in this document, `ROADMAP.md` and `TEST_MATRIX.md`.
 
 ## Public Compatibility Baseline
 
@@ -81,6 +99,8 @@ Service facade: ksupervisor.service
 Service API: /api/v1
 CLI: k-supervisor
 Config version: 1
+Preferred ChatGPT release target: CHATGPT_PLUGIN
+Legacy ChatGPT migration target: GPT_STORE
 Extension groups:
   k_supervisor.agents
   k_supervisor.capabilities
@@ -90,4 +110,4 @@ Extension groups:
 
 ## Validation Rule
 
-Completed v0.2 plus completed v0.3 phase tests remain cumulative. Runtime phases require successful Core Validation on the committed implementation SHA before completion.
+Completed v0.2 plus completed v0.3 phase tests remain cumulative. Runtime changes require successful Core Validation on the committed implementation SHA. Phase completion additionally requires all phase-specific non-code governance exit criteria.
