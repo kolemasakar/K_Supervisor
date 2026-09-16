@@ -310,7 +310,8 @@ maintenance_expected
 Potential release targets:
 
 ```text
-GPT_STORE
+CHATGPT_PLUGIN
+GPT_STORE          # legacy compatibility / migration target
 API_SERVICE
 WEB_APPLICATION
 CLI_PACKAGE
@@ -318,9 +319,11 @@ INTERNAL_AGENT
 OTHER
 ```
 
-For `GPT_STORE`, K_Supervisor should prepare all feasible publication requirements automatically.
+For `CHATGPT_PLUGIN`, K_Supervisor should prepare portable skill/workflow assets, reference and integration inventories, regression prompts, and access/sharing checks. Custom Action dependencies must be explicitly rebuilt and verified through supported apps/connectors or custom MCP integrations.
 
-Actual publication remains a per-project owner action unless a future explicit capability and policy authorize otherwise.
+`GPT_STORE` remains readable and executable for legacy migration compatibility but is not the preferred target for new ChatGPT projects.
+
+Actual external availability/publication remains a per-project owner or workspace-admin action unless a future explicit capability and policy authorize otherwise.
 
 ## 17. Risk and Resource Profile
 

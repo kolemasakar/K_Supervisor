@@ -12,7 +12,13 @@ NOW = datetime(2026, 9, 13, 20, 0, tzinfo=timezone.utc)
 LATER = datetime(2026, 9, 13, 20, 5, tzinfo=timezone.utc)
 
 
-def build_release_stack(tmp_path, *, readiness=("release tests pass",)):
+def build_release_stack(
+    tmp_path,
+    *,
+    readiness=("release tests pass",),
+    target="GPT_STORE",
+    target_config=None,
+):
     store = SQLitePersistenceStore(tmp_path / "state.db")
     store.initialize()
     registry = ProjectRegistry(store)
@@ -36,9 +42,10 @@ def build_release_stack(tmp_path, *, readiness=("release tests pass",)):
         architecture={"architecture_style": "MODULAR"},
         notifications={"primary_channel": "EMAIL"},
         release={
-            "release_targets": ["GPT_STORE"],
+            "release_targets": [target],
             "release_readiness_criteria": list(readiness),
             "publication_owner": "OWNER",
+            **({target.lower(): target_config} if target_config is not None else {}),
         },
     )
     project = Project(

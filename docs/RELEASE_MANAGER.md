@@ -29,7 +29,7 @@ FIRST_WORKING
 
 `Release` tracks the project-level release state.
 
-`ReleaseTarget` tracks one target such as `GPT_STORE` independently and stores:
+`ReleaseTarget` tracks one target such as `CHATGPT_PLUGIN`, legacy `GPT_STORE`, or another deployment destination independently and stores:
 
 - target type;
 - state;
@@ -68,33 +68,29 @@ Invalid transitions fail deterministically.
 
 A failed required check keeps the project in `RELEASE_PREPARATION`, marks the release/target failed, and does not open a publication owner action.
 
-## GPT Store Profile
+## ChatGPT Plugin Profile
 
-The initial target-specific profile is `GPT_STORE`.
+The preferred ChatGPT-facing target is `CHATGPT_PLUGIN`.
 
-Automatically generated assets:
+Automatically generated portable evidence:
 
 ```text
-release/gpt_store/GPT_STORE_PROFILE.json
-release/gpt_store/GPT_INSTRUCTIONS.md
-release/gpt_store/GPT_STORE_LISTING.md
-release/gpt_store/GPT_PUBLICATION_CHECKLIST.md
+release/chatgpt_plugin/PLUGIN_PROFILE.json
+release/chatgpt_plugin/SKILL.md
+release/chatgpt_plugin/INTEGRATIONS.md
+release/chatgpt_plugin/REGRESSION_PROMPTS.md
+release/chatgpt_plugin/ACCESS_AND_MIGRATION_CHECKLIST.md
 ```
 
-The profile normalizes/generates:
+The profile records reusable skill guidance, reference assets, required/optional apps, app templates, Custom Action dependencies requiring rebuild, custom MCP integrations, regression prompts, and access/sharing review requirements. It does not pin a selected ChatGPT model or claim that Custom Actions migrated automatically.
 
-- name and description;
-- instructions asset;
-- conversation starters;
-- declared knowledge-file references;
-- declared capabilities/actions metadata;
-- owner publication checklist.
+`GPT_STORE` remains a supported legacy profile so persisted releases and active Custom GPT migration work stay resumable. New ChatGPT-oriented projects should prefer `CHATGPT_PLUGIN`.
 
-The generated assets contain configuration data and references only. They do not embed raw credentials.
+Generated assets contain configuration data and references only. They do not embed raw credentials.
 
 ## Owner Publication Boundary
 
-Phase 13 does not publish to the GPT Store or another external target automatically.
+Release Manager does not publish to the Plugin Directory, GPT Store, or another external target automatically.
 
 After automated readiness succeeds:
 
@@ -128,7 +124,7 @@ Release, ReleaseTarget, HumanActionRequest, notifications, lifecycle transitions
 ## Current Limits
 
 - external publication APIs are not invoked;
-- GPT Store UI/account actions remain owner-controlled;
+- plugin/GPT directory, sharing, installation and account/workspace actions remain owner- or administrator-controlled;
 - readiness evidence is explicit and does not infer test success from CI providers automatically;
 - release preparation writes files through a repository adapter but does not create a Git commit or tag;
 - multi-target transactional preparation is best-effort across target operations rather than one database transaction;

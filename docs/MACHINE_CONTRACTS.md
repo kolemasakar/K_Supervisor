@@ -140,7 +140,7 @@ Additional messaging channels remain deferred extension points.
 
 Release state remains separate from project lifecycle state.
 
-Release targets may include GPT Store and other project-specific targets. GPT Store preparation may be automated; actual publication remains an owner action under the approved project policy.
+Release targets may include preferred `CHATGPT_PLUGIN`, legacy `GPT_STORE`, and other project-specific targets. Plugin preparation may automate portable skill/integration/regression/access evidence, while external sharing/publication remains an owner or workspace-administrator action under the approved project policy.
 
 ## 11. Validation Baseline
 

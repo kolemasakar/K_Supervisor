@@ -246,7 +246,8 @@ Release Manager prepares and validates release targets.
 Potential targets include:
 
 ```text
-GPT Store package
+ChatGPT Plugin
+GPT Store package (legacy compatibility / migration)
 API service
 web application
 CLI/package
@@ -254,11 +255,11 @@ internal agent
 other deployment targets
 ```
 
-For GPT Store targets, K_Supervisor should automate all feasible preparation and validation, including project assets, instructions, knowledge package, actions/API definitions, release checks, and publication readiness requirements.
+For `CHATGPT_PLUGIN`, K_Supervisor prepares portable skill/workflow assets, reference material inventory, app/connector/MCP dependencies, regression prompts and access/sharing checks. Legacy Custom Action dependencies are inventory-only until explicitly rebuilt and verified.
 
-Automatic GPT Store publication is not a platform requirement.
+`GPT_STORE` remains supported for existing migration work but is not the preferred target for new ChatGPT projects.
 
-Publication is handled per project by the owner when the project reaches the appropriate release-ready state.
+Automatic Plugin Directory, GPT Store or other external publication is not a platform requirement. External availability is handled per project by the owner or workspace administrator when the project reaches the appropriate release-ready state.
 
 ## 12. First Working State
 
