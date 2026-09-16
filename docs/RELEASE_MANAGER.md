@@ -1,9 +1,9 @@
 # RELEASE_MANAGER
 Керування підготовкою релізів, перевіркою готовності та передачею публікації власнику.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
-Phase: 13
+Phase: 13 baseline + v0.3 Phase 8 operational qualification
 
 ## Purpose
 
@@ -125,7 +125,25 @@ Release, ReleaseTarget, HumanActionRequest, notifications, lifecycle transitions
 
 - external publication APIs are not invoked;
 - plugin/GPT directory, sharing, installation and account/workspace actions remain owner- or administrator-controlled;
-- readiness evidence is explicit and does not infer test success from CI providers automatically;
+- arbitrary/project-specific readiness evidence remains explicit; only reserved Phase 8 operational criteria are derived from authoritative platform state;
 - release preparation writes files through a repository adapter but does not create a Git commit or tag;
 - multi-target transactional preparation is best-effort across target operations rather than one database transaction;
 - publication expiry/revocation policy is not implemented.
+
+## Phase 8 Operational Readiness Evidence
+
+`OperationalReleaseEvidenceProvider` supplies only reserved criteria backed by authoritative runtime state:
+
+```text
+operational:schema-current
+operational:store-integrity
+operational:recovery-integrity
+```
+
+These criteria are combined with caller-supplied evidence before the existing `GenericReleaseReadinessChecker` runs. Project-specific, owner-specific or external criteria are never guessed. This preserves predecessor behavior while allowing ProjectSpec release gates to depend on verified persistence/recovery state.
+
+Phase 8 end-to-end qualification proves an approved ProjectSpec can traverse the existing lifecycle to `FIRST_WORKING`, enter release preparation, reach `RELEASE_READY`, persist release-validation evidence, then stop at the existing blocking publication Human Intervention. Restart/reopen reconstructs that owner-gated state.
+
+## Package-Index Publication Workflow
+
+`.github/workflows/package-publish.yml` is an owner-controlled manual workflow only. It has no automatic push/tag/release/schedule trigger, requires explicit `confirm_owner_publication`, builds and validates distributions separately, and publishes from the protected `pypi` GitHub environment through OIDC Trusted Publishing. External publication still requires owner/workspace configuration and is never performed by normal Release Manager execution.

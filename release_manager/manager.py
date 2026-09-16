@@ -8,6 +8,7 @@ from .contracts import ReleaseEvidence, ReleasePreparationOutcome
 from .errors import ReleaseManagerError, ReleaseNotReadyError, ReleaseProfileValidationError
 from .events import ReleaseEventEmitter
 from .publication import PublicationHandoff
+from .operational_evidence import OperationalReleaseEvidenceProvider
 from .readiness import GenericReleaseReadinessChecker
 from .state import transition_release
 from .target_preparation import TargetPreparer
@@ -23,11 +24,16 @@ class ReleaseManager:
         *,
         notification_broker=None,
         readiness_checker=None,
+        operational_evidence_provider=None,
     ):
         self.store = store
         self.projects = projects
         self.repository_adapter = repository_adapter
         self.readiness = readiness_checker or GenericReleaseReadinessChecker()
+        self.operational_evidence = (
+            operational_evidence_provider
+            or OperationalReleaseEvidenceProvider(store, projects)
+        )
         self.targets = TargetPreparer(store, repository_adapter, self.readiness)
         self.publication = PublicationHandoff(store, human)
         self.events = ReleaseEventEmitter(store, notification_broker)
@@ -54,6 +60,7 @@ class ReleaseManager:
                 f"project must be FIRST_WORKING or a release state: {project.lifecycle_state}"
             )
 
+        criteria = self._readiness_criteria(project_id, satisfied_criteria)
         target_names = self._target_names(spec)
         release_id = f"RELEASE_{project_id}_{version}"
         release = self.store.get_release(release_id)
@@ -90,7 +97,7 @@ class ReleaseManager:
             ReleaseStatus.PUBLISHED,
         }:
             targets = self._release_targets(release)
-            reports = self._reports(project, spec, release, targets, repository, satisfied_criteria)
+            reports = self._reports(project, spec, release, targets, repository, criteria)
             return ReleasePreparationOutcome(release, targets, reports)
 
         if release.status in {ReleaseStatus.DRAFT, ReleaseStatus.FAILED}:
@@ -108,7 +115,7 @@ class ReleaseManager:
                     target_name,
                     repository,
                     at,
-                    satisfied_criteria,
+                    criteria,
                 )
                 ready_targets.append(target)
                 reports.append(report)
@@ -157,6 +164,10 @@ class ReleaseManager:
                 release = transition_release(release, ReleaseStatus.PUBLISHED, at)
                 self.store.save_release(release)
         return ReleasePreparationOutcome(release, tuple(targets), ())
+
+    def _readiness_criteria(self, project_id, explicit):
+        operational = self.operational_evidence.collect(project_id)
+        return tuple(dict.fromkeys((*tuple(explicit), *operational)))
 
     def _reports(self, project, spec, release, targets, repository, criteria):
         evidence = ReleaseEvidence(

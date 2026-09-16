@@ -10,6 +10,7 @@ from .timeline import AuditTimeline
 from .telemetry import REDACTED, TelemetryRecorder, TelemetryTimeline, redact
 from .exporters import OpenTelemetryProjectionExporter, PrometheusProjectionExporter, TelemetryExporter
 from .health import ComponentHealth, HealthReport, ReadinessReport, ServiceHealthEvaluator
+from .deployment import DeploymentQualificationReport, DeploymentQualifier
 
 __all__ = [
     "AuditTimeline",
@@ -23,6 +24,8 @@ __all__ = [
     "TelemetryExporter",
     "TelemetryRecorder",
     "TelemetryTimeline",
+    "DeploymentQualificationReport",
+    "DeploymentQualifier",
     "DeterministicFailureInjector",
     "InjectedFailure",
     "MetricsCollector",

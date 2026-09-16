@@ -1,9 +1,9 @@
 # OBSERVABILITY_AND_RELIABILITY
 Production observability and reliability boundary for K_Supervisor.
 
-Version: 2.0
+Version: 2.1
 Status: ACTIVE
-Baseline: v0.3 Phase 6 COMPLETE
+Baseline: v0.3 Phase 6 COMPLETE + Phase 8 deployment qualification
 Date: 2026-09-16
 
 ## Observability Model
@@ -53,3 +53,16 @@ Core Validation: PASS
 ```
 
 Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_6_COMPLETE.md`.
+
+## Phase 8 Deployment Qualification
+
+`DeploymentQualifier` composes existing reliability/health boundaries rather than creating a new deployment control plane. Qualification checks:
+
+- current SQLite schema and SQLite integrity through `SQLiteOperationalManager`;
+- required/optional service component probes through `ServiceHealthEvaluator`;
+- `ProjectRegistry.recover()` for selected Projects;
+- referential integrity through `ReliabilityValidator`.
+
+A failed required service probe or Project/store integrity check makes the deployment candidate not ready. Project lifecycle state is not treated as service readiness. The qualifier performs validation only; it does not deploy hosts, configure TLS, publish packages or bypass owner actions.
+
+Operational procedures are documented in `OPERATIONS_RUNBOOK.md`.
