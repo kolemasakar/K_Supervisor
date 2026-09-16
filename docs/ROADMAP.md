@@ -6,9 +6,10 @@ Status: ACTIVE
 Approved: 2026-09-16
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 0 — Baseline Freeze & Operator Product Contract
-Phase 0 activation: YES
-Runtime implementation authorized: NO — Phase 0 is documentation/baseline only
+Current phase: v0.4 Phase 1 — READY FOR PRE-IMPLEMENTATION AUDIT
+Phase 0: COMPLETE
+Phase 1 activation: NO — pre-implementation audit pending
+Runtime implementation authorized: NO
 
 ## Program Objective
 
@@ -47,6 +48,8 @@ The v0.4 program will make the existing control plane practically operable throu
 - protected `Core Validation` PASS on the committed Phase 0 baseline.
 
 **Deferred:** all runtime implementation assigned to Phases 1-7.
+
+**Phase 0 status:** COMPLETE. Activation PR #10 passed `Core Validation` run `35143639772` on exact tree `c19e76192ab98003060bd86e5a193676029b358b` and merged as `b559f3a6158566531e2896e91ced817484d6f152`. No runtime path changed. Completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
 
 ## v0.4 Phase 1 — Production Model Provider & AI Execution
 
@@ -261,6 +264,6 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is ACTIVE for documentation, baseline and hardening-contract work only. Runtime implementation remains unauthorized until Phase 0 completion is recorded and the next phase passes its required pre-implementation audit and activation gate.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is READY FOR PRE-IMPLEMENTATION AUDIT but is not runtime-active. Runtime implementation remains unauthorized until the Phase 1 audit is committed and its activation gate is satisfied through protected governance.
 
-Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Phase 0 contract: `HARDENING_BASELINE_V0_4.md`.
+Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Frozen Phase 0 contract: `HARDENING_BASELINE_V0_4.md`. Phase 0 completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.

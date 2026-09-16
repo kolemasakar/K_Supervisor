@@ -1,47 +1,61 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 3.7
+Version: 4.1
 Status: ACTIVE
 Date: 2026-09-16
 
 ## Reading Order
 
-1. `VISION.md` - product direction and scope.
-2. `PROJECT_STATE.md` - canonical current implementation/roadmap state.
-3. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - ROADMAP v0.3 final closure evidence.
-4. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md` - Phase 8 completion evidence.
-5. `ROADMAP.md` - completed ROADMAP v0.3 phase sequence and evidence.
-6. `TEST_MATRIX.md` - permanent regression floor and final v0.3 validation evidence.
-7. `OPERATIONS_RUNBOOK.md` - deployment, backup/restore/upgrade, recovery and package-publication procedures.
-8. `PHASE8_PREIMPLEMENTATION_AUDIT.md` - Phase 8 implementation boundary.
-9. `PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_7_COMPLETE.md` - Phase 7 completion evidence.
-10. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT Plugin release-target compatibility decision.
-11. `RELEASE_MANAGER.md` - release targets and owner/workspace availability boundary.
+1. `PROJECT_STATE.md` - canonical current implementation and active roadmap state.
+2. `ROADMAP.md` - approved active ROADMAP v0.4 phase sequence and scope.
+3. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - current Phase 0 completion evidence and next gate.
+4. `HARDENING_BASELINE_V0_4.md` - frozen v0.4 product/security/compatibility contract.
+5. `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md` - explicit owner approval boundary.
+6. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable pre-approval audit evidence that produced v0.4.
+7. `TEST_MATRIX.md` - active v0.4 verification plan and permanent quality gates.
+8. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 cumulative test evidence.
+9. `VISION.md` - product direction and success definition.
+10. `OPERATIONS_RUNBOOK.md` - current deployment, backup/restore/upgrade, recovery and publication procedures.
+11. `COMPATIBILITY_POLICY.md` - public compatibility rules.
 12. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
-13. `COMPATIBILITY_POLICY.md` - public compatibility rules.
-14. `HARDENING_BASELINE_V0_3.md` - frozen v0.3 predecessor baseline and debt assignment.
-15. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
-16. `ARCHITECTURE.md` - control plane and multi-agent core.
-17. `PERSISTENCE.md` - storage and operational recovery semantics.
-18. `AGENT_RUNTIME.md` - runtime execution control.
-19. `INTEGRATIONS.md` - tools, providers and side-effect gateway.
-20. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
-21. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
-22. `SERVICE_API.md` - versioned Service/API contracts.
-23. `ROADMAP_V0_2_ARCHIVE.md` - completed predecessor roadmap snapshot.
+13. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
+14. `ARCHITECTURE.md` - control plane and multi-agent core.
+15. `PERSISTENCE.md` - storage and operational recovery semantics.
+16. `AGENT_RUNTIME.md` - runtime execution control.
+17. `INTEGRATIONS.md` - tools, providers, model-selection contracts and side-effect gateway.
+18. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
+19. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
+20. `SERVICE_API.md` - versioned Service/API contracts.
+21. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
+22. `RELEASE_MANAGER.md` - release targets and owner/workspace publication boundary.
+23. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap snapshot.
+24. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 final closure evidence.
+25. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
 
-Historical phase checkpoints and startup handoffs remain preserved and are not rewritten to reflect later platform changes.
+Historical phase checkpoints and transition handoffs remain preserved and are not rewritten to reflect later roadmap state.
 
 ## Current Roadmap State
 
 ```text
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
-v0.3 Phase 0-8: COMPLETE
-Current approved implementation phase: NONE
-Phase 9: NOT DEFINED
-Phase 17: NOT DEFINED
+ROADMAP v0.4: ACTIVE
+v0.4 Phase 0: COMPLETE
+v0.4 Phase 1: READY FOR PRE-IMPLEMENTATION AUDIT
+v0.4 Phase 2-7: PLANNED
+Runtime implementation phase: NONE
+v0.3 Phase 9: NOT DEFINED
+```
+
+## Phase 0 Governance Evidence
+
+```text
+Activation PR: #10
+Core Validation: 35143639772 — PASS
+Activation/merged tree: c19e76192ab98003060bd86e5a193676029b358b
+Merged main SHA: b559f3a6158566531e2896e91ced817484d6f152
+Runtime paths changed: NONE
 ```
 
 ## Current Runtime Baseline
@@ -49,7 +63,7 @@ Phase 17: NOT DEFINED
 ```text
 Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
 Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
-Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
+Validated runtime main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
 Protected PR Core Validation: 35134961231 — PASS
 Merged-main Core Validation: 35135133947 — PASS
 Python workflow: 3.13
@@ -60,34 +74,14 @@ wheel build/install: PASS
 public CLI/import smoke: PASS
 ```
 
-Exact-tree local cumulative verification before merge: `163 passed`, branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 is authoritative and passed on PR and merged `main`.
-
 ## Repository Governance
 
-```text
-Ruleset: main-core-validation
-Ruleset id: 23556478
-Target: default branch
-Enforcement: active
-Pull request required: YES
-Required status check: Core Validation
-Deletion blocked: YES
-Non-fast-forward / force push blocked: YES
-Bypass actors: NONE
-```
+Ruleset `main-core-validation` (id `23556478`) is active on the default branch, requires pull requests and `Core Validation`, blocks deletion/non-fast-forward updates, and has no bypass actors.
 
-## Current Compatibility / Publication Boundary
+## Compatibility / Publication Boundary
 
-```text
-Preferred ChatGPT target: CHATGPT_PLUGIN
-Legacy ChatGPT target: GPT_STORE
-Package-index workflow: manual owner-confirmed only
-External availability/publication: owner/workspace controlled
-Automatic external publication: NO
-```
+Preferred ChatGPT target remains `CHATGPT_PLUGIN`; legacy `GPT_STORE` remains a persisted compatibility path. External availability/publication remains owner/workspace controlled. Automatic external publication remains out of scope.
 
-ROADMAP completion is not a claim that the package was actually published or that explicitly deferred post-v0.3 scope is implemented. A future implementation cycle requires a new explicitly approved roadmap/revision.
+## Next Work Rule
 
-## Historical Baseline
-
-ROADMAP v0.2 remains immutable historical evidence. `HARDENING_BASELINE_V0_3.md` remains the frozen Phase 0 debt/compatibility contract; later validated implementation and closure evidence is recorded in the v0.3 checkpoints and active state documents.
+The next work item is the v0.4 Phase 1 pre-implementation audit. Do not begin production MODEL-provider runtime code until the audit/activation gate is committed through protected `main` governance.

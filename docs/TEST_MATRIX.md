@@ -4,7 +4,7 @@ Active cumulative verification contract for approved ROADMAP v0.4.
 Version: 3.0
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 0 — Baseline Freeze & Operator Product Contract
+Current phase: v0.4 Phase 1 — READY FOR PRE-IMPLEMENTATION AUDIT
 Date: 2026-09-16
 
 ## Preserved Predecessor Regression Floor
@@ -29,8 +29,8 @@ Predecessor permanent gates remain in force: branch-aware total coverage >=80%, 
 
 | Phase | Required verification | Status |
 | --- | --- | --- |
-| 0 | predecessor traceability, product-gap assignment, deployment/trust contract, compatibility freeze, no runtime diff | ACTIVE |
-| 1 | production MODEL provider, protected credentials, policy-gated inference, normalized failure/usage evidence, live smoke | PLANNED |
+| 0 | predecessor traceability, product-gap assignment, deployment/trust contract, compatibility freeze, no runtime diff | COMPLETE |
+| 1 | production MODEL provider, protected credentials, policy-gated inference, normalized failure/usage evidence, live smoke | READY — AUDIT PENDING |
 | 2 | operator API lifecycle, approval/intervention/execution/release operations, idempotency, redaction | PLANNED |
 | 3 | installed service host, health/readiness, graceful shutdown, operator CLI parity, reverse-proxy contract | PLANNED |
 | 4 | GitHub repository/VCS provider, protected credentials, idempotent recovery, policy/governance enforcement | PLANNED |
@@ -51,6 +51,17 @@ Required verification:
 - migration/rollback and live-external-evidence rules documented;
 - no runtime path changed by Phase 0;
 - protected activation PR `Core Validation` PASS.
+
+Phase 0 evidence:
+
+```text
+Activation PR: #10
+Activation head SHA: 78ad31bb7df0b654be3477b0be3136db2270abad
+Activation tree: c19e76192ab98003060bd86e5a193676029b358b
+Core Validation: 35143639772 — PASS
+Merged main: b559f3a6158566531e2896e91ced817484d6f152
+Runtime path changes: NONE
+```
 
 ## v0.4 Phase 1 — Production Model Provider & AI Execution
 
@@ -200,4 +211,4 @@ Normal protected CI remains deterministic and credential-free. Production model/
 
 ## Activation Rule
 
-ROADMAP v0.4 is approved. Phase 0 is ACTIVE and contains no runtime implementation. Phase 1 verification becomes active only after Phase 0 completion plus a separate Phase 1 pre-implementation audit/activation gate.
+ROADMAP v0.4 is approved and Phase 0 is COMPLETE. Phase 1 is READY FOR PRE-IMPLEMENTATION AUDIT; its runtime verification and implementation scope become active only after the separate Phase 1 audit/activation gate is committed through protected governance.

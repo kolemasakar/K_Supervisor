@@ -2,7 +2,7 @@
 Frozen predecessor and productization contract for ROADMAP v0.4.
 
 Version: 1.0
-Status: ACTIVE
+Status: FROZEN — PHASE 0 COMPLETE
 Roadmap: v0.4
 Phase: 0
 Date: 2026-09-16
@@ -78,3 +78,18 @@ Completed v0.2 and v0.3 tests remain cumulative. Runtime phases must pass branch
 ## 10. Phase 0 Exit Contract
 
 Phase 0 completes only when current-main ancestry is verified, all audited product gaps are assigned or deferred, this contract plus approved ROADMAP/TEST_MATRIX state is merged through protected `main`, no runtime path changed, and the activation PR passes `Core Validation`.
+
+
+## 11. Phase 0 Completion Evidence
+
+```text
+Activation PR: #10
+Activation head SHA: 78ad31bb7df0b654be3477b0be3136db2270abad
+Activation tree: c19e76192ab98003060bd86e5a193676029b358b
+Core Validation: 35143639772 — PASS
+Merged main SHA: b559f3a6158566531e2896e91ced817484d6f152
+Merged main tree: c19e76192ab98003060bd86e5a193676029b358b
+Runtime paths changed: NO
+```
+
+The Phase 0 contract is now frozen. Changes to these product/security/compatibility boundaries require an explicit later roadmap amendment or versioned migration; ordinary Phase 1 implementation may not silently weaken them.

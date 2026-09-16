@@ -1,22 +1,22 @@
 # CHAT_HANDOFF
-Canonical compact context for continuing K_Supervisor after ROADMAP v0.3 completion.
+Canonical compact continuation context for approved ROADMAP v0.4 after Phase 0 completion.
 
-Version: 3.1
+Version: 4.1
 Status: ACTIVE
 Date: 2026-09-16
 
 ## Start Here
 
 ```text
-docs/PROJECT_HANDOFF_2026_09_16_ROADMAP_V0_4.md
 docs/PROJECT_STATE.md
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_PHASE_8_COMPLETE.md
 docs/ROADMAP.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md
+docs/HARDENING_BASELINE_V0_4.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md
+docs/POST_V0_3_PRODUCT_GAP_AUDIT.md
 docs/TEST_MATRIX.md
-docs/OPERATIONS_RUNBOOK.md
-docs/HARDENING_BASELINE_V0_3.md
-docs/COMPATIBILITY_POLICY.md
+docs/TEST_MATRIX_V0_3_ARCHIVE.md
+docs/ROADMAP_V0_3_ARCHIVE.md
 ```
 
 ## Current Roadmap State
@@ -24,39 +24,38 @@ docs/COMPATIBILITY_POLICY.md
 ```text
 ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
-v0.3 Phase 0-8: COMPLETE
-Current approved implementation phase: NONE
-Phase 9: NOT DEFINED
+ROADMAP v0.4: ACTIVE
+v0.4 Phase 0: COMPLETE
+v0.4 Phase 1: READY FOR PRE-IMPLEMENTATION AUDIT
+v0.4 Phase 2-7: PLANNED
+Runtime implementation phase: NONE
+v0.3 Phase 9: NOT DEFINED
 ```
 
-## Current Runtime Baseline
+## Phase 0 Evidence
+
+```text
+Activation PR: #10
+Activation head: 78ad31bb7df0b654be3477b0be3136db2270abad
+Activation tree: c19e76192ab98003060bd86e5a193676029b358b
+Core Validation: 35143639772 — PASS
+Merged main: b559f3a6158566531e2896e91ced817484d6f152
+Runtime path changes: NONE
+```
+
+## Validated Runtime Baseline
 
 ```text
 Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
 Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
-Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
-Protected PR Core Validation: 35134961231 — PASS
+Validated runtime main: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
 Merged-main Core Validation: 35135133947 — PASS
 Python workflow: 3.13
-coverage gate: >= 80% PASS
-ResourceWarning gate: PASS
-compileall: PASS
-wheel build/install: PASS
-public CLI/import smoke: PASS
+Local exact-tree result: 163 passed / 85.82% branch coverage (Python 3.12.3, non-authoritative)
 ```
 
-Exact-tree local cumulative result before merge: `163 passed`, branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 is authoritative.
+## Next Gate
 
-## Completed Phase 8
+Perform the mandatory v0.4 Phase 1 pre-implementation audit against current `main`, `ROADMAP.md`, `TEST_MATRIX.md`, `HARDENING_BASELINE_V0_4.md`, existing Provider/ModelProfile/SideEffectGateway contracts, and current OpenAI Responses API documentation. Fix credential resolution, policy/approval enforcement, model-selection, failure/usage normalization, deterministic CI fake, owner-controlled live smoke, tests and exit criteria before runtime code changes.
 
-Phase 8 delivered verified SQLite backup/restore/upgrade qualification, deployment qualification, operational release evidence, approved ProjectSpec -> `RELEASE_READY` qualification, restart/recovery and owner-wait concurrency isolation, an operations runbook, and a manual owner-confirmed OIDC package publication workflow.
-
-External publication remains an owner/workspace action and was not automatically performed. SQLite schema remains version `2`.
-
-## Repository Governance
-
-Ruleset `main-core-validation` (id `23556478`) is active on the default branch, requires pull requests and `Core Validation`, blocks deletion/non-fast-forward updates and has no bypass actors.
-
-## Working Rule
-
-ROADMAP v0.3 is closed. `PROJECT_HANDOFF_2026_09_16_ROADMAP_V0_4.md` is the canonical new-chat transition record. Do not create or implement a Phase 9 implicitly. The next chat must verify the final v0.3 baselines, perform the post-v0.3 baseline/product-gap audit, draft a new roadmap/revision and obtain explicit approval before runtime changes.
+Do not activate Phase 1 runtime implementation until that audit/activation record passes protected governance. Owner-controlled publication and all v0.4 deferred boundaries remain unchanged.
