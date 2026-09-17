@@ -1,13 +1,14 @@
 # CHAT_HANDOFF
 Canonical compact continuation context for ROADMAP v0.4 after Phase 1 deterministic implementation merge; live provider smoke pending.
 
-Version: 4.2
+Version: 4.3
 Status: ACTIVE
 Date: 2026-09-17
 
 ## Start Here
 
 ```text
+docs/PROJECT_HANDOFF_2026_09_17_V0_4_PHASE_1_LIVE_SMOKE.md
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md
