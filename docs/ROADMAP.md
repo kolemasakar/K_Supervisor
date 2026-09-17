@@ -9,6 +9,7 @@ Predecessor: ROADMAP v0.3 COMPLETE
 Current phase: v0.4 Phase 1 — Production Model Provider & AI Execution
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
+Phase 1 implementation: MERGED / CI-VALIDATED — LIVE SMOKE PENDING
 Runtime implementation authorized: YES — Phase 1 scope only
 
 ## Program Objective
@@ -78,6 +79,8 @@ The v0.4 program will make the existing control plane practically operable throu
 - cumulative regression and protected `Core Validation` PASS.
 
 **Deferred:** production-quality bespoke intelligence for every domain/reference agent, mandatory multi-provider routing, model fine-tuning/training and remote-agent federation.
+
+**Phase 1 implementation status:** IMPLEMENTED / LIVE SMOKE PENDING. PR #14 merged exact implementation tree `7fabf5220d4370124bb245445c84f9ed77eb2041` as main `8f748e993737cebe45a6e8ebaac74d8c0e10d1b7`; protected PR `Core Validation` `35175344558` and merged-main `Core Validation` `35175392964` both passed. The required owner-controlled live OpenAI Responses smoke is still pending, so Phase 1 is not COMPLETE and Phase 2 remains inactive. Evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`.
 
 ## v0.4 Phase 2 — Operator Control API
 
@@ -264,6 +267,6 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is ACTIVE after its pre-implementation audit/activation gate. Runtime implementation is authorized only for Phase 1 scope defined by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; later phases remain inactive.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is ACTIVE after its pre-implementation audit/activation gate and deterministic implementation merge. It remains incomplete until the required owner-controlled live provider smoke passes. Runtime implementation is authorized only for Phase 1 scope defined by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; later phases remain inactive.
 
 Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Frozen Phase 0 contract: `HARDENING_BASELINE_V0_4.md`. Phase 0 completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
