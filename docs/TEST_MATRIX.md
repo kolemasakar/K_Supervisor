@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.1
+Version: 3.2
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
 Current phase: v0.4 Phase 1 — ACTIVE
-Date: 2026-09-16
+Date: 2026-09-17
 
 ## Preserved Regression Floor
 
@@ -28,7 +28,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | Phase | Verification focus | Status |
 | --- | --- | --- |
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
-| 1 | governed production MODEL provider, protected credentials, failure/usage normalization, live smoke | ACTIVE |
+| 1 | governed production MODEL provider, protected credentials, failure/usage normalization, live smoke | ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | PLANNED |
 | 3 | service host, health/readiness, shutdown, CLI parity | PLANNED |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
@@ -60,6 +60,22 @@ Runtime paths changed: NONE
 ```
 
 Audit authority: `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`.
+
+## Phase 1 Implementation Evidence
+
+```text
+Implementation PR: #14
+Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
+Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
+Protected PR Core Validation: 35175344558 — PASS
+Merged main: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
+Merged-main Core Validation: 35175392964 — PASS
+Deterministic Phase 1 tests added: 24
+Local full candidate: 187 passed / 85.02% branch coverage (Python 3.12.3, non-authoritative)
+Live provider smoke: PENDING
+```
+
+All deterministic Phase 1 implementation requirements are merged and green. Phase completion remains blocked by the separately required owner-controlled live OpenAI Responses smoke.
 
 ## v0.4 Phase 1 — Required Verification
 
@@ -109,4 +125,4 @@ Normal protected CI remains deterministic and credential-free. The Phase 1 live 
 
 ## Activation Rule
 
-Phase 0 is COMPLETE. Phase 1 is ACTIVE and runtime implementation is authorized only within `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`. Phases 2-7 remain inactive. No later phase runtime work may begin without its own pre-implementation audit/activation gate.
+Phase 0 is COMPLETE. Phase 1 is ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING. Runtime implementation remains constrained by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; Phase 1 cannot be marked COMPLETE until live smoke evidence exists. Phases 2-7 remain inactive. No later phase runtime work may begin without its own pre-implementation audit/activation gate.

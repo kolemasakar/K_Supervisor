@@ -1,9 +1,9 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 activation.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation merge; live provider smoke remains pending.
 
-Version: 4.2
+Version: 4.3
 Status: ACTIVE
-Date: 2026-09-16
+Date: 2026-09-17
 
 ## Current Baseline
 
@@ -16,7 +16,7 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: ACTIVE — Production Model Provider & AI Execution
+v0.4 Phase 1: ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
 v0.4 Phase 2-7: PLANNED
 Current approved implementation phase: v0.4 Phase 1
 Runtime implementation phase: v0.4 Phase 1
@@ -26,20 +26,22 @@ v0.3 Phase 9: NOT DEFINED
 ## Current Validated Runtime Baseline
 
 ```text
-Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
-Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
-Validated main SHA: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
-Protected PR Core Validation: 35134961231 — PASS
-Merged-main Core Validation: 35135133947 — PASS
+Implementation PR: #14
+Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
+Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
+Validated main SHA: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
+Protected PR Core Validation: 35175344558 — PASS
+Merged-main Core Validation: 35175392964 — PASS
 Python workflow: 3.13
 coverage gate: >= 80% PASS
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
+Live OpenAI Responses smoke: PENDING
 ```
 
-Exact-tree local cumulative verification before v0.3 merge produced `163 passed` and branch-aware coverage `85.82%` on Python 3.12.3. GitHub Actions Python 3.13 remains authoritative. The completed v0.4 Phase 0 changed documentation only and does not replace this runtime baseline.
+Local Phase 1 candidate verification passed `187 tests` with branch-aware coverage `85.02%` on Python 3.12.3 (non-authoritative). GitHub Actions Python 3.13 is authoritative and passed on both PR #14 and merged `main`. The v0.3 baseline remains preserved as predecessor evidence.
 
 ## v0.4 Approval State
 
@@ -53,7 +55,7 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
-Phase 1  Production Model Provider & AI Execution                   ACTIVE
+Phase 1  Production Model Provider & AI Execution                   ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
 Phase 2  Operator Control API                                       PLANNED
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
@@ -62,7 +64,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 is complete. Its protected activation evidence is PR #10 / `Core Validation` `35143639772` / merged main `b559f3a6158566531e2896e91ced817484d6f152`, with no runtime path changes. Phase 1 pre-implementation audit and protected activation are complete. Runtime implementation is authorized only within `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; Phases 2-7 remain inactive.
+Phase 0 is complete. Phase 1 pre-implementation audit, protected activation and deterministic runtime implementation are complete. Phase 1 remains ACTIVE because the required owner-controlled live OpenAI Responses smoke has not yet been recorded. Runtime changes remain authorized only within `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; Phases 2-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -89,6 +91,23 @@ Runtime path changes: NONE
 ```
 
 Audit: `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`. Activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_ACTIVATED.md`.
+
+## Phase 1 Implementation Evidence
+
+```text
+Implementation PR: #14
+Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
+Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
+Protected PR Core Validation: 35175344558 — PASS
+Merged main: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
+Merged-main Core Validation: 35175392964 — PASS
+Local candidate: 187 passed / 85.02% branch coverage (Python 3.12.3, non-authoritative)
+Live OpenAI Responses smoke: PENDING — no approved live credential reference configured on owner host
+Phase 1 completion: BLOCKED ON LIVE SMOKE ONLY
+Phase 2 activation: NO
+```
+
+Implementation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`.
 
 ## Repository Governance
 

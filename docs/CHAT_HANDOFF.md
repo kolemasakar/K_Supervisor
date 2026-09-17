@@ -1,15 +1,18 @@
 # CHAT_HANDOFF
-Canonical compact continuation context for approved ROADMAP v0.4 after Phase 0 completion.
+Canonical compact continuation context for ROADMAP v0.4 after Phase 1 deterministic implementation merge; live provider smoke pending.
 
-Version: 4.1
+Version: 4.2
 Status: ACTIVE
-Date: 2026-09-16
+Date: 2026-09-17
 
 ## Start Here
 
 ```text
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_ACTIVATED.md
+docs/V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md
 docs/HARDENING_BASELINE_V0_4.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md
@@ -26,9 +29,9 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: READY FOR PRE-IMPLEMENTATION AUDIT
+v0.4 Phase 1: ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
 v0.4 Phase 2-7: PLANNED
-Runtime implementation phase: NONE
+Runtime implementation phase: v0.4 Phase 1
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -43,19 +46,21 @@ Merged main: b559f3a6158566531e2896e91ced817484d6f152
 Runtime path changes: NONE
 ```
 
-## Validated Runtime Baseline
+## Current Runtime Baseline
 
 ```text
-Implementation commit: f0c9bc30a5562c83803a861aafe6f669a2ae4730
-Implementation tree: 85ffccfe4f2254d0f4d4ce3d64eec3e6f33976ef
-Validated runtime main: 641b95ed6cd29b629af9b86e6826eab7fa9bb742
-Merged-main Core Validation: 35135133947 — PASS
-Python workflow: 3.13
-Local exact-tree result: 163 passed / 85.82% branch coverage (Python 3.12.3, non-authoritative)
+Phase 1 implementation PR: #14
+Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
+Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
+Merged main: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
+Protected PR Core Validation: 35175344558 — PASS
+Merged-main Core Validation: 35175392964 — PASS
+Local candidate: 187 passed / 85.02% branch coverage (Python 3.12.3, non-authoritative)
+Live OpenAI Responses smoke: PENDING
 ```
 
 ## Next Gate
 
-Perform the mandatory v0.4 Phase 1 pre-implementation audit against current `main`, `ROADMAP.md`, `TEST_MATRIX.md`, `HARDENING_BASELINE_V0_4.md`, existing Provider/ModelProfile/SideEffectGateway contracts, and current OpenAI Responses API documentation. Fix credential resolution, policy/approval enforcement, model-selection, failure/usage normalization, deterministic CI fake, owner-controlled live smoke, tests and exit criteria before runtime code changes.
+Run the required owner-controlled live OpenAI Responses smoke through the governed `openai.responses` provider path using an approved `AccessReference`/`SecretBackend` credential and configured model. Record only safe response identity/model/status/usage evidence; never persist or print the credential or hidden reasoning.
 
-Do not activate Phase 1 runtime implementation until that audit/activation record passes protected governance. Owner-controlled publication and all v0.4 deferred boundaries remain unchanged.
+Until that smoke succeeds and its evidence is committed through protected governance, keep Phase 1 ACTIVE / LIVE SMOKE PENDING and keep Phase 2 inactive. Owner-controlled publication and all v0.4 deferred boundaries remain unchanged.
