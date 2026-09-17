@@ -18,7 +18,7 @@ from policy.access_permissions import require_access_reference
 from policy.contracts import PolicyDecision, PolicyEffect
 from policy.engine import PolicyEngine
 from policy.tool_permissions import require_tool_operation
-from providers import ProviderRequest
+from providers import ProviderExecutionError, ProviderRequest
 from registry.provider_registry import ProviderRegistry
 from registry.tool_registry import ToolRegistry
 from tools import ToolRequest
@@ -315,11 +315,25 @@ class SideEffectGateway:
             output, metadata = invoke(idempotency_key)
         except Exception as exc:
             completed_at = self._now()
+            if isinstance(exc, ProviderExecutionError):
+                error_code = exc.code
+                error_message = exc.message
+                error_metadata = {
+                    "error_category": exc.category,
+                    "retryable": exc.retryable,
+                }
+                if exc.provider_code is not None:
+                    error_metadata["provider_code"] = exc.provider_code
+            else:
+                error_code = "SIDE_EFFECT_ADAPTER_ERROR"
+                error_message = str(exc)
+                error_metadata = {}
             failed = pending.model_copy(
                 update={
                     "status": SideEffectExecutionStatus.FAILED,
-                    "error_code": "SIDE_EFFECT_ADAPTER_ERROR",
-                    "error_message": str(exc),
+                    "metadata": error_metadata,
+                    "error_code": error_code,
+                    "error_message": error_message,
                     "completed_at": completed_at,
                 }
             )
