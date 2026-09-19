@@ -67,6 +67,13 @@ All project development, testing, CI, validation, smoke testing and qualificatio
 
 Canonical policy: `docs/DEVELOPMENT_RESOURCE_POLICY.md`.
 
+
+## CI Infrastructure Migration
+
+Migration of protected `Core Validation` from GitHub-hosted `ubuntu-latest` to a repository-scoped self-hosted ARM64 runner on `kgm-e4-owner-pilot` is owner-approved but not yet executed. The required check name remains `Core Validation`; workflow mutation is blocked until the runner is confirmed online/idle and systemd resource guardrails are applied.
+
+Canonical checkpoint: `docs/PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md`.
+
 ## Completed v0.3 Hardening
 
 - Phase 1: explicit SQLite lifecycle ownership, schema migration, rollback/concurrency/resource-hygiene gates.
@@ -100,6 +107,7 @@ Extension groups:
 
 Start with:
 
+- `docs/PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_IMPLEMENTED.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`;
