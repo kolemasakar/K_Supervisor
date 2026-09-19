@@ -87,14 +87,25 @@ fi
 echo "Official interactive runner registration follows."
 echo "Enter the short-lived repository registration token only at the GitHub runner prompt."
 
-runuser -u "${RUNNER_USER}" -- env   HOME="${RUNNER_HOME}" USER="${RUNNER_USER}" LOGNAME="${RUNNER_USER}"   /bin/bash -lc "
+runuser -u "${RUNNER_USER}" -- env -i \
+  HOME="${RUNNER_HOME}" \
+  USER="${RUNNER_USER}" \
+  LOGNAME="${RUNNER_USER}" \
+  PATH="/usr/local/bin:/usr/bin:/bin" \
+  LANG="C.UTF-8" \
+  /bin/bash -c "
     set -euo pipefail
     umask 077
     cd '${RUNNER_DIR}'
-    ./config.sh       --url '${REPO_URL}'       --name '${RUNNER_NAME}'       --labels '${RUNNER_LABELS}'       --work '_work'
+    ./config.sh \
+      --url '${REPO_URL}' \
+      --name '${RUNNER_NAME}' \
+      --labels '${RUNNER_LABELS}' \
+      --work '_work'
   "
 
 [[ -f "${RUNNER_DIR}/.runner" ]] || fail "registration did not produce .runner"
+chmod 0600 "${RUNNER_DIR}"/.credentials* 2>/dev/null || true
 
 cd "${RUNNER_DIR}"
 ./svc.sh install "${RUNNER_USER}"
