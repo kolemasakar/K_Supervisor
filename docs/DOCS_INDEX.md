@@ -54,9 +54,9 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: ACTIVATION APPROVED — PROTECTED CHECKPOINT PENDING MERGE
+v0.4 Phase 3: ACTIVE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Runtime implementation phase: NONE — activation checkpoint not yet merged
+Runtime implementation phase: Phase 3 — audited scope only
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -121,4 +121,4 @@ Preferred ChatGPT target remains `CHATGPT_PLUGIN`; legacy `GPT_STORE` remains a 
 
 ## Next Work Rule
 
-Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE and owner activation approval was granted on 2026-09-19. The protected Phase 3 activation checkpoint must pass required `Core Validation` and merge before runtime implementation begins. Phase 4-7 remain inactive.
+Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE and owner activation approval was granted on 2026-09-19 through protected checkpoint #28. After that checkpoint merges, Phase 3 runtime implementation is authorized strictly within the audited scope. Phase 4-7 remain inactive.

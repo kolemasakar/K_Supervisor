@@ -20,15 +20,15 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: ACTIVATION APPROVED — PROTECTED CHECKPOINT PENDING MERGE
+v0.4 Phase 3: ACTIVE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Runtime implementation phase: NONE — activation checkpoint not yet merged
+Runtime implementation phase: Phase 3 — audited scope only
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 2 delivers the additive authenticated Operator Control API. The Phase 3 Production Single-Node Service Host & Operator CLI pre-implementation audit is complete and merged through PR #26 with final exact-head `Core Validation` `35445489807`. Owner activation approval was granted on 2026-09-19; Phase 3 runtime remains blocked until the separate protected activation checkpoint passes `Core Validation` and merges. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 2 delivers the additive authenticated Operator Control API. The Phase 3 Production Single-Node Service Host & Operator CLI pre-implementation audit is complete and merged through PR #26 with final exact-head `Core Validation` `35445489807`. Owner activation approval was granted on 2026-09-19 through protected activation checkpoint #28; after that checkpoint merges, Phase 3 runtime implementation is authorized strictly within the audited scope. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 

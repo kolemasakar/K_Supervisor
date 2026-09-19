@@ -3,7 +3,7 @@
 Контрольна точка активації ROADMAP v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI.
 
 Version: 1.0
-Status: ACTIVATION APPROVED — PROTECTED MERGE PENDING
+Status: ACTIVATED — EFFECTIVE ON PROTECTED MERGE
 Roadmap: v0.4
 Phase: 3
 Date: 2026-09-19
@@ -56,10 +56,10 @@ After this activation checkpoint passes protected `Core Validation` and merges t
 ## Protected Activation Evidence
 
 ```text
-Activation PR: PENDING
-Initial activation head: PENDING
-Initial activation tree: PENDING
-Core Validation: PENDING
+Activation PR: #28
+Initial activation head: f06673fc1f6469d11c3f16b341238c76ba473494
+Initial activation tree: 634324ffee6bd31b1dfe1fd0a77e517c9cb49475
+Core Validation: 35450123607 — PASS
 Runtime/source/test paths changed: NONE
 ```
 
@@ -72,7 +72,7 @@ Owner approval: YES — 2026-09-19
 Pre-implementation audit: COMPLETE
 Audit PR: #26
 Audit final Core Validation: 35445489807 — PASS
-Phase 3 runtime implementation authorization: CONDITIONAL — begins only after this checkpoint merges
+Phase 3 runtime implementation authorization: YES — audited scope only, effective after this checkpoint merges
 Phase 4-7 runtime implementation authorization: NO
 Zero-cost development policy: REQUIRED
 ```

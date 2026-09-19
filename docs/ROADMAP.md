@@ -7,12 +7,12 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 3 — ACTIVATION APPROVED / PROTECTED CHECKPOINT PENDING MERGE
+Current phase: v0.4 Phase 3 — ACTIVE
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
-Phase 3 activation: OWNER APPROVED — protected checkpoint pending merge
-Runtime implementation authorized: NO — activation checkpoint must merge first
+Phase 3 activation: YES — owner-approved protected checkpoint #28
+Runtime implementation authorized: YES — Phase 3 audited scope only
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -115,7 +115,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI
 
-**Phase 3 status:** ACTIVATION OWNER-APPROVED — PROTECTED CHECKPOINT PENDING MERGE. Canonical audit: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`; activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`. Audit PR #26 final head `31eff0be...` passed exact-head `Core Validation` `35445489807` and merged as `31e39bf4...`; runtime/source/test paths were unchanged. Owner approval was given on 2026-09-19. Runtime implementation remains blocked until the activation checkpoint passes required `Core Validation` and merges.
+**Phase 3 status:** ACTIVE. Canonical audit: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`; activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`. Audit PR #26 final head `31eff0be...` passed exact-head `Core Validation` `35445489807` and merged as `31e39bf4...`. Owner approval was given on 2026-09-19; activation PR #28 initial head `f06673fc...` / tree `634324ff...` passed `Core Validation` `35450123607`. Runtime authority is limited to the audited Phase 3 scope; Phase 4 remains inactive.
 
 **Goal:** provide a supported long-running service process and operator client for the Phase 2 API without creating a second control path.
 
@@ -275,4 +275,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE and the owner approved Phase 3 activation on 2026-09-19. The separate protected activation checkpoint is now the active gate. No Phase 3 runtime change is authorized before that checkpoint merges. Phase 4-7 remain inactive.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE and the owner approved Phase 3 activation on 2026-09-19 through the separate protected activation checkpoint. Phase 3 runtime work is authorized only within that audited scope after the checkpoint merge. Phase 4-7 remain inactive.

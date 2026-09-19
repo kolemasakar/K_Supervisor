@@ -29,10 +29,10 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: ACTIVATION APPROVED — PROTECTED CHECKPOINT PENDING MERGE
+v0.4 Phase 3: ACTIVE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Current approved implementation phase: Phase 3 — conditional on activation-checkpoint merge
-Runtime implementation phase: NONE — activation checkpoint not yet merged
+Current approved implementation phase: Phase 3
+Runtime implementation phase: Phase 3 — audited scope only
 ```
 
 ## Phase 2 Runtime Baseline
@@ -101,8 +101,8 @@ Runtime/source/test paths changed: NONE
 
 ## Next Gate
 
-Phase 3 audit is COMPLETE and merged. Owner activation approval was granted on 2026-09-19.
+Phase 3 audit is COMPLETE and merged. Owner activation approval was granted on 2026-09-19 through protected checkpoint #28.
 
-The active gate is the docs-only `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`: pass protected `Core Validation`, merge it, and only then begin Phase 3 runtime implementation strictly within the audited scope.
+After the activation checkpoint merges, continue Phase 3 runtime implementation strictly in the audited order from `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`; preserve the Phase 2 runtime predecessor and all permanent quality/resource gates.
 
 Do not activate Phase 4.
