@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor during ROADMAP v0.4 Phase 3 implementation.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.3
+Version: 5.4
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -18,37 +18,37 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: ACTIVE
+v0.4 Phase 3: COMPLETE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Current approved implementation phase: Phase 3
-Runtime implementation phase: Phase 3 — audited scope only
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Phase 2 implementation PR: #24
-Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
-Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
-Code/test Core Validation: 35443690831 — PASS
-Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
-Final PR tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
-Final exact-head Core Validation: 35443735846 — PASS
-Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
-Merged-main Core Validation: 35443778180 — PASS
+Phase 3 implementation PR: #29
+Initial implementation head: 46bca5223d5e42d9051f886832a7d12a87a5d812
+Initial protected Core Validation: 35452558739 — PASS
+Final PR head: c73e4c5f24f958ebb1473d4c8d23f28244c9f799
+Final PR tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
+Final exact-head Core Validation: 35453258878 — PASS
+Merged main: a1791b607496edfaf84593d753f7d1d7662eede1
+Merged-main Core Validation: 35453297160 — PASS
 Python workflow: 3.13
-Full regression: 214 passed
-Branch-aware coverage: 83.21%
+Full regression: 229 passed
+Branch-aware coverage: 82.06%
 coverage gate >=80%: PASS
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
+installed-wheel Phase 3 service/CLI smoke: PASS
 Zero-cost development policy: PASS
 ```
 
-PR #24 is merged and its final exact head plus merged `main` passed protected `Core Validation`. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
+PR #29 is merged and its final exact head plus merged `main` passed protected `Core Validation`. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
 
 ## v0.4 Approval State
 
@@ -64,14 +64,14 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
-Phase 3  Production Single-Node Service Host & Operator CLI         ACTIVE
+Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1 and Phase 2 are complete. Phase 3 audit and protected activation are complete. The current Phase 3 implementation candidate adds only the audited production composition/host/client/CLI layer around Service/API v1; Phase 4-7 remain inactive.
+Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4-7 remain inactive; the next permitted work is Phase 4 pre-implementation audit only.
 
 ## Phase 0 Completion Evidence
 
@@ -192,24 +192,28 @@ Runtime/source/test paths changed by audit: NONE
 Zero-cost development policy: REQUIRED
 ```
 
-The audit is merged and by itself authorizes no runtime change. Owner approval was granted on 2026-09-19; protected activation checkpoint #28 is the authority for Phase 3 runtime work. Current implementation evidence is tracked in `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_IMPLEMENTED.md`; protected completion validation is still pending.
+The audit and protected activation are complete. Phase 3 runtime implementation is now complete and closed by `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`; no Phase 3 runtime authority remains.
 
-## Phase 3 Implementation Candidate
+## Phase 3 Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
 
 ```text
-Activated main predecessor: f65df3b11ab46730295c13fb2c7f6d91243e89ff
-Candidate branch: v04-phase3-runtime
-Targeted Phase 3 + legacy CLI subset: 17 passed
-Local full regression: 229 passed
-Local branch-aware coverage: 82.06%
-ResourceWarning gate: PASS / no warnings
-compileall: PASS
-Supplementary installed-wheel smoke: PASS
-Authoritative Python 3.13 Core Validation: 35452558739 — PASS / 229 tests / 82.06% coverage
+Implementation PR: #29
+Initial head: 46bca5223d5e42d9051f886832a7d12a87a5d812
+Initial Core Validation: 35452558739 — PASS
+Final PR head: c73e4c5f24f958ebb1473d4c8d23f28244c9f799
+Final PR tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
+Final exact-head Core Validation: 35453258878 — PASS
+Merged main: a1791b607496edfaf84593d753f7d1d7662eede1
+Merged-main Core Validation: 35453297160 — PASS
+Full regression: 229 passed
+Branch-aware coverage: 82.06%
+Installed-wheel Phase 3 service/CLI smoke: PASS
 Phase 4 activation: NO
 ```
 
-The candidate adds additive config/auth composition, bounded host lifecycle, health/readiness, trusted-proxy enforcement, HTTP client, operator CLI, threaded SQLite access serialization and installed-wheel CI qualification without changing the persistence schema or Service/API v1 business semantics.
+Phase 3 is complete. Runtime implementation authorization is NONE; Phase 4 remains planned/inactive.
 
 ## Development Resource Policy
 
