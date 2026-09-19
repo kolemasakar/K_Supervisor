@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
-Canonical compact continuation context after ROADMAP v0.4 Phase 1 completion.
+Canonical compact continuation context after Phase 1 completion and Phase 2 pre-implementation audit.
 
-Version: 4.5
+Version: 4.6
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -13,6 +13,7 @@ docs/PROJECT_STATE.md
 docs/DEVELOPMENT_RESOURCE_POLICY.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
+docs/V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
 docs/V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md
@@ -29,7 +30,8 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2-7: PLANNED / INACTIVE
+v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 3-7: PLANNED / INACTIVE
 ```
 
 ## Current Evidence
@@ -57,10 +59,13 @@ Phase 1 gap-closure PR: #21
 Gap-closure candidate Core Validation: 35440664106 — PASS
 Gap-closure full regression: 192 passed / 84.86% branch-aware coverage
 Phase 1 completion checkpoint: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
+Phase 2 audit PR: #22
+Phase 2 audit initial Core Validation: 35441199999 — PASS
+Phase 2 audit authority: V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md
 ```
 
 ## Next Gate
 
-Phase 1 is COMPLETE after protected merge of PR #21. Do not perform any additional Phase 1 paid-provider retry.
+Phase 1 is COMPLETE. Phase 2 pre-implementation audit is COMPLETE in `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
 
-The next permitted work is the mandatory v0.4 Phase 2 pre-implementation audit for Operator Control API. Phase 2 remains PLANNED / INACTIVE during that audit. Do not implement or activate Phase 2 runtime until the audit/activation gate is separately approved, validated by protected `Core Validation`, and merged.
+Phase 2 remains INACTIVE. The next gate is an explicit owner decision to activate Phase 2 implementation under the audited scope. Activation must be recorded in a docs-only checkpoint, pass protected `Core Validation`, and merge before any Phase 2 runtime code changes. Zero-cost development remains mandatory.

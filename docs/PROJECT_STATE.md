@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation and the zero-cost development policy amendment.
 
-Version: 4.5
+Version: 4.6
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -17,7 +17,8 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2-7: PLANNED
+v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 3-7: PLANNED
 Current approved implementation phase: NONE
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
@@ -57,7 +58,7 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
-Phase 2  Operator Control API                                       PLANNED
+Phase 2  Operator Control API                                       AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
@@ -65,7 +66,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 and Phase 1 are complete. Phase 1 includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. A governed real OpenAI endpoint attempt reached the provider and normalized `credit_balance_exhausted`; under the zero-cost policy this is supplemental evidence and no paid retry is required. Phase 2 remains PLANNED / INACTIVE pending its pre-implementation audit; Phases 3-7 remain inactive.
+Phase 0 and Phase 1 are complete. Phase 2 pre-implementation audit is complete and identifies the required lower-layer authority, idempotency, cancellation and redaction constraints for the Operator Control API. Phase 2 remains INACTIVE with runtime implementation authorization `NO` until an explicit owner-approved activation checkpoint is merged through protected governance. Phases 3-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -118,6 +119,19 @@ Implementation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.
 The formal completion review identified and closed the remaining non-reference capability adapter gap. `ModelBackedAgent` invokes selected MODEL providers only through `SideEffectGateway.execute_provider()`; `PriorityModelSelector` keeps selection provider-neutral. The validated PR #21 code/test candidate passed full regression, packaging and public CLI/import gates.
 
 Completion checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
+
+## Phase 2 Pre-Implementation Audit
+
+Audit authority: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
+
+```text
+Audit status: COMPLETE
+Activation: PENDING OWNER APPROVAL
+Runtime implementation authorization: NO
+Zero-cost development policy: REQUIRED
+```
+
+The audit preserves the v0.3 Phase 5 Service/API compatibility surface and authorizes no runtime change by itself.
 
 ## Development Resource Policy
 
