@@ -2,7 +2,7 @@
 
 Permanent development-resource policy for K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 Date: 2026-09-19
 Authority: owner-approved project invariant
@@ -23,6 +23,23 @@ Allowed resources include:
 - repository/CI capabilities available at no additional project-attributable charge;
 - deterministic fakes, fixtures, emulators and local test doubles for external providers;
 - externally hosted services only when the required operation is available without payment.
+
+
+## CI Capacity and Self-Hosted Runner Rule
+
+Exhaustion of included GitHub-hosted Actions minutes does not authorize paid Actions usage or weakening protected-main validation.
+
+When included hosted CI capacity is unavailable, the project may migrate required validation to owner-controlled self-hosted infrastructure only when all of the following remain true:
+
+- the required quality gate and status context are preserved;
+- the self-hosted runtime is repository-scoped and least-privileged;
+- CI runtime credentials are isolated from unrelated production secrets and administration credentials;
+- privileged bootstrap is bounded and separated from normal runner execution;
+- the runner cannot materially displace an existing production workload; enforce resource guardrails when sharing a host;
+- migration and rollback are documented before changing the protected workflow;
+- no new project-attributable paid service is required.
+
+For the current K_Supervisor migration, the canonical architecture and acceptance contract is `PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md`.
 
 ## Paid Provider Boundary
 
