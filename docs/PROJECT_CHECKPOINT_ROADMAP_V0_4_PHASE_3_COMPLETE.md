@@ -102,10 +102,10 @@ No GitHub repository provider, certificate lifecycle platform, multi-node coordi
 ## Canonical Closure Governance
 
 ```text
-Closure PR: PENDING
-Initial closure head: PENDING
-Initial closure tree: PENDING
-Initial closure Core Validation: PENDING
+Closure PR: #30
+Initial closure head: 6178cae1687114421ac4c9137418a28383059faf
+Initial closure tree: 7463a2327c729cf3e74bc8a4c196889b482957de
+Initial closure Core Validation: 35453658578 — PASS
 Runtime/source/test paths changed by closure PR: NONE
 ```
 
