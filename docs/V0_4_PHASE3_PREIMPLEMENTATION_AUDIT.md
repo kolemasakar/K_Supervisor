@@ -457,7 +457,19 @@ After a separate owner-approved activation checkpoint is merged through protecte
 
 If any implementation step requires changing Service/API business semantics, pause and audit that change rather than embedding it in the host or CLI.
 
-## 18. Audit Outcome
+## 18. Protected Governance Evidence
+
+```text
+Audit PR: #26
+Initial audit head: 4499c98a47710d6c3c1ac2a71d0cd2264fbe8e86
+Initial audit tree: b39c88572d2d1ca6baf32194f4798e9ba07f7fe6
+Initial Core Validation: 35445444720 — PASS
+Runtime/source/test paths changed: NONE
+```
+
+The exact final PR head, including this governance evidence, must also pass required protected `Core Validation` before merge.
+
+## 19. Audit Outcome
 
 The existing architecture is suitable for additive Phase 3 productization. The principal missing layer is operational composition/hosting/client infrastructure, not a new control plane.
 
