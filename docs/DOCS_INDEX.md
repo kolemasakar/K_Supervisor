@@ -1,37 +1,39 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 4.2
+Version: 4.3
 Status: ACTIVE
-Date: 2026-09-17
+Date: 2026-09-19
 
 ## Reading Order
 
 1. `PROJECT_STATE.md` - canonical current implementation and active roadmap state.
-2. `ROADMAP.md` - approved active ROADMAP v0.4 phase sequence and scope.
-3. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - current Phase 1 implementation/CI evidence; live smoke pending.
-4. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - current Phase 0 completion evidence and next gate.
+2. `DEVELOPMENT_RESOURCE_POLICY.md` - permanent zero-cost development/validation resource policy.
+3. `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md` - owner-approved v0.4 policy amendment and Phase 1 impact.
+4. `ROADMAP.md` - approved active ROADMAP v0.4 phase sequence and scope.
+7. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 implementation/CI evidence.
+8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - current Phase 0 completion evidence and next gate.
 5. `HARDENING_BASELINE_V0_4.md` - frozen v0.4 product/security/compatibility contract.
 6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md` - explicit owner approval boundary.
-7. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable pre-approval audit evidence that produced v0.4.
-8. `TEST_MATRIX.md` - active v0.4 verification plan and permanent quality gates.
-9. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 cumulative test evidence.
-10. `VISION.md` - product direction and success definition.
-11. `OPERATIONS_RUNBOOK.md` - current deployment, backup/restore/upgrade, recovery and publication procedures.
-12. `COMPATIBILITY_POLICY.md` - public compatibility rules.
-13. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
-14. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
-15. `ARCHITECTURE.md` - control plane and multi-agent core.
-16. `PERSISTENCE.md` - storage and operational recovery semantics.
-17. `AGENT_RUNTIME.md` - runtime execution control.
-18. `INTEGRATIONS.md` - tools, providers, model-selection contracts and side-effect gateway.
-19. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
-20. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
-21. `SERVICE_API.md` - versioned Service/API contracts.
-22. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
-23. `RELEASE_MANAGER.md` - release targets and owner/workspace publication boundary.
-24. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap snapshot.
-25. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 final closure evidence.
+9. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable pre-approval audit evidence that produced v0.4.
+10. `TEST_MATRIX.md` - active v0.4 verification plan and permanent quality gates.
+11. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 cumulative test evidence.
+12. `VISION.md` - product direction and success definition.
+13. `OPERATIONS_RUNBOOK.md` - current deployment, backup/restore/upgrade, recovery and publication procedures.
+14. `COMPATIBILITY_POLICY.md` - public compatibility rules.
+15. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
+16. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
+17. `ARCHITECTURE.md` - control plane and multi-agent core.
+18. `PERSISTENCE.md` - storage and operational recovery semantics.
+19. `AGENT_RUNTIME.md` - runtime execution control.
+20. `INTEGRATIONS.md` - tools, providers, model-selection contracts and side-effect gateway.
+21. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
+22. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
+23. `SERVICE_API.md` - versioned Service/API contracts.
+24. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
+25. `RELEASE_MANAGER.md` - release targets and owner/workspace publication boundary.
+26. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap snapshot.
+27. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 final closure evidence.
 26. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
 
 Historical phase checkpoints and transition handoffs remain preserved and are not rewritten to reflect later roadmap state.
@@ -43,7 +45,7 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
+v0.4 Phase 1: ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW
 v0.4 Phase 2-7: PLANNED
 Runtime implementation phase: v0.4 Phase 1
 v0.3 Phase 9: NOT DEFINED
@@ -67,7 +69,8 @@ Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
 Protected PR Core Validation: 35175344558 — PASS
 Merged main SHA: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
 Merged-main Core Validation: 35175392964 — PASS
-Live OpenAI Responses smoke: PENDING
+Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
+Paid retry for development validation: PROHIBITED
 Phase 2 activation: NO
 ```
 
@@ -86,7 +89,7 @@ ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
-Live OpenAI Responses smoke: PENDING
+Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
 ```
 
 ## Repository Governance
@@ -99,4 +102,4 @@ Preferred ChatGPT target remains `CHATGPT_PLUGIN`; legacy `GPT_STORE` remains a 
 
 ## Next Work Rule
 
-Phase 1 runtime is merged and CI-validated. The next required gate is the owner-controlled live OpenAI Responses smoke using an approved protected credential reference. Do not mark Phase 1 COMPLETE or activate Phase 2 until that smoke evidence is recorded through protected governance.
+Phase 1 runtime is merged and CI-validated. Under `DEVELOPMENT_RESOURCE_POLICY.md`, paid OpenAI credits must not be purchased for development validation and successful paid live inference is no longer a blocking gate. The next required step is a formal Phase 1 completion review against the amended zero-cost criteria. Phase 2 remains inactive until that completion is merged through protected governance.
