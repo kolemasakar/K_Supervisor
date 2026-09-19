@@ -7,11 +7,11 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 2 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
+Current phase: v0.4 Phase 2 — ACTIVE / IMPLEMENTATION AUTHORIZED
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
-Runtime implementation authorized: NO — Phase 2 audit complete; activation pending
+Runtime implementation authorized: YES — Phase 2 audited scope only
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -87,7 +87,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 2 — Operator Control API
 
-**Phase 2 audit status:** COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`. The audit is docs-only and does not authorize runtime implementation. Zero-cost development remains mandatory.
+**Phase 2 status:** ACTIVE / IMPLEMENTATION AUTHORIZED. Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`. Owner activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md`. Runtime work is restricted to the audited scope; zero-cost development remains mandatory.
 
 **Goal:** let an authenticated owner/operator drive the approved control-plane lifecycle through one versioned service boundary instead of direct Python composition.
 
@@ -272,4 +272,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 and Phase 1 are COMPLETE. Phase 2 pre-implementation audit is COMPLETE, but Phase 2 remains INACTIVE / ACTIVATION PENDING. No Phase 2 runtime change is authorized until a separate owner-approved activation checkpoint is merged through protected governance.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 and Phase 1 are COMPLETE. Phase 2 pre-implementation audit is COMPLETE and the owner approved activation on 2026-09-19. Phase 2 runtime work is authorized only after the activation checkpoint merges through protected governance and only within the audited scope. Phase 3-7 remain inactive.

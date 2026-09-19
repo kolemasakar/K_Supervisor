@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
 Canonical compact continuation context after Phase 1 completion and Phase 2 pre-implementation audit.
 
-Version: 4.6
+Version: 4.7
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -14,6 +14,7 @@ docs/DEVELOPMENT_RESOURCE_POLICY.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
 docs/V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
 docs/V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md
@@ -30,7 +31,7 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
 v0.4 Phase 3-7: PLANNED / INACTIVE
 ```
 
@@ -66,6 +67,6 @@ Phase 2 audit authority: V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md
 
 ## Next Gate
 
-Phase 1 is COMPLETE. Phase 2 pre-implementation audit is COMPLETE in `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
+Phase 1 is COMPLETE. Phase 2 audit is COMPLETE and the owner explicitly approved Phase 2 activation on 2026-09-19.
 
-Phase 2 remains INACTIVE. The next gate is an explicit owner decision to activate Phase 2 implementation under the audited scope. Activation must be recorded in a docs-only checkpoint, pass protected `Core Validation`, and merge before any Phase 2 runtime code changes. Zero-cost development remains mandatory.
+The activation checkpoint `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md` must pass protected `Core Validation` and merge before runtime implementation starts. After merge, implement Phase 2 strictly by `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` and `TEST_MATRIX.md`. Phase 3 remains inactive. Zero-cost development remains mandatory.
