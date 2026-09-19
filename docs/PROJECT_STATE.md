@@ -228,7 +228,7 @@ Owner approval was given on 2026-09-19 to migrate `Core Validation` from GitHub-
 Decision authority: `SELF_HOSTED_CI_RUNNER_DECISION.md`.
 
 ```text
-Migration status: APPROVED / READ-ONLY INSPECTION + PREFLIGHT IN PROGRESS
+Migration status: PREFLIGHT COMPLETE / PRIVILEGED OWNER BOOTSTRAP PENDING
 Runner host: kgm-e4-owner-pilot
 Runner OS: Ubuntu 24.04.4 LTS / ARM64
 Runner account: dedicated ghrunner / no sudo
@@ -243,7 +243,7 @@ Systemd guardrails required: CPUQuota / MemoryMax / TasksMax
 Phase 4 activation: NO
 ```
 
-Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. Connection-manager review requires read-only bootstrap inspection, KGM workload preflight, dedicated `/opt` isolation and runner-specific systemd resource limits before migration closure. The transition must register and verify the runner online before the workflow `runs-on` target changes.
+Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. Reviewed bootstrap is pinned at commit `9eca846bc154e7fb091074d91e72941a20d3bfdd` with VM SHA-256 `13ce7221a024acb2c4388b21f59b3edd27d3ccdd14ee54d18edc401d6ab6855e`. Connection-manager review requires read-only bootstrap inspection, KGM workload preflight, dedicated `/opt` isolation and runner-specific systemd resource limits before migration closure. The transition must register and verify the runner online before the workflow `runs-on` target changes.
 
 This infrastructure work does not activate a roadmap runtime phase. Read-only preflight evidence: `SELF_HOSTED_CI_RUNNER_PREFLIGHT_2026_09_19.md`; privileged bootstrap remains pending. Read-only preflight authority/evidence: `SELF_HOSTED_CI_RUNNER_PREFLIGHT_2026_09_19.md`; privileged bootstrap remains pending.
 
