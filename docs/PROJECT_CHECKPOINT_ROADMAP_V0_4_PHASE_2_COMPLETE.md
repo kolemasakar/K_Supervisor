@@ -25,12 +25,12 @@ Owner activation was explicitly approved on 2026-09-19. Phase 3 was not activate
 
 ```text
 Implementation PR: #24
-Validated code/test head: d6503d9a0a3f64ee14a003c22e61c03a1bfdf960
-Validated code/test tree: c5ccce4e3ad93de69e16d55bd441bf934e7e92cc
-Core Validation: 35443466438 — PASS
+Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
+Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
+Core Validation: 35443690831 — PASS
 Python workflow: 3.13
-Full regression: 210 passed
-Branch-aware total coverage: 83.12%
+Full regression: 214 passed
+Branch-aware total coverage: 83.21%
 coverage gate >=80%: PASS
 ResourceWarning-as-error: PASS
 compileall: PASS
@@ -110,7 +110,10 @@ Legacy `ServiceMutationRecord` remains readable and authoritative for predecesso
    Validation uses local SQLite, deterministic runtime fixtures and no paid provider/cloud dependency.
 
 10. **Cumulative protected validation — PASS for the code/test candidate.**
-    Run `35443466438` passed 210 tests with 83.12% branch-aware coverage plus packaging/public-smoke gates. Final exact-head protected validation remains required after documentation synchronization.
+    Run `35443690831` passed 214 tests with 83.21% branch-aware coverage plus packaging/public-smoke gates. Final exact-head protected validation remains required after documentation synchronization.
+
+11. **Review-discovered recovery invariants — PASS.**
+    Final review closed the workflow cancellation-late-result race, orphaned deterministic workflow-parent reconciliation, same-version workflow-definition hash enforcement, and recovered execution-command lease reacquisition. Deterministic regression coverage is included in the 214-test suite.
 
 ## Completion Decision
 
