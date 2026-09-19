@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.2
+Version: 3.3
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 1 — ACTIVE
-Date: 2026-09-17
+Current phase: v0.4 Phase 1 — ACTIVE / FREE-RESOURCE COMPLETION REVIEW
+Date: 2026-09-19
 
 ## Preserved Regression Floor
 
@@ -28,7 +28,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | Phase | Verification focus | Status |
 | --- | --- | --- |
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
-| 1 | governed production MODEL provider, protected credentials, failure/usage normalization, live smoke | ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING |
+| 1 | governed production MODEL provider, protected credentials, failure/usage normalization, zero-cost validation path | ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | PLANNED |
 | 3 | service host, health/readiness, shutdown, CLI parity | PLANNED |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
@@ -72,10 +72,10 @@ Merged main: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
 Merged-main Core Validation: 35175392964 — PASS
 Deterministic Phase 1 tests added: 24
 Local full candidate: 187 passed / 85.02% branch coverage (Python 3.12.3, non-authoritative)
-Live provider smoke: PENDING
+Live provider attempt: REACHED PROVIDER / credit_balance_exhausted — supplemental evidence; paid retry prohibited by development policy
 ```
 
-All deterministic Phase 1 implementation requirements are merged and green. Phase completion remains blocked by the separately required owner-controlled live OpenAI Responses smoke.
+All deterministic Phase 1 implementation requirements are merged and green. The earlier paid-success live-smoke gate is superseded by `DEVELOPMENT_RESOURCE_POLICY.md`: project development must not purchase provider credits. Phase 1 now requires formal completion review against the amended zero-cost criteria.
 
 ## v0.4 Phase 1 — Required Verification
 
@@ -99,7 +99,7 @@ Required deterministic behaviors:
 - unknown legacy adapter exceptions preserve backward-compatible generic gateway normalization;
 - deterministic fake transport/provider keeps normal CI credential-free and network-free;
 - existing offline model/provider registry and SideEffectGateway tests remain green;
-- separate owner-controlled live OpenAI Responses smoke succeeds before Phase 1 completion.
+- a no-cost owner-controlled live provider smoke may supplement evidence when available; successful paid live inference is not a completion requirement, and paid credits/subscriptions must not be purchased for validation.
 
 ## Permanent Quality Gates
 
@@ -117,12 +117,15 @@ restart/recovery regression                   PASS for durable new state
 failure-injection regression                  PASS for external provider boundaries
 migration/rollback regression                 PASS for schema/config contract changes
 GitHub ruleset / required CI                  enforced
+zero-cost development resource policy         PASS / no paid-only phase gate
 ```
 
 ## Live External Evidence Rule
 
-Normal protected CI remains deterministic and credential-free. The Phase 1 live provider smoke is owner-controlled and is a phase-completion requirement, not an ordinary PR merge dependency. Missing live credentials/evidence blocks the Phase 1 completion claim only.
+Normal protected CI remains deterministic, credential-free and zero-cost to the project owner. `DEVELOPMENT_RESOURCE_POLICY.md` is authoritative for external development resources.
+
+A live external smoke is supplemental when the required operation is available without payment. If successful live evidence requires purchasing credits, a subscription or paid infrastructure, it is non-blocking and must be replaced by deterministic contract/integration evidence plus safe governed failure/reachability evidence where useful. No phase may require a paid-only external service to pass development validation.
 
 ## Activation Rule
 
-Phase 0 is COMPLETE. Phase 1 is ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING. Runtime implementation remains constrained by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; Phase 1 cannot be marked COMPLETE until live smoke evidence exists. Phases 2-7 remain inactive. No later phase runtime work may begin without its own pre-implementation audit/activation gate.
+Phase 0 is COMPLETE. Phase 1 is ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW. Runtime implementation remains constrained by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md` as amended by `DEVELOPMENT_RESOURCE_POLICY.md`. A successful paid live smoke is not required. Phase 1 must be formally re-evaluated and closed under the amended zero-cost criteria before Phase 2 activation. Phases 2-7 remain inactive. No later phase runtime work may begin without its own pre-implementation audit/activation gate.
