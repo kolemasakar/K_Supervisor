@@ -19,36 +19,35 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
+v0.4 Phase 2: COMPLETE
 v0.4 Phase 3-7: PLANNED
-Runtime implementation phase: v0.4 Phase 2
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0 and 1 are complete. Phase 1 includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. The Phase 2 Operator Control API pre-implementation audit is complete and owner activation is approved; runtime work begins after the protected activation checkpoint merges and remains limited to the audited scope. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 2 delivers the additive authenticated Operator Control API with Project/ProjectSpec administration, owner decisions, Task/Workflow execution control, release/publication confirmation, durable command receipts and redacted recovery projections. Phase 3 remains inactive; its pre-implementation audit is the next permitted gate. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 
 ```text
-Phase 1 completion PR: #21
-Validated final head: 9f05053d242cec13fa9e56f7c8eb71b92b0ad2cd
-Validated final tree: 51b62d79af1391d85a1d53ccdd38027e88caf78c
-Current main SHA: 15e6fa08ef348cb13d15b269110aa60a1cc3f537
-Final exact-head Core Validation: 35440792545 — PASS
-Full regression: 192 passed
-branch-aware coverage: 84.86%
+Phase 2 implementation PR: #24
+Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
+Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
+Code/test Core Validation: 35443690831 — PASS
+Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
+Final exact-head Core Validation: 35443735846 — PASS
+Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
+Merged-main Core Validation: 35443778180 — PASS
+Full regression: 214 passed
+branch-aware coverage: 83.21%
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
-Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
-Paid retry for development validation: PROHIBITED
-Phase 1 completion: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
+Phase 2 completion: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md
 ```
-
-Local Phase 1 candidate verification passed `187 tests` with branch-aware coverage `85.02%` on Python 3.12.3 (non-authoritative). GitHub Actions Python 3.13 is authoritative and passed on both PR #14 and merged `main`.
 
 ## Development Resource Policy
 
@@ -93,6 +92,7 @@ Start with:
 - `docs/DEVELOPMENT_RESOURCE_POLICY.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`;
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`;

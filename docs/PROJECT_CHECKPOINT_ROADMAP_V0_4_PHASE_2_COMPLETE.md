@@ -3,7 +3,7 @@
 Formal completion checkpoint for ROADMAP v0.4 Phase 2 — Operator Control API.
 
 Version: 1.0
-Status: COMPLETION CANDIDATE — PROTECTED MERGE REQUIRED
+Status: COMPLETE
 Date: 2026-09-19
 Roadmap: v0.4
 Phase: 2
@@ -39,7 +39,15 @@ public CLI/import smoke: PASS
 Paid external development resources: NONE
 ```
 
-The exact final PR head, including completion documentation, must also pass required protected `Core Validation` before merge.
+Final protected evidence:
+
+```text
+Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
+Final PR tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
+Final exact-head Core Validation: 35443735846 — PASS
+Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
+Merged-main Core Validation: 35443778180 — PASS
+```
 
 ## Delivered Runtime Scope
 
@@ -109,15 +117,27 @@ Legacy `ServiceMutationRecord` remains readable and authoritative for predecesso
 9. **Zero-cost validation — PASS.**
    Validation uses local SQLite, deterministic runtime fixtures and no paid provider/cloud dependency.
 
-10. **Cumulative protected validation — PASS for the code/test candidate.**
-    Run `35443690831` passed 214 tests with 83.21% branch-aware coverage plus packaging/public-smoke gates. Final exact-head protected validation remains required after documentation synchronization.
+10. **Cumulative protected validation — PASS.**
+    Run `35443690831` passed 214 tests with 83.21% branch-aware coverage plus packaging/public-smoke gates. Final exact-head run `35443735846` passed, PR #24 merged as `9b532e4d...`, and merged-main run `35443778180` also passed.
 
 11. **Review-discovered recovery invariants — PASS.**
     Final review closed the workflow cancellation-late-result race, orphaned deterministic workflow-parent reconciliation, same-version workflow-definition hash enforcement, and recovered execution-command lease reacquisition. Deterministic regression coverage is included in the 214-test suite.
 
+## Canonical Closure Governance
+
+```text
+Closure PR: #25
+Initial closure head: d754c2715d3e30c173aeb1e5ee97eb25f6bd91e5
+Initial closure tree: 1a67d7363af8b4045fe1bdd01a2260a22e6eba94
+Initial closure Core Validation: 35443950367 — PASS
+Runtime paths changed by closure PR: NONE
+```
+
+The final closure PR head, including this governance evidence, must also pass required protected `Core Validation` before merge.
+
 ## Completion Decision
 
-Subject only to protected merge of PR #24 after final exact-head `Core Validation`:
+Protected implementation merge is complete:
 
 ```text
 v0.4 Phase 2: COMPLETE

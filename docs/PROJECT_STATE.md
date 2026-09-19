@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor at ROADMAP v0.4 Phase 2 completion.
 
-Version: 4.8
+Version: 4.9
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -28,12 +28,17 @@ v0.3 Phase 9: NOT DEFINED
 
 ```text
 Phase 2 implementation PR: #24
-Validated code/test head: d6503d9a0a3f64ee14a003c22e61c03a1bfdf960
-Validated code/test tree: c5ccce4e3ad93de69e16d55bd441bf934e7e92cc
-Protected Core Validation: 35443466438 — PASS
+Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
+Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
+Code/test Core Validation: 35443690831 — PASS
+Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
+Final PR tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
+Final exact-head Core Validation: 35443735846 — PASS
+Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
+Merged-main Core Validation: 35443778180 — PASS
 Python workflow: 3.13
-Full regression: 210 passed
-Branch-aware coverage: 83.12%
+Full regression: 214 passed
+Branch-aware coverage: 83.21%
 coverage gate >=80%: PASS
 ResourceWarning gate: PASS
 compileall: PASS
@@ -42,7 +47,7 @@ public CLI/import smoke: PASS
 Zero-cost development policy: PASS
 ```
 
-The exact final PR #24 head, including synchronized completion documentation, must pass protected `Core Validation` before merge. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
+PR #24 is merged and its final exact head plus merged `main` passed protected `Core Validation`. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
 
 ## v0.4 Approval State
 
@@ -65,7 +70,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1 and Phase 2 are complete subject to the protected completion merge represented by PR #24. Phase 2 delivers the audited Operator Control API without activating a production service host. Phase 3-7 remain inactive; the next permitted work after completion merge is Phase 3 pre-implementation audit only.
+Phase 0, Phase 1 and Phase 2 are complete. Phase 2 delivers the audited Operator Control API without activating a production service host. Phase 3-7 remain inactive; the next permitted work is the Phase 3 pre-implementation audit only.
 
 ## Phase 0 Completion Evidence
 
@@ -151,15 +156,19 @@ Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
 
 ```text
 Implementation PR: #24
-Validated code/test head: d6503d9a0a3f64ee14a003c22e61c03a1bfdf960
-Validated tree: c5ccce4e3ad93de69e16d55bd441bf934e7e92cc
-Core Validation: 35443466438 — PASS
-Full regression: 210 passed
-Branch-aware coverage: 83.12%
+Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
+Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
+Code/test Core Validation: 35443690831 — PASS
+Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
+Final exact-head Core Validation: 35443735846 — PASS
+Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
+Merged-main Core Validation: 35443778180 — PASS
+Full regression: 214 passed
+Branch-aware coverage: 83.21%
 Phase 3 activation: NO
 ```
 
-Phase 2 completion becomes authoritative only through protected merge of the exact final PR #24 head. No Phase 3 runtime implementation is authorized.
+Phase 2 completion is authoritative: PR #24 merged after exact-head protected validation and merged `main` is green. No Phase 3 runtime implementation is authorized.
 
 ## Development Resource Policy
 
