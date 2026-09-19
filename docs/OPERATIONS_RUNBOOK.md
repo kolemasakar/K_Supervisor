@@ -1,14 +1,14 @@
 # OPERATIONS_RUNBOOK
 
-K_Supervisor v0.3 operational-readiness runbook.
+K_Supervisor single-node operational-readiness runbook.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
-Date: 2026-09-16
+Date: 2026-09-19
 
 ## Scope and invariants
 
-This runbook covers the supported PRE-ALPHA operational boundary: package deployment qualification, SQLite backup/restore/upgrade qualification, rollback, Project recovery and owner-controlled package-index publication. It does not claim a production HTTP hosting/TLS platform, distributed cluster, remote-agent federation or automatic external publication.
+This runbook covers the supported PRE-ALPHA single-node operational boundary: production Service/API hosting, operator CLI-over-HTTP, package deployment qualification, SQLite backup/restore/upgrade qualification, rollback, Project recovery and owner-controlled package-index publication. TLS termination/certificate lifecycle remains operator-owned. Distributed clusters, remote-agent federation and automatic external publication remain unsupported.
 
 `RELEASE_READY` means prepared and validated. It does not mean published. External publication always remains an explicit owner/workspace action.
 
@@ -24,6 +24,37 @@ Before deployment or package promotion:
 6. Confirm release targets remain owner-controlled and no unresolved blocking state is being bypassed.
 
 A failed required deployment check blocks promotion. Project lifecycle state is not used as a substitute for service health/readiness.
+
+## Single-node Service/API host
+
+The supported Phase 3 topology is:
+
+```text
+operator CLI / HTTP client
+  -> HTTPS reverse proxy for non-loopback production exposure
+  -> trusted local/private HTTP hop
+  -> k-supervisor serve
+  -> one ServiceRuntime / one authoritative SQLite store
+```
+
+Safe defaults and requirements:
+
+- loopback binding is the default;
+- non-loopback binding requires `proxy_mode=true` plus explicit trusted proxy addresses/CIDRs;
+- in proxy mode, requests from untrusted proxy peers fail closed and trusted peers must forward `X-Forwarded-Proto: https`;
+- certificate issuance/renewal is external to K_Supervisor;
+- bearer tokens are configured only through `secret://...` references and resolved from the environment/secret backend at startup;
+- bearer token contents must never be placed in CLI arguments, config files, logs or durable state;
+- configured service extensions activate only through existing Extension Governance; strict mode fails startup on an unauthorized/incompatible configured extension.
+
+Start with:
+
+```text
+k-supervisor validate-config service.json
+k-supervisor serve --config service.json
+```
+
+The host exposes unauthenticated minimal `GET /healthz` and `GET /readyz`. Readiness is false while draining. Business/operator operations remain under `/api/v1` and require Bearer authentication plus the existing independent scopes.
 
 ## Online backup
 
@@ -85,6 +116,19 @@ The restore path validates a temporary candidate before atomic replacement and p
 If deployment validation fails before authoritative replacement, continue using the existing store and artifact. If post-replacement verification fails during the supported restore operation, the restore boundary restores the prior database family automatically.
 
 For an application/package rollback, reinstall the last validated wheel and reopen the same supported schema. Never downgrade a database to an unsupported schema. Restore a verified pre-change backup instead.
+
+## Graceful shutdown and uncertain mutation outcomes
+
+On SIGINT/SIGTERM or explicit host stop:
+
+1. host state changes to `DRAINING` before listener shutdown;
+2. `/readyz` returns 503 and new application requests are rejected;
+3. accepted requests may finish within the configured drain interval;
+4. SQLite is not closed beneath an active accepted request;
+5. if an operation outlives the preferred drain interval, resource close is deferred until accepted work drains;
+6. after clean shutdown, reopen SQLite and require `PRAGMA integrity_check = ok`.
+
+A client timeout/disconnect after dispatch does **not** mean a material mutation was cancelled. For an uncertain mutation outcome, retry the same logical request with the same `Idempotency-Key` or query the supported recovery/status route. The CLI surfaces an auto-generated key even on transport uncertainty; preserve it for replay. Do not retry the logical mutation with a new key.
 
 ## Project restart and recovery
 

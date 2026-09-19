@@ -1,10 +1,10 @@
 # PLATFORM_INTERFACES
 Публічні межі встановлення, CLI, конфігурації, extension discovery та Service/API для K_Supervisor.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
-Baseline: v0.3 Phase 5
-Date: 2026-09-16
+Baseline: v0.4 Phase 3 implementation candidate
+Date: 2026-09-19
 
 ## 1. Public Package Boundary
 
@@ -16,7 +16,7 @@ Existing internal top-level packages remain available for the current 0.x baseli
 
 Installation creates the `k-supervisor` console command.
 
-Supported commands remain:
+Legacy commands remain backward-compatible:
 
 ```text
 k-supervisor version
@@ -24,7 +24,7 @@ k-supervisor validate-config PATH
 k-supervisor extensions [--kind agent|capability|project_template|adapter]
 ```
 
-Phase 5 does not replace or remove the CLI.
+Phase 3 adds `k-supervisor serve --config CONFIG` and HTTP-only operator groups for Projects, ProjectSpecs, Human Actions, Policy Approvals, Tasks, Workflows, Releases and recovery status. Operator mutations require or auto-generate an idempotency key; generated keys are surfaced in machine-readable output. Bearer-token contents are never accepted as command-line arguments.
 
 ## 3. Service/API Boundary
 
@@ -43,9 +43,9 @@ POST /api/v1/projects/{project_id}/lifecycle-transitions
 POST /api/v1/projects/{project_id}/operational-transitions
 ```
 
-`ServiceApiV1` is transport-neutral. `WsgiServiceAppV1` is a thin HTTP/WSGI adapter and is not a production hosting stack.
+`ServiceApiV1` remains transport-neutral and authoritative for business semantics. `WsgiServiceAppV1` remains the thin application adapter. Phase 3 adds `ServiceRuntime`, bounded `ServiceHost`, `ServiceClientV1`, unauthenticated minimal `/healthz` and `/readyz`, graceful drain/shutdown, and trusted-proxy enforcement without changing `/api/v1` semantics.
 
-Authentication is injected. The baseline Bearer adapter is `StaticBearerAuthenticator`; tokens are host-owned and are not persisted by the API.
+Authentication is injected. `StaticBearerAuthenticator` resolves host-supplied in-memory Bearer mappings; persisted configuration contains only `secret://...` references and resolved token contents are never persisted by the API or CLI.
 
 Required scopes are:
 
@@ -63,7 +63,7 @@ Detailed contract: `SERVICE_API.md`.
 
 `ksupervisor.config.PlatformConfig` is frozen and rejects unknown fields.
 
-Baseline fields remain:
+Baseline fields remain and old configuration files stay valid:
 
 ```text
 config_version
@@ -72,9 +72,9 @@ extension_groups
 strict_extensions
 ```
 
-JSON and TOML are supported by `load_config()`. Secrets are not configuration values; protected credentials continue to use `secret://...` references and secret backends.
+Phase 3 adds optional `service_host` and `service_client` sections while retaining `config_version = "1"`. Host configuration bounds bind/port, workers, socket/drain timeouts, trusted proxies, protected principal token references, and optional governed extension activations. Client configuration accepts only HTTPS for non-loopback endpoints and may use HTTP only for loopback.
 
-Phase 5 does not add persisted API credentials to `PlatformConfig`.
+JSON and TOML are supported by `load_config()`. Secrets are not configuration values; only opaque `secret://...` references may persist.
 
 ## 5. Extension Discovery
 
@@ -99,11 +99,11 @@ Phase 5 does not change extension activation/trust semantics.
 
 `pyproject.toml` defines Python >= 3.13, Pydantic v2, setuptools build backend, explicit package discovery and the console script. Phase 5 adds `service_api*` to the packaged modules and public `ksupervisor.service` exports.
 
-Core Validation builds and installs a wheel, changes outside the repository checkout, and verifies the CLI and `import ksupervisor`.
+Core Validation builds and installs a wheel, changes outside the repository checkout, verifies the public CLI/import surface, starts the installed Phase 3 host on an ephemeral loopback port, checks health/readiness, performs an authenticated CLI-over-HTTP request, shuts down cleanly, and verifies SQLite integrity.
 
 ## 8. Compatibility Boundary
 
-The service API is additive to the existing package/CLI/config/extension baseline. `/api/v1` request/response meanings and documented scope names are now public compatibility surfaces subject to `COMPATIBILITY_POLICY.md`.
+The service host/client/CLI layer is additive to the existing package/config/extension and `/api/v1` compatibility baseline. Host transport policy does not create a second control plane. `/api/v1` request/response meanings, documented scope names, 64 KiB request-body floor, idempotency semantics, and owner publication boundary remain public compatibility surfaces subject to `COMPATIBILITY_POLICY.md`.
 
 ## 9. Validation Baseline
 

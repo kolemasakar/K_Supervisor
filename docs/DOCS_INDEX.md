@@ -1,47 +1,48 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 5.0
+Version: 5.1
 Status: ACTIVE
 Date: 2026-09-19
 
 ## Reading Order
 
 1. `PROJECT_STATE.md` - canonical current implementation and active roadmap state.
-2. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md` - owner-approved Phase 3 activation checkpoint and protected merge gate.
-3. `PROJECT_HANDOFF_2026_09_19_V0_4_PHASE3_ACTIVATION.md` - transition handoff that led to the Phase 3 activation decision.
-4. `DEVELOPMENT_RESOURCE_POLICY.md` - permanent zero-cost development/validation resource policy.
-5. `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md` - completed v0.4 Phase 3 service-host/operator-CLI pre-implementation audit.
-6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md` - authoritative Phase 2 completion evidence.
-7. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md` - owner-approved Phase 2 activation checkpoint.
-8. `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` - completed Phase 2 Operator Control API pre-implementation audit.
-9. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md` - authoritative Phase 1 completion review.
-10. `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md` - owner-approved zero-cost v0.4 policy amendment.
-11. `ROADMAP.md` - approved active ROADMAP v0.4 sequence and scope.
-12. `TEST_MATRIX.md` - active cumulative v0.4 verification contract.
-13. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 original implementation evidence.
-14. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - Phase 0 completion evidence.
-15. `HARDENING_BASELINE_V0_4.md` - frozen v0.4 product/security/compatibility contract.
-16. `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md` - explicit owner approval boundary.
-17. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable audit that produced v0.4.
-18. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 regression evidence.
-19. `VISION.md` - product direction and success definition.
-20. `OPERATIONS_RUNBOOK.md` - deployment, backup/restore/upgrade and recovery procedures.
-21. `COMPATIBILITY_POLICY.md` - public compatibility rules.
-22. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
-23. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
-24. `ARCHITECTURE.md` - control plane and multi-agent core.
-25. `PERSISTENCE.md` - storage and recovery semantics.
-26. `AGENT_RUNTIME.md` - runtime execution control.
-27. `INTEGRATIONS.md` - tools/providers/model-selection/side-effect gateway.
-28. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
-29. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
-30. `SERVICE_API.md` - currently implemented v1 Service/API contract.
-31. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
-32. `RELEASE_MANAGER.md` - release targets and owner publication boundary.
-33. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap.
-34. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 closure evidence.
-35. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
+2. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_IMPLEMENTED.md` - current Phase 3 implementation candidate and protected completion gate.
+3. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md` - owner-approved Phase 3 activation checkpoint and protected merge gate.
+4. `PROJECT_HANDOFF_2026_09_19_V0_4_PHASE3_ACTIVATION.md` - transition handoff that led to the Phase 3 activation decision.
+5. `DEVELOPMENT_RESOURCE_POLICY.md` - permanent zero-cost development/validation resource policy.
+6. `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md` - completed v0.4 Phase 3 service-host/operator-CLI pre-implementation audit.
+7. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md` - authoritative Phase 2 completion evidence.
+8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md` - owner-approved Phase 2 activation checkpoint.
+9. `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` - completed Phase 2 Operator Control API pre-implementation audit.
+10. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md` - authoritative Phase 1 completion review.
+11. `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md` - owner-approved zero-cost v0.4 policy amendment.
+12. `ROADMAP.md` - approved active ROADMAP v0.4 sequence and scope.
+13. `TEST_MATRIX.md` - active cumulative v0.4 verification contract.
+14. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 original implementation evidence.
+15. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - Phase 0 completion evidence.
+16. `HARDENING_BASELINE_V0_4.md` - frozen v0.4 product/security/compatibility contract.
+17. `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md` - explicit owner approval boundary.
+18. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable audit that produced v0.4.
+19. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 regression evidence.
+20. `VISION.md` - product direction and success definition.
+21. `OPERATIONS_RUNBOOK.md` - deployment, backup/restore/upgrade and recovery procedures.
+22. `COMPATIBILITY_POLICY.md` - public compatibility rules.
+23. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
+24. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
+25. `ARCHITECTURE.md` - control plane and multi-agent core.
+26. `PERSISTENCE.md` - storage and recovery semantics.
+27. `AGENT_RUNTIME.md` - runtime execution control.
+28. `INTEGRATIONS.md` - tools/providers/model-selection/side-effect gateway.
+29. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
+30. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
+31. `SERVICE_API.md` - currently implemented v1 Service/API contract.
+32. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
+33. `RELEASE_MANAGER.md` - release targets and owner publication boundary.
+34. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap.
+35. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 closure evidence.
+36. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
 
 Historical phase checkpoints and transition handoffs remain preserved and are not rewritten to reflect later roadmap state.
 

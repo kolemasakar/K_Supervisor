@@ -32,6 +32,15 @@ from service_api import (
     ServiceAuthenticator,
     StaticBearerAuthenticator,
     WsgiServiceAppV1,
+    ServiceClientError,
+    ServiceClientResponse,
+    ServiceClientV1,
+    HostState,
+    ServiceHost,
+    ServiceHostApplication,
+    create_service_host,
+    ServiceRuntime,
+    build_service_runtime,
 )
 
 __all__ = [
@@ -68,4 +77,13 @@ __all__ = [
     "ServiceAuthenticator",
     "StaticBearerAuthenticator",
     "WsgiServiceAppV1",
+    "ServiceClientError",
+    "ServiceClientResponse",
+    "ServiceClientV1",
+    "HostState",
+    "ServiceHost",
+    "ServiceHostApplication",
+    "create_service_host",
+    "ServiceRuntime",
+    "build_service_runtime",
 ]

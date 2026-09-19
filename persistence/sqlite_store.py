@@ -4,6 +4,7 @@ import json
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
+from threading import RLock
 from typing import Iterator, TypeVar
 
 from pydantic import BaseModel
@@ -42,6 +43,7 @@ class SQLitePersistenceStore(PersistenceStore):
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self._conn: sqlite3.Connection | None = None
+        self._transaction_lock = RLock()
 
     @property
     def conn(self) -> sqlite3.Connection:
@@ -55,12 +57,13 @@ class SQLitePersistenceStore(PersistenceStore):
 
     @property
     def schema_version(self) -> str:
-        row = self.conn.execute(
-            "SELECT value FROM schema_meta WHERE key='schema_version'"
-        ).fetchone()
-        if row is None:
-            raise RuntimeError("persistence schema version is not initialized")
-        return str(row["value"])
+        with self._transaction_lock:
+            row = self.conn.execute(
+                "SELECT value FROM schema_meta WHERE key='schema_version'"
+            ).fetchone()
+            if row is None:
+                raise RuntimeError("persistence schema version is not initialized")
+            return str(row["value"])
 
     def __enter__(self) -> "SQLitePersistenceStore":
         self.initialize()
@@ -80,7 +83,11 @@ class SQLitePersistenceStore(PersistenceStore):
             return
 
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(self.path, timeout=self.BUSY_TIMEOUT_MS / 1_000)
+        connection = sqlite3.connect(
+            self.path,
+            timeout=self.BUSY_TIMEOUT_MS / 1_000,
+            check_same_thread=False,
+        )
         connection.row_factory = sqlite3.Row
         self._conn = connection
         try:
@@ -165,30 +172,32 @@ class SQLitePersistenceStore(PersistenceStore):
 
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:
-        connection = self.conn
-        if connection.in_transaction:
-            yield connection
-            return
+        with self._transaction_lock:
+            connection = self.conn
+            if connection.in_transaction:
+                yield connection
+                return
 
-        connection.execute("BEGIN IMMEDIATE")
-        try:
-            yield connection
-        except BaseException:
-            connection.rollback()
-            raise
-        else:
-            connection.commit()
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                yield connection
+            except BaseException:
+                connection.rollback()
+                raise
+            else:
+                connection.commit()
 
     def close(self) -> None:
-        connection = self._conn
-        if connection is None:
-            return
-        self._conn = None
-        try:
-            if connection.in_transaction:
-                connection.rollback()
-        finally:
-            connection.close()
+        with self._transaction_lock:
+            connection = self._conn
+            if connection is None:
+                return
+            self._conn = None
+            try:
+                if connection.in_transaction:
+                    connection.rollback()
+            finally:
+                connection.close()
 
     @staticmethod
     def _json(value: BaseModel) -> str:
@@ -258,19 +267,21 @@ class SQLitePersistenceStore(PersistenceStore):
             raise PersistenceConflictError(f"{kind} already exists: {resource_id}") from exc
 
     def _get(self, kind, resource_id, cls: type[T]) -> T | None:
-        row = self.conn.execute(
-            "SELECT payload FROM resources WHERE kind=? AND resource_id=?",
-            (kind, resource_id),
-        ).fetchone()
-        return None if row is None else cls.model_validate_json(row["payload"])
+        with self._transaction_lock:
+            row = self.conn.execute(
+                "SELECT payload FROM resources WHERE kind=? AND resource_id=?",
+                (kind, resource_id),
+            ).fetchone()
+            return None if row is None else cls.model_validate_json(row["payload"])
 
     def _list(self, kind, project_id, cls: type[T]) -> tuple[T, ...]:
-        rows = self.conn.execute(
-            "SELECT payload FROM resources "
-            "WHERE kind=? AND project_id=? ORDER BY rowid",
-            (kind, project_id),
-        ).fetchall()
-        return tuple(cls.model_validate_json(row["payload"]) for row in rows)
+        with self._transaction_lock:
+            rows = self.conn.execute(
+                "SELECT payload FROM resources "
+                "WHERE kind=? AND project_id=? ORDER BY rowid",
+                (kind, project_id),
+            ).fetchall()
+            return tuple(cls.model_validate_json(row["payload"]) for row in rows)
 
     def _event(self, kind, project_id, occurred_at, value, commit=True):
         if commit:
@@ -285,12 +296,13 @@ class SQLitePersistenceStore(PersistenceStore):
         )
 
     def _events(self, kind, project_id, cls: type[T]) -> tuple[T, ...]:
-        rows = self.conn.execute(
-            "SELECT payload FROM events "
-            "WHERE kind=? AND project_id=? ORDER BY event_id",
-            (kind, project_id),
-        ).fetchall()
-        return tuple(cls.model_validate_json(row["payload"]) for row in rows)
+        with self._transaction_lock:
+            rows = self.conn.execute(
+                "SELECT payload FROM events "
+                "WHERE kind=? AND project_id=? ORDER BY event_id",
+                (kind, project_id),
+            ).fetchall()
+            return tuple(cls.model_validate_json(row["payload"]) for row in rows)
 
     def _audit(self, value: AuditEvent) -> None:
         self._event(
@@ -308,8 +320,11 @@ class SQLitePersistenceStore(PersistenceStore):
             self._audit(audit)
     def get_project(self, project_id): return self._get("project", project_id, Project)
     def list_projects(self):
-        rows = self.conn.execute("SELECT payload FROM resources WHERE kind='project' ORDER BY rowid").fetchall()
-        return tuple(Project.model_validate_json(row["payload"]) for row in rows)
+        with self._transaction_lock:
+            rows = self.conn.execute(
+                "SELECT payload FROM resources WHERE kind='project' ORDER BY rowid"
+            ).fetchall()
+            return tuple(Project.model_validate_json(row["payload"]) for row in rows)
     def save_project_spec(self, value): self._save("project_spec", value.project_spec_id, value.project_id, value, True)
     def transition_project_spec(self, value, audit):
         with self.transaction():

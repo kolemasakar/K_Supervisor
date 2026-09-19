@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 pre-implementation audit.
+Canonical current snapshot of K_Supervisor during ROADMAP v0.4 Phase 3 implementation.
 
-Version: 5.2
+Version: 5.3
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -71,7 +71,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1 and Phase 2 are complete. Phase 2 delivers the audited Operator Control API. Phase 3 audit is complete and owner activation was approved on 2026-09-19 through `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`. After that protected checkpoint merges, Phase 3 runtime implementation is authorized strictly within the audited scope; Phase 4-7 remain inactive.
+Phase 0, Phase 1 and Phase 2 are complete. Phase 3 audit and protected activation are complete. The current Phase 3 implementation candidate adds only the audited production composition/host/client/CLI layer around Service/API v1; Phase 4-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -192,7 +192,24 @@ Runtime/source/test paths changed by audit: NONE
 Zero-cost development policy: REQUIRED
 ```
 
-The audit is merged and by itself authorizes no runtime change. Owner approval was granted on 2026-09-19; protected activation checkpoint #28 is the authority for Phase 3 runtime work after merge.
+The audit is merged and by itself authorizes no runtime change. Owner approval was granted on 2026-09-19; protected activation checkpoint #28 is the authority for Phase 3 runtime work. Current implementation evidence is tracked in `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_IMPLEMENTED.md`; protected completion validation is still pending.
+
+## Phase 3 Implementation Candidate
+
+```text
+Activated main predecessor: f65df3b11ab46730295c13fb2c7f6d91243e89ff
+Candidate branch: v04-phase3-runtime
+Targeted Phase 3 + legacy CLI subset: 17 passed
+Local full regression: 229 passed
+Local branch-aware coverage: 82.06%
+ResourceWarning gate: PASS / no warnings
+compileall: PASS
+Supplementary installed-wheel smoke: PASS
+Authoritative Python 3.13 Core Validation: 35452558739 — PASS / 229 tests / 82.06% coverage
+Phase 4 activation: NO
+```
+
+The candidate adds additive config/auth composition, bounded host lifecycle, health/readiness, trusted-proxy enforcement, HTTP client, operator CLI, threaded SQLite access serialization and installed-wheel CI qualification without changing the persistence schema or Service/API v1 business semantics.
 
 ## Development Resource Policy
 

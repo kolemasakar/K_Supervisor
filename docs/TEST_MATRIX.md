@@ -197,6 +197,23 @@ After the owner-approved activation checkpoint merges, required deterministic Ph
 - zero paid external resources are required;
 - cumulative regression and permanent quality gates remain green.
 
+## v0.4 Phase 3 — Local Implementation Candidate Evidence
+
+```text
+Candidate branch: v04-phase3-runtime
+Activated main predecessor: f65df3b11ab46730295c13fb2c7f6d91243e89ff
+Targeted Phase 3 + legacy CLI subset: 17 passed
+Local full regression: 229 passed
+Local branch-aware total coverage: 82.06%
+ResourceWarning gate: PASS / no warnings
+compileall: PASS
+Local installed-wheel smoke: PASS (Python 3.12.3 supplementary only)
+Authoritative Python 3.13 protected Core Validation: 35452558739 — PASS / 229 tests / 82.06% coverage / installed-wheel Phase 3 smoke PASS
+Phase 4 activation: NO
+```
+
+The candidate covers the audited host/config/auth/health/readiness/proxy/client/CLI/restart/idempotency and installed-wheel boundaries. Local Python 3.12.3 evidence is supplementary because package metadata and protected CI require Python 3.13.
+
 ## Permanent Quality Gates
 
 ```text
