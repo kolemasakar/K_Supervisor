@@ -10,6 +10,7 @@ class WorkflowExecutionStatus(StrEnum):
     WAITING_FOR_APPROVAL = "WAITING_FOR_APPROVAL"
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
 
 
 class WorkflowExecutionResult(ContractModel):
