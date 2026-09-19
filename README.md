@@ -19,26 +19,26 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2-7: PLANNED
+v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 3-7: PLANNED
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0 and 1 are complete. Phase 1 now includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. The zero-cost development policy remains permanent: no phase may require purchasing provider credits, subscriptions or paid infrastructure for development/validation. Phase 2 remains inactive until its pre-implementation audit/activation gate.
+ROADMAP v0.4 is approved; Phases 0 and 1 are complete. Phase 1 includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. The Phase 2 Operator Control API pre-implementation audit is complete, but Phase 2 remains inactive until an explicit owner-approved activation checkpoint is merged. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 
 ```text
-Implementation PR: #14
-Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
-Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
-Validated main SHA: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
-Protected PR Core Validation: 35175344558 — PASS
-Merged-main Core Validation: 35175392964 — PASS
-Python workflow: 3.13
-coverage gate: >= 80% PASS
+Phase 1 completion PR: #21
+Validated final head: 9f05053d242cec13fa9e56f7c8eb71b92b0ad2cd
+Validated final tree: 51b62d79af1391d85a1d53ccdd38027e88caf78c
+Current main SHA: 15e6fa08ef348cb13d15b269110aa60a1cc3f537
+Final exact-head Core Validation: 35440792545 — PASS
+Full regression: 192 passed
+branch-aware coverage: 84.86%
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
@@ -46,7 +46,6 @@ public CLI/import smoke: PASS
 Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
 Paid retry for development validation: PROHIBITED
 Phase 1 completion: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
-Gap-closure Core Validation: 35440664106 — PASS / 192 tests / 84.86% coverage
 ```
 
 Local Phase 1 candidate verification passed `187 tests` with branch-aware coverage `85.02%` on Python 3.12.3 (non-authoritative). GitHub Actions Python 3.13 is authoritative and passed on both PR #14 and merged `main`.
