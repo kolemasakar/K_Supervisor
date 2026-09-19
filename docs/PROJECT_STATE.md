@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 pre-implementation audit.
 
-Version: 5.1
+Version: 5.2
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -18,10 +18,10 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
-v0.4 Phase 4-7: PLANNED
-Current approved implementation phase: NONE
-Runtime implementation phase: NONE
+v0.4 Phase 3: ACTIVATION APPROVED — PROTECTED CHECKPOINT PENDING MERGE
+v0.4 Phase 4-7: PLANNED / INACTIVE
+Current approved implementation phase: Phase 3 — conditional on activation-checkpoint merge
+Runtime implementation phase: NONE — activation checkpoint not yet merged
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -64,14 +64,14 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
-Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
+Phase 3  Production Single-Node Service Host & Operator CLI         ACTIVATION APPROVED — CHECKPOINT PENDING MERGE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1 and Phase 2 are complete. Phase 2 delivers the audited Operator Control API without activating a production service host. Phase 3 audit is complete, but Phase 3 remains inactive. The next permitted step is explicit owner approval and a separate protected Phase 3 activation checkpoint; Phase 4-7 remain inactive.
+Phase 0, Phase 1 and Phase 2 are complete. Phase 2 delivers the audited Operator Control API without activating a production service host. Phase 3 audit is complete and the owner approved Phase 3 activation on 2026-09-19. Runtime implementation remains blocked until the separate protected Phase 3 activation checkpoint passes required `Core Validation` and merges; Phase 4-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -177,8 +177,8 @@ Audit authority: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`.
 
 ```text
 Audit status: COMPLETE
-Activation: NO — PENDING OWNER APPROVAL
-Runtime implementation authorization: NO
+Activation: OWNER APPROVED — PROTECTED CHECKPOINT PENDING MERGE
+Runtime implementation authorization: NO — checkpoint merge required
 Validated runtime predecessor: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
 Validated runtime predecessor tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
 Audit preparation baseline main: 5b15e54ce4fb0efd50a8e8c41e083a9e870c3294
@@ -192,7 +192,7 @@ Runtime/source/test paths changed by audit: NONE
 Zero-cost development policy: REQUIRED
 ```
 
-The audit is merged and authorizes no runtime change. The next gate is explicit owner approval followed by a separate protected Phase 3 activation checkpoint.
+The audit is merged and by itself authorizes no runtime change. Owner approval was granted on 2026-09-19; the current gate is the separate protected Phase 3 activation checkpoint.
 
 ## Development Resource Policy
 
