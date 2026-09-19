@@ -228,17 +228,22 @@ Owner approval was given on 2026-09-19 to migrate `Core Validation` from GitHub-
 Decision authority: `SELF_HOSTED_CI_RUNNER_DECISION.md`.
 
 ```text
-Migration status: APPROVED / RUNNER PACKAGE STAGED / PRIVILEGED REGISTRATION PENDING
+Migration status: APPROVED / READ-ONLY INSPECTION + PREFLIGHT IN PROGRESS
 Runner host: kgm-e4-owner-pilot
 Runner OS: Ubuntu 24.04.4 LTS / ARM64
 Runner account: dedicated ghrunner / no sudo
+Runner path: /opt/actions-runner/k-supervisor
+Management path: OCI OIDC -> ephemeral Tailscale -> Tailscale SSH
+SentinelX re-enrollment: NO
+kgmops privilege expansion: NO
 Approved concurrency: 1 job
 Required check name: Core Validation — unchanged
 Protected-main ruleset: unchanged
+Systemd guardrails required: CPUQuota / MemoryMax / TasksMax
 Phase 4 activation: NO
 ```
 
-Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. The transition must register and verify the runner online before the workflow `runs-on` target changes.
+Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. Connection-manager review requires read-only bootstrap inspection, KGM workload preflight, dedicated `/opt` isolation and runner-specific systemd resource limits before migration closure. The transition must register and verify the runner online before the workflow `runs-on` target changes.
 
 This infrastructure work does not activate a roadmap runtime phase.
 

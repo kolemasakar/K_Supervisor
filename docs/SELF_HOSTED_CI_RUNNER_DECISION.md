@@ -2,7 +2,7 @@
 
 Approved infrastructure decision for K_Supervisor protected CI.
 
-Version: 1.0
+Version: 1.1
 Status: APPROVED — MIGRATION PENDING
 Date: 2026-09-19
 Owner approval: YES
@@ -94,6 +94,27 @@ runs-on: [self-hosted, linux, arm64, k-supervisor-ci]
 
 Only one runner instance is approved on this VM. Job concurrency is therefore effectively one.
 
+## Management Path
+
+Privileged bootstrap and later runner administration must use the existing KGM owner-management path:
+
+```text
+owner / GitHub-controlled management
+  -> OCI OIDC
+  -> ephemeral Tailscale
+  -> Tailscale SSH
+  -> bounded administrative bootstrap
+  -> ghrunner system account
+```
+
+Governance constraints:
+
+- do not re-enroll SentinelX on `kgm-e4-owner-pilot`;
+- do not create a new permanent privileged Sentinel channel;
+- do not expand `kgmops` privileges;
+- privileged owner access is for bounded bootstrap/systemd administration only;
+- normal CI runtime executes exclusively as `ghrunner`.
+
 ## Security Isolation
 
 The runner must not run as `kgmops`.
@@ -104,7 +125,7 @@ Create a dedicated unprivileged OS account:
 user: ghrunner
 sudo: NO
 interactive project-administration role: NO
-runner home/workspace: isolated from /home/kgmops
+runner installation/workspace: /opt/actions-runner/k-supervisor, owned by ghrunner:ghrunner and isolated from /home/kgmops
 production secrets: NONE
 owner SSH private keys: NONE
 provider/API credentials: NONE
@@ -118,7 +139,10 @@ Required properties:
 - no production K_Supervisor secret is installed in runner environment/systemd configuration;
 - jobs are accepted only from this repository;
 - workflows from untrusted forks must not be granted privileged secrets or host access;
-- no `sudo` permission is granted to workflow steps.
+- no `sudo` permission is granted to workflow steps;
+- no membership in `docker`, `lxd`, `adm` or other privileged groups;
+- no access to KGM production environment files, OCI credentials, repository-external credentials or privileged sockets;
+- no ability to manage KGM production services.
 
 The self-hosted runner is persistent rather than disposable. Workspace cleanup and runner/software updates are therefore operational responsibilities.
 
@@ -126,13 +150,17 @@ The self-hosted runner is persistent rather than disposable. Workspace cleanup a
 
 Before registration:
 
-1. create dedicated `ghrunner` account;
-2. create isolated runner installation/work directories;
-3. add a 2 GiB swap file as an OOM safety margin;
-4. install the selected official Linux ARM64 GitHub Actions Runner v2.337.0 (compatible with `actions/setup-python@v7`);
-5. register it only for `kolemasakar/K_Supervisor`;
-6. install/start it as a systemd service under `ghrunner`;
-7. verify runner status is online and idle.
+1. perform read-only inspection of the bootstrap script before privileged execution;
+2. perform VM/KGM workload preflight;
+3. create dedicated `ghrunner` account;
+4. create `/opt/actions-runner/k-supervisor`, owned by `ghrunner:ghrunner`;
+5. add a 2 GiB swap file only if preflight confirms it is appropriate and there is no existing swap/policy conflict;
+6. install the selected official Linux ARM64 GitHub Actions Runner v2.337.0;
+7. obtain a short-lived repository registration token immediately before registration;
+8. register it only for `kolemasakar/K_Supervisor`;
+9. install/start it as a systemd service under `ghrunner`;
+10. apply runner-specific systemd resource guardrails;
+11. verify runner status is online and idle.
 
 Selected runner artifact:
 
@@ -143,7 +171,24 @@ sha256: 9b1dc70626422526e3c94767cf024896beb15da5342a3f4819bf2feac13e0393
 staging verification: PASS
 ```
 
-Docker is not required by the current `Core Validation` workflow and will not be installed as part of this migration.
+Docker is not required by the current `Core Validation` workflow and will not be installed as part of this migration. Any future Docker or privileged capability requires a separate security review.
+
+## Registration Token Handling
+
+The repository runner registration token is short-lived bootstrap material. It must be obtained immediately before registration, never committed or stored in project files, never sent through Sentinel, never included in handoffs/checkpoints, and never printed to logs. Hidden input or other ephemeral handoff is preferred. If the official GitHub configuration command ultimately requires the token as an argument, exposure must be bounded to the one registration process and the token must not be persisted.
+
+## Systemd Resource Guardrails
+
+Before migration closure, the K_Supervisor runner service must have dedicated cgroup limits so CI cannot crowd out KGM workload. Initial target:
+
+```ini
+[Service]
+CPUQuota=80%
+MemoryMax=2G
+TasksMax=256
+```
+
+The limits must be applied as a drop-in for the specific runner service only. They must not modify unrelated KGM services.
 
 ## Python and Dependencies
 
@@ -192,13 +237,19 @@ Rollback must not create a paid validation requirement.
 The migration is complete only when all are true:
 
 ```text
+read-only bootstrap inspection: PASS
+VM/KGM workload preflight: PASS
 dedicated ghrunner account: PASS
 runner repository scope: PASS
 runner online/idle: PASS
 runner service persistence: PASS
 no sudo for runner: PASS
+no docker/lxd/adm authority: PASS
 no access to /home/kgmops: PASS
-2 GiB swap safety margin: PASS
+no KGM production secret/OCI/privileged-socket access: PASS
+runner path /opt/actions-runner/k-supervisor: PASS
+systemd CPUQuota/MemoryMax/TasksMax guardrails: PASS
+2 GiB swap safety margin, if preflight-approved: PASS
 Core Validation runs on self-hosted labels: PASS
 Python 3.13 via setup-python: PASS
 229+ cumulative tests: PASS
@@ -210,6 +261,9 @@ installed-wheel CLI/service smoke: PASS
 required check name unchanged: PASS
 protected-main governance unchanged: PASS
 GitHub-hosted compute minutes required for normal K_Supervisor CI: NO
+KGM production impact: NONE
+SentinelX re-enrollment on runner host: NO
+kgmops privilege expansion: NO
 ```
 
 ## Scope Boundary
