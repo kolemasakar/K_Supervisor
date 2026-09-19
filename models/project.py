@@ -52,8 +52,8 @@ class ProjectSpec(ContractModel):
     def validate_approval(self) -> "ProjectSpec":
         if self.status == ProjectSpecStatus.APPROVED and self.approved_at is None:
             raise ValueError("approved ProjectSpec requires approved_at")
-        if self.status != ProjectSpecStatus.APPROVED and self.approved_at is not None:
-            raise ValueError("only approved ProjectSpec may contain approved_at")
+        if self.status not in {ProjectSpecStatus.APPROVED, ProjectSpecStatus.SUPERSEDED} and self.approved_at is not None:
+            raise ValueError("only approved/superseded ProjectSpec may contain approved_at")
         if self.updated_at < self.created_at:
             raise ValueError("updated_at must not precede created_at")
         return self
