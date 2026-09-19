@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.5
+Version: 3.6
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 2 — AUDIT COMPLETE / INACTIVE
+Current phase: v0.4 Phase 2 — ACTIVE / IMPLEMENTATION AUTHORIZED
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -29,7 +29,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | --- | --- | --- |
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
-| 2 | operator API lifecycle, scopes, idempotency, redaction | AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING |
+| 2 | operator API lifecycle, scopes, idempotency, redaction | ACTIVE — IMPLEMENTATION AUTHORIZED |
 | 3 | service host, health/readiness, shutdown, CLI parity | PLANNED |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
@@ -122,7 +122,7 @@ Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
 
 Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
 
-Phase 2 remains inactive. When separately activated, required deterministic verification includes:
+Phase 2 is owner-approved for activation. After the protected activation checkpoint merges, required deterministic verification includes:
 
 - backward compatibility of all v0.3 Phase 5 Service/API routes/scopes/idempotency;
 - safe fixed-state Project registration/onboarding;
@@ -164,4 +164,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 and Phase 1 are COMPLETE. Phase 2 pre-implementation audit is COMPLETE; Phase 2 remains INACTIVE / ACTIVATION PENDING. No Phase 2 runtime work is authorized until a separate activation checkpoint is owner-approved and merged through protected governance. Phases 3-7 remain inactive.
+Phase 0 and Phase 1 are COMPLETE. Phase 2 pre-implementation audit is COMPLETE and owner activation is approved. Runtime implementation is authorized only after the activation checkpoint merges through protected governance and remains limited to the audited Phase 2 verification contract. Phases 3-7 remain inactive.
