@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 4.5
+Version: 4.6
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -11,8 +11,9 @@ Date: 2026-09-19
 2. `DEVELOPMENT_RESOURCE_POLICY.md` - permanent zero-cost development/validation resource policy.
 3. `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md` - owner-approved v0.4 policy amendment.
 4. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md` - authoritative Phase 1 completion review.
-5. `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` - completed Phase 2 Operator Control API pre-implementation audit; activation pending.
-6. `ROADMAP.md` - approved active ROADMAP v0.4 sequence and scope.
+5. `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` - completed Phase 2 Operator Control API pre-implementation audit.
+6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md` - owner-approved Phase 2 activation checkpoint.
+7. `ROADMAP.md` - approved active ROADMAP v0.4 sequence and scope.
 7. `TEST_MATRIX.md` - active v0.4 verification contract.
 8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 original implementation evidence.
 9. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - Phase 0 completion evidence.
@@ -48,9 +49,9 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
 v0.4 Phase 3-7: PLANNED
-Runtime implementation phase: NONE
+Runtime implementation phase: v0.4 Phase 2
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -76,7 +77,7 @@ Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
 Paid retry for development validation: PROHIBITED
 Phase 1 completion: COMPLETE
 Gap-closure Core Validation: 35440664106 — PASS / 192 tests / 84.86% coverage
-Phase 2 activation: NO
+Phase 2 activation: YES — checkpoint pending protected merge
 ```
 
 ## Current Runtime Baseline
@@ -107,4 +108,4 @@ Preferred ChatGPT target remains `CHATGPT_PLUGIN`; legacy `GPT_STORE` remains a 
 
 ## Next Work Rule
 
-Phase 1 is COMPLETE. The Phase 2 pre-implementation audit is also COMPLETE, but Phase 2 runtime remains inactive. The next gate is explicit owner approval of a Phase 2 activation checkpoint through protected governance.
+Phase 1 is COMPLETE. Phase 2 audit is COMPLETE and owner activation is approved. The activation checkpoint must pass protected governance before Phase 2 runtime implementation starts.
