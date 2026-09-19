@@ -11,6 +11,7 @@ Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: MERGED / CI-VALIDATED — LIVE SMOKE PENDING
 Runtime implementation authorized: YES — Phase 1 scope only
+Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
 
@@ -25,7 +26,8 @@ The v0.4 program will make the existing control plane practically operable throu
 - existing public compatibility is preserved unless a phase explicitly defines a versioned migration;
 - owner-controlled publication remains a permanent boundary;
 - each phase requires its own pre-implementation audit before runtime changes;
-- completed v0.2 + v0.3 tests remain the cumulative regression floor.
+- completed v0.2 + v0.3 tests remain the cumulative regression floor;
+- all development, testing, CI, validation and qualification must comply with `DEVELOPMENT_RESOURCE_POLICY.md`; no paid-only external resource may be a required phase gate.
 
 ## v0.4 Phase 0 — Baseline Freeze & Operator Product Contract
 
@@ -64,7 +66,7 @@ The v0.4 program will make the existing control plane practically operable throu
 - normalized request/response/usage/error metadata without persisting hidden chain-of-thought;
 - capability/agent adapter path that can invoke the selected model through `SideEffectGateway` / policy controls rather than direct SDK calls;
 - bounded timeout/cancellation/budget accounting and provider availability handling;
-- deterministic fake provider for CI plus a separate owner-controlled live smoke path;
+- deterministic fake provider for CI plus a separate owner-controlled no-cost live smoke path when such provider access is available without payment;
 - documentation for adding another MODEL provider without Supervisor-core modification.
 
 **Exit criteria:**
@@ -75,12 +77,12 @@ The v0.4 program will make the existing control plane practically operable throu
 - timeout/rate-limit/provider failure is normalized, audited and recoverable;
 - model selection remains provider-neutral and no specific model is hard-coded as a platform invariant;
 - reference offline agents and predecessor provider tests remain compatible;
-- a minimal owner-controlled live provider smoke succeeds before Phase 1 completion, without becoming an ordinary PR merge dependency;
+- production-provider behavior is validated through deterministic governed tests; a successful live provider smoke is supplemental when available at zero cost and must not require purchasing credits or a paid plan;
 - cumulative regression and protected `Core Validation` PASS.
 
 **Deferred:** production-quality bespoke intelligence for every domain/reference agent, mandatory multi-provider routing, model fine-tuning/training and remote-agent federation.
 
-**Phase 1 implementation status:** IMPLEMENTED / LIVE SMOKE PENDING. PR #14 merged exact implementation tree `7fabf5220d4370124bb245445c84f9ed77eb2041` as main `8f748e993737cebe45a6e8ebaac74d8c0e10d1b7`; protected PR `Core Validation` `35175344558` and merged-main `Core Validation` `35175392964` both passed. The required owner-controlled live OpenAI Responses smoke is still pending, so Phase 1 is not COMPLETE and Phase 2 remains inactive. Evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`.
+**Phase 1 implementation status:** IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW. PR #14 merged exact implementation tree `7fabf5220d4370124bb245445c84f9ed77eb2041` as main `8f748e993737cebe45a6e8ebaac74d8c0e10d1b7`; protected PR `Core Validation` `35175344558` and merged-main `Core Validation` `35175392964` both passed. A governed OpenAI Responses attempt reached the provider and was rejected with `credit_balance_exhausted`. Under `DEVELOPMENT_RESOURCE_POLICY.md`, purchasing credits solely to satisfy development evidence is prohibited and successful paid live inference is no longer a blocking Phase 1 criterion. Phase 1 requires a formal completion review under the amended criteria before Phase 2 activation. Evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`, `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_LIVE_SMOKE_BILLING_BLOCKED_2026_09_19.md`, and `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md`.
 
 ## v0.4 Phase 2 — Operator Control API
 
