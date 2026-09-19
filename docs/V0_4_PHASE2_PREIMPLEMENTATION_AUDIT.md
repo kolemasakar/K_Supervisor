@@ -404,7 +404,19 @@ After a separate owner-approved activation gate, Phase 2 implementation should p
 
 The Service API must remain a thin orchestration boundary; business-state rules stay below it.
 
-## 13. Audit Outcome
+## 13. Protected Governance Evidence
+
+```text
+Audit PR: #22
+Initial audit head: c995615b5e4063f54f5b5c17d0fd0966c000bf2f
+Initial audit tree: 03a5a2852ea340e408a8531aa6915c8a5d887707
+Core Validation: 35441199999 — PASS
+Runtime paths changed: NONE
+```
+
+The exact final PR head, including this governance evidence, must also pass required `Core Validation` before merge.
+
+## 14. Audit Outcome
 
 The existing architecture is suitable for additive Phase 2 work, but implementation must first close the explicitly identified lower-layer authority gaps. None requires paid resources or a Phase 3 service host.
 
