@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.6
+Version: 3.7
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 2 — COMPLETE; Phase 3 audit next
+Current phase: v0.4 Phase 3 — AUDIT COMPLETE / ACTIVATION PENDING
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -30,7 +30,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
-| 3 | service host, health/readiness, shutdown, CLI parity | PLANNED |
+| 3 | service host, health/readiness, shutdown, CLI parity | PLANNED — AUDIT COMPLETE / ACTIVATION PENDING |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
@@ -154,6 +154,34 @@ Branch-aware total coverage: 83.21%
 
 Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
 
+## v0.4 Phase 3 — Audited Verification Contract
+
+Audit authority: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 3 remains inactive. After a separate owner-approved activation checkpoint merges, required deterministic verification includes:
+
+- installed-wheel service starts with valid config and fails closed on invalid bind/port/auth/config;
+- one production composition root owns SQLite/control-plane resource lifecycle; production code does not import test fixtures;
+- service auth resolves bearer tokens from protected references/environment injection with zero plaintext persistence/logging;
+- host preserves the Phase 2 `/api/v1` route/scope/idempotency/error compatibility floor;
+- health/readiness endpoints are minimal, redacted, and use existing health/deployment qualification contracts;
+- readiness becomes false while draining; Project lifecycle state is not a service-readiness substitute;
+- bounded workers plus connection/header/body timeout/config validation;
+- existing 64 KiB request body compatibility floor is not weakened;
+- graceful shutdown stops new requests before resource close and leaves SQLite reopenable;
+- material mutation outcome is not inferred from client disconnect/transport timeout;
+- restart/retry reuses Phase 2 durable command receipts and does not duplicate material work;
+- forwarded headers are ignored by default and trusted only from configured proxy addresses;
+- production proxy mode requires secure forwarded scheme; certificate lifecycle remains external;
+- HTTP client/CLI uses Service/API only and does not import persistence/registry/kernel/workflow mutation authorities;
+- CLI and direct HTTP yield equivalent authoritative transitions for representative read/mutation flows;
+- mutation CLI preserves/surfaces idempotency keys for uncertain outcomes;
+- bearer token contents are never CLI arguments;
+- legacy `version`, `validate-config`, and `extensions` behavior remains compatible;
+- service + CLI smoke runs outside the source checkout from the installed wheel;
+- zero paid external resources are required;
+- cumulative regression and permanent quality gates remain green.
+
 ## Permanent Quality Gates
 
 ```text
@@ -181,4 +209,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3-7 remain inactive. The next permitted work is the Phase 3 pre-implementation audit only; no Phase 3 runtime implementation is authorized.
+Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE, but Phase 3 remains inactive pending explicit owner approval and a separate protected activation checkpoint. Phase 4-7 remain inactive; no Phase 3 runtime implementation is authorized.
