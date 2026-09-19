@@ -2,7 +2,7 @@
 
 Approved infrastructure decision for K_Supervisor protected CI.
 
-Version: 1.1
+Version: 1.2
 Status: APPROVED — MIGRATION PENDING
 Date: 2026-09-19
 Owner approval: YES
@@ -179,16 +179,19 @@ The repository runner registration token is short-lived bootstrap material. It m
 
 ## Systemd Resource Guardrails
 
-Before migration closure, the K_Supervisor runner service must have dedicated cgroup limits so CI cannot crowd out KGM workload. Initial target:
+Resource guardrails are a mandatory pre-validation gate. They must be installed and verified **before the first self-hosted `Core Validation` run**.
 
-```ini
-[Service]
-CPUQuota=80%
-MemoryMax=2G
-TasksMax=256
-```
+The final values must be selected from measured VM capacity and K_Supervisor workload evidence during preflight. The service-specific systemd drop-in must control only the K_Supervisor runner service/cgroup and must not modify KGM production services.
 
-The limits must be applied as a drop-in for the specific runner service only. They must not modify unrelated KGM services.
+Required controls:
+
+- `MemoryMax` — hard upper bound for runner-service memory;
+- `CPUQuota` — cap runner CPU consumption so CI cannot monopolize the VM;
+- `TasksMax` — bound process/thread count;
+- `MemoryHigh` — optional soft-throttling threshold when preflight supports a useful value below `MemoryMax`;
+- `Restart` — do not override the standard GitHub runner service restart behavior unless inspection shows an explicit operational need.
+
+Candidate limits remain provisional until read-only VM preflight records the final approved values.
 
 ## Python and Dependencies
 
@@ -210,13 +213,14 @@ The transition must occur in this order:
 1. commit/push this decision as documentation only;
 2. prepare the VM and dedicated runner account;
 3. install and register the repository-scoped runner;
-4. verify the runner is online without changing the workflow;
-5. change only `runs-on` from `ubuntu-latest` to the approved self-hosted labels;
-6. push the workflow change only after the runner is online;
-7. require the resulting `Core Validation` job to execute on the self-hosted runner and PASS;
-8. open/validate the infrastructure PR through the same protected required check;
-9. merge only after exact-head PASS;
-10. verify protected `main` remains green on the self-hosted runner.
+4. install and verify the runner-specific systemd resource guardrails;
+5. verify the runner is online and idle without changing the workflow;
+6. change only `runs-on` from `ubuntu-latest` to the approved self-hosted labels;
+7. push the workflow change only after the runner is online/idle and resource guardrails are verified;
+8. require the resulting `Core Validation` job to execute on the self-hosted runner and PASS;
+9. open/validate the infrastructure PR through the same protected required check;
+10. merge only after exact-head PASS;
+11. verify protected `main` remains green on the self-hosted runner.
 
 This sequence avoids accidentally dispatching a new `ubuntu-latest` job during migration.
 
@@ -237,33 +241,26 @@ Rollback must not create a paid validation requirement.
 The migration is complete only when all are true:
 
 ```text
-read-only bootstrap inspection: PASS
-VM/KGM workload preflight: PASS
-dedicated ghrunner account: PASS
-runner repository scope: PASS
-runner online/idle: PASS
-runner service persistence: PASS
-no sudo for runner: PASS
-no docker/lxd/adm authority: PASS
-no access to /home/kgmops: PASS
-no KGM production secret/OCI/privileged-socket access: PASS
-runner path /opt/actions-runner/k-supervisor: PASS
-systemd CPUQuota/MemoryMax/TasksMax guardrails: PASS
-2 GiB swap safety margin, if preflight-approved: PASS
-Core Validation runs on self-hosted labels: PASS
-Python 3.13 via setup-python: PASS
-229+ cumulative tests: PASS
-branch-aware coverage >= 80%: PASS
-ResourceWarning-as-error: PASS
-compileall: PASS
-wheel build/install: PASS
-installed-wheel CLI/service smoke: PASS
-required check name unchanged: PASS
-protected-main governance unchanged: PASS
-GitHub-hosted compute minutes required for normal K_Supervisor CI: NO
-KGM production impact: NONE
-SentinelX re-enrollment on runner host: NO
-kgmops privilege expansion: NO
+RUNNER_REGISTERED=PASS
+RUNNER_ONLINE=PASS
+RUNNER_IDLE_BEFORE_TEST=PASS
+REPOSITORY_SCOPE=K_Supervisor_ONLY
+
+GHRUNNER_SUDO=NO
+GHRUNNER_DOCKER_AUTHORITY=NO
+KGM_PRODUCTION_SECRET_ACCESS=NO
+KGMOPS_PRIVILEGE_EXPANSION=NO
+
+SYSTEMD_MEMORY_GUARDRAIL=PASS
+SYSTEMD_CPU_GUARDRAIL=PASS
+SYSTEMD_TASKS_GUARDRAIL=PASS
+
+CORE_VALIDATION_SELF_HOSTED=PASS
+REQUIRED_CHECK_NAME_UNCHANGED=PASS
+RULESET_GOVERNANCE=PASS
+
+GITHUB_HOSTED_MINUTES_USED=0
+KGM_PRODUCTION_IMPACT=NONE
 ```
 
 ## Scope Boundary

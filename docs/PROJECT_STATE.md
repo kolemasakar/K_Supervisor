@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.5
+Version: 5.6
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -239,11 +239,11 @@ kgmops privilege expansion: NO
 Approved concurrency: 1 job
 Required check name: Core Validation — unchanged
 Protected-main ruleset: unchanged
-Systemd guardrails required: CPUQuota / MemoryMax / TasksMax
+Systemd guardrails required before first self-hosted Core Validation: MemoryMax / CPUQuota / TasksMax; MemoryHigh if supported by preflight sizing
 Phase 4 activation: NO
 ```
 
-Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. Reviewed bootstrap is pinned at commit `9eca846bc154e7fb091074d91e72941a20d3bfdd` with VM SHA-256 `13ce7221a024acb2c4388b21f59b3edd27d3ccdd14ee54d18edc401d6ab6855e`. Connection-manager review requires read-only bootstrap inspection, KGM workload preflight, dedicated `/opt` isolation and runner-specific systemd resource limits before migration closure. The transition must register and verify the runner online before the workflow `runs-on` target changes.
+Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. Reviewed bootstrap is pinned at commit `9eca846bc154e7fb091074d91e72941a20d3bfdd` with VM SHA-256 `13ce7221a024acb2c4388b21f59b3edd27d3ccdd14ee54d18edc401d6ab6855e`. Connection-manager review requires read-only bootstrap inspection, KGM workload preflight, dedicated `/opt` isolation and runner-specific systemd resource limits before the first self-hosted `Core Validation`. Workflow mutation remains prohibited until the runner is registered, online/idle and the guardrails are verified.
 
 This infrastructure work does not activate a roadmap runtime phase. Read-only preflight evidence: `SELF_HOSTED_CI_RUNNER_PREFLIGHT_2026_09_19.md`; privileged bootstrap remains pending. Read-only preflight authority/evidence: `SELF_HOSTED_CI_RUNNER_PREFLIGHT_2026_09_19.md`; privileged bootstrap remains pending.
 
