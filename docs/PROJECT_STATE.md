@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 4 pre-implementation audit.
 
-Version: 5.4
+Version: 5.5
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -19,7 +19,8 @@ v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
-v0.4 Phase 4-7: PLANNED / INACTIVE
+v0.4 Phase 4: PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 5-7: PLANNED / INACTIVE
 Current approved implementation phase: NONE
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
@@ -65,13 +66,13 @@ Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
-Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
+Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4-7 remain inactive; the next permitted work is Phase 4 pre-implementation audit only.
+Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 4 pre-implementation audit is complete. Phase 4 remains inactive pending explicit owner approval and a separate protected activation checkpoint; Phase 5-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -214,6 +215,23 @@ Phase 4 activation: NO
 ```
 
 Phase 3 is complete. Runtime implementation authorization is NONE; Phase 4 remains planned/inactive.
+
+## Phase 4 Pre-Implementation Audit
+
+Audit authority: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`.
+
+```text
+Audit status: COMPLETE
+Baseline main: db37da2a1a8210fd45d3bf8dcb716d6fbfba7624
+Baseline tree: 6215ab22dcd0c2daf820168ab2b9d1706be6f650
+Validated runtime predecessor: a1791b607496edfaf84593d753f7d1d7662eede1
+Validated runtime predecessor tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
+Activation: NO — PENDING OWNER APPROVAL
+Runtime implementation authorization: NO
+Zero-cost development policy: REQUIRED
+```
+
+The audit requires a VCS-capable repository abstraction plus a governed control-plane repository side-effect bridge. New GitHub material mutations may not use the historical direct `ProviderProvisioningAdapter -> provider.execute()` path, may not fabricate agent identity, and may not bypass protected-branch/repository policy. Phase 4 runtime work remains blocked pending a separate owner-approved activation checkpoint.
 
 ## Development Resource Policy
 

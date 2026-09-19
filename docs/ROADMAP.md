@@ -7,7 +7,7 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
@@ -142,6 +142,8 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 4 — GitHub Repository Provider & Governed VCS Handoff
 
+**Phase 4 status:** PLANNED — AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`. Runtime implementation remains unauthorized until explicit owner approval and a separate protected activation checkpoint merge.
+
 **Goal:** let K_Supervisor bootstrap and update a real GitHub repository through existing Project Factory/provisioning/policy boundaries.
 
 **Deliverables:**
@@ -275,4 +277,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive. The next permitted work is Phase 4 pre-implementation audit only; Phase 4 runtime implementation requires its own completed audit, explicit owner activation and protected merge gate.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-3 are COMPLETE. Phase 4 pre-implementation audit is COMPLETE, but Phase 4 remains PLANNED / INACTIVE. The next permitted step is explicit owner approval and a separate protected Phase 4 activation checkpoint. No Phase 4 runtime change is authorized before that merge; Phase 5-7 remain inactive.

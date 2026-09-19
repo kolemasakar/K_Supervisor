@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.9
+Version: 4.0
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 4 — AUDIT COMPLETE / ACTIVATION PENDING
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -30,8 +30,8 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
-| 3 | service host, health/readiness, shutdown, CLI parity | ACTIVE |
-| 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
+| 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
+| 4 | GitHub repository/VCS provider and governed handoff | PLANNED — AUDIT COMPLETE / ACTIVATION PENDING |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
 | 7 | end-to-end single-node product qualification | PLANNED |
@@ -215,6 +215,34 @@ Phase 4 activation: NO
 
 Phase 3 satisfies the audited host/config/auth/health/readiness/proxy/client/CLI/restart/idempotency and installed-wheel verification contract. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
 
+## v0.4 Phase 4 — Audited Verification Contract
+
+Audit authority: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 4 remains inactive. After a separate owner-approved activation checkpoint merges, required deterministic verification includes:
+
+- GitHub repository target/credential-reference validation with zero plaintext secret leakage;
+- deterministic fake GitHub HTTP transport; protected CI remains credential-free/network-free;
+- repository resolve-before-create and create-timeout resolve-before-retry;
+- existing repository visibility/default-branch validation and fail-closed conflict handling;
+- no new material GitHub mutation through direct `ProviderProvisioningAdapter -> provider.execute()`;
+- governed control-plane repository side-effect enforcement without fabricated agent identity;
+- policy DENY / REQUIRE_APPROVAL / access-reference denial produces zero outbound mutation calls;
+- durable attempt/outcome/idempotency evidence with no bearer token material;
+- bootstrap file identical-content no-op and divergent-content conflict behavior;
+- commit creation against observed parent with non-force ref update;
+- concurrent ref movement/protected-branch denial cannot trigger force/admin bypass;
+- deterministic managed branch create/reuse/conflict behavior;
+- pull-request resolve/create/restart deduplication with no automatic merge;
+- optional policy-gated tag idempotency/conflict behavior with no GitHub Release publication;
+- normalized authentication/authorization/rate-limit/conflict/timeout/transient provider failures;
+- stale PENDING or uncertain remote mutations reconcile GitHub state before retry;
+- owner intervention fallback for credential/permission/repository-policy conflicts;
+- ProjectFactory/FilesystemRepositoryAdapter predecessor behavior remains compatible;
+- ReleaseManager owner-controlled publication boundary remains unchanged;
+- zero paid external resource requirement;
+- cumulative regression, coverage >=80%, ResourceWarning-as-error, compileall, wheel/install and public/Phase3 smoke gates remain green.
+
 ## Permanent Quality Gates
 
 ```text
@@ -242,4 +270,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive; the next permitted work is Phase 4 pre-implementation audit only.
+Phase 0, Phase 1, Phase 2 and Phase 3 are COMPLETE. Phase 4 pre-implementation audit is COMPLETE, but Phase 4 remains inactive pending explicit owner approval and a separate protected activation checkpoint. Phase 5-7 remain inactive; no Phase 4 runtime implementation is authorized.
