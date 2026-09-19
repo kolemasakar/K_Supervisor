@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 
-from models.control import ServiceCommandStatus
+from models.control import ServiceCommandRecord, ServiceCommandStatus
 from models.enums import (
     HumanActionStatus,
     ProjectLifecycleState,
@@ -198,6 +199,38 @@ def test_project_spec_submit_approve_activate_and_scope_denial(tmp_path):
     store.close()
 
 
+def test_project_spec_supersession_preserves_immutable_content_and_approval_evidence(tmp_path):
+    store, projects, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
+    submitted = api.dispatch(
+        "POST",
+        "/api/v1/projects/P2/specs",
+        principal=principal(PROJECT_SPECS_SUBMIT_SCOPE),
+        body={"spec_version": "1.0", "onboarding": onboarding()},
+        idempotency_key="supersede-spec",
+    )
+    spec_id = submitted.body["data"]["project_spec"]["project_spec_id"]
+    api.dispatch(
+        "POST",
+        f"/api/v1/projects/P2/specs/{spec_id}/approve",
+        principal=principal(PROJECT_SPECS_APPROVE_SCOPE),
+        idempotency_key="supersede-approve",
+    )
+    approved = store.get_project_spec(spec_id)
+    approved_at = approved.approved_at
+    repository = dict(approved.repository)
+
+    superseded = projects.transition_spec_status(
+        "P2",
+        spec_id,
+        ProjectSpecStatus.SUPERSEDED,
+        datetime.now(timezone.utc) + timedelta(seconds=1),
+    )
+    assert superseded.status == ProjectSpecStatus.SUPERSEDED
+    assert superseded.approved_at == approved_at
+    assert superseded.repository == repository
+    store.close()
+
+
 def test_project_spec_cross_project_identifier_fails_closed(tmp_path):
     store, projects, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
     projects.register(
@@ -318,6 +351,52 @@ def test_task_start_replay_survives_restart_without_duplicate_task(tmp_path):
     assert replay.body["data"]["task"]["task_id"] == task_id
     assert len(recovered.list_tasks("P2")) == 1
     recovered.close()
+
+
+def test_orphaned_pending_task_command_reconciles_without_duplicate_execution(tmp_path):
+    store, _, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
+    body = task_body(9)
+    command_id = api.operator._command_id("P2", "task-start", "orphan-task")
+    task_id = api.operator._derived_id("TASK_SERVICE", command_id)
+    workflow_run_id = api.operator._derived_id("WF_SERVICE", command_id)
+    now = datetime.now(timezone.utc)
+    store.claim_service_command(
+        ServiceCommandRecord(
+            command_id=command_id,
+            project_id="P2",
+            api_version="v1",
+            operation="task-start",
+            idempotency_key="orphan-task",
+            signature=api.operator._signature(body),
+            result_refs={"task_id": task_id, "workflow_run_id": workflow_run_id},
+            created_at=now,
+            updated_at=now,
+        )
+    )
+    store.save_task(
+        Task(
+            task_id=task_id,
+            project_id="P2",
+            title="already durable",
+            status=TaskStatus.SUCCEEDED.value,
+            created_at=now,
+            updated_at=now,
+            metadata={"service_command_id": command_id},
+        )
+    )
+    response = api.dispatch(
+        "POST",
+        "/api/v1/projects/P2/tasks",
+        principal=principal(EXECUTIONS_START_SCOPE),
+        body=body,
+        idempotency_key="orphan-task",
+    )
+    assert response.status_code == 200
+    assert response.body["meta"]["idempotent_replay"] is True
+    assert len(store.list_tasks("P2")) == 1
+    command = store.get_service_command(command_id)
+    assert command.status == ServiceCommandStatus.SUCCEEDED
+    store.close()
 
 
 def test_task_cancel_uses_kernel_authority_and_updates_linked_workflow(tmp_path):
