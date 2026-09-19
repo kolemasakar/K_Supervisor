@@ -7,11 +7,11 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 1 — COMPLETE; next gate: Phase 2 pre-implementation audit
+Current phase: v0.4 Phase 2 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
-Runtime implementation authorized: NO — Phase 1 closed; Phase 2 not activated
+Runtime implementation authorized: NO — Phase 2 audit complete; activation pending
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -86,6 +86,8 @@ The v0.4 program will make the existing control plane practically operable throu
 **Phase 1 status:** COMPLETE. PR #14 established the production `openai.responses` provider boundary; PR #21 closes the remaining non-reference capability/agent path with `ModelBackedAgent` and provider-neutral `PriorityModelSelector`. Deterministic full regression on the validated PR #21 code/test candidate passed 192 tests at 84.86% branch-aware coverage in Core Validation `35440664106`. Real OpenAI endpoint reachability and normalized `credit_balance_exhausted` evidence are retained as supplemental evidence; `DEVELOPMENT_RESOURCE_POLICY.md` prohibits purchasing credits solely for development validation. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
 
 ## v0.4 Phase 2 — Operator Control API
+
+**Phase 2 audit status:** COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`. The audit is docs-only and does not authorize runtime implementation. Zero-cost development remains mandatory.
 
 **Goal:** let an authenticated owner/operator drive the approved control-plane lifecycle through one versioned service boundary instead of direct Python composition.
 
@@ -270,4 +272,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 and Phase 1 are COMPLETE. Phase 2 remains PLANNED / INACTIVE; the next permitted work is its pre-implementation audit. No Phase 2 runtime change is authorized until a separate Phase 2 audit/activation gate is approved and merged through protected governance.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 and Phase 1 are COMPLETE. Phase 2 pre-implementation audit is COMPLETE, but Phase 2 remains INACTIVE / ACTIVATION PENDING. No Phase 2 runtime change is authorized until a separate owner-approved activation checkpoint is merged through protected governance.
