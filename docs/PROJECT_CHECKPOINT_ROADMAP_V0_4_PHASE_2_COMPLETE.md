@@ -123,6 +123,18 @@ Legacy `ServiceMutationRecord` remains readable and authoritative for predecesso
 11. **Review-discovered recovery invariants — PASS.**
     Final review closed the workflow cancellation-late-result race, orphaned deterministic workflow-parent reconciliation, same-version workflow-definition hash enforcement, and recovered execution-command lease reacquisition. Deterministic regression coverage is included in the 214-test suite.
 
+## Canonical Closure Governance
+
+```text
+Closure PR: #25
+Initial closure head: d754c2715d3e30c173aeb1e5ee97eb25f6bd91e5
+Initial closure tree: 1a67d7363af8b4045fe1bdd01a2260a22e6eba94
+Initial closure Core Validation: 35443950367 — PASS
+Runtime paths changed by closure PR: NONE
+```
+
+The final closure PR head, including this governance evidence, must also pass required protected `Core Validation` before merge.
+
 ## Completion Decision
 
 Protected implementation merge is complete:
