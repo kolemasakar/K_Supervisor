@@ -20,20 +20,31 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: ACTIVE
+v0.4 Phase 3: COMPLETE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Runtime implementation phase: Phase 3 — audited scope only
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 3 is active under protected activation checkpoint #28; implementation PR #29 has passed its initial protected `Core Validation` (`35452558739`) for the single-node Service Host, protected bearer configuration, health/readiness, trusted-proxy boundary, HTTP client and operator CLI. Final exact-head validation and merge remain pending. Phase 4 remains inactive. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0-3 are complete. Phase 3 implementation PR #29 passed initial, final exact-head and merged-main protected `Core Validation`, including the 229-test suite, 82.06% branch-aware coverage and installed-wheel service/CLI smoke. Phase 4 remains planned/inactive; the next permitted work is its pre-implementation audit only. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 
 ```text
-Phase 2 implementation PR: #24
+Phase 3 implementation PR: #29
+Final PR head: c73e4c5f24f958ebb1473d4c8d23f28244c9f799
+Final PR tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
+Final exact-head Core Validation: 35453258878 — PASS
+Merged main: a1791b607496edfaf84593d753f7d1d7662eede1
+Merged-main Core Validation: 35453297160 — PASS
+Full regression: 229 passed
+branch-aware coverage: 82.06%
+installed-wheel Phase 3 service/CLI smoke: PASS
+Phase 3 completion: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md
+
+Previous Phase 2 implementation PR: #24
 Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
 Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
 Code/test Core Validation: 35443690831 — PASS
@@ -89,6 +100,7 @@ Extension groups:
 
 Start with:
 
+- `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_IMPLEMENTED.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`;
 - `docs/PROJECT_HANDOFF_2026_09_19_V0_4_PHASE3_ACTIVATION.md`;

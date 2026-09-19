@@ -3,7 +3,7 @@
 Контрольна точка реалізації ROADMAP v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI.
 
 Version: 1.0
-Status: IMPLEMENTED — PROTECTED MERGE PENDING
+Status: IMPLEMENTED — MERGED / VALIDATED
 Roadmap: v0.4
 Phase: 3
 Date: 2026-09-19
@@ -20,9 +20,9 @@ Protected PR Core Validation: 35452558739 — PASS
 Authoritative CI regression: 229 passed
 Authoritative CI branch-aware coverage: 82.06%
 Installed-wheel Phase 3 service/CLI smoke: PASS
-Final exact-head Core Validation: PENDING
-Merged main SHA: PENDING
-Merged-main Core Validation: PENDING
+Final exact-head Core Validation: 35453258878 — PASS
+Merged main SHA: a1791b607496edfaf84593d753f7d1d7662eede1
+Merged-main Core Validation: 35453297160 — PASS
 Local targeted Phase 3 + legacy CLI subset: 17 passed
 Local full regression: 229 passed
 Local branch-aware coverage: 82.06%
@@ -60,7 +60,7 @@ Local candidate validation passed the targeted Phase 3/legacy CLI subset, cumula
 
 ## Completion Gate
 
-Phase 3 is not COMPLETE until:
+Phase 3 completion gates were satisfied:
 
 1. the implementation candidate is committed to a protected pull request;
 2. exact implementation head passes required `Core Validation`;
@@ -69,4 +69,4 @@ Phase 3 is not COMPLETE until:
 5. merged `main` passes `Core Validation`;
 6. the completion checkpoint records exact immutable evidence.
 
-Phase 4 remains inactive until a separate pre-implementation audit/activation decision.
+All six gates are satisfied. Formal completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`. Phase 4 remains inactive until a separate pre-implementation audit/activation decision.

@@ -4,7 +4,7 @@ Active cumulative verification contract for approved ROADMAP v0.4.
 Version: 3.9
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 3 — ACTIVE
+Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT PENDING
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -197,22 +197,23 @@ After the owner-approved activation checkpoint merges, required deterministic Ph
 - zero paid external resources are required;
 - cumulative regression and permanent quality gates remain green.
 
-## v0.4 Phase 3 — Local Implementation Candidate Evidence
+## v0.4 Phase 3 — Completion Evidence
 
 ```text
-Candidate branch: v04-phase3-runtime
-Activated main predecessor: f65df3b11ab46730295c13fb2c7f6d91243e89ff
-Targeted Phase 3 + legacy CLI subset: 17 passed
-Local full regression: 229 passed
-Local branch-aware total coverage: 82.06%
-ResourceWarning gate: PASS / no warnings
-compileall: PASS
-Local installed-wheel smoke: PASS (Python 3.12.3 supplementary only)
-Authoritative Python 3.13 protected Core Validation: 35452558739 — PASS / 229 tests / 82.06% coverage / installed-wheel Phase 3 smoke PASS
+Implementation PR: #29
+Initial protected Core Validation: 35452558739 — PASS
+Final PR head: c73e4c5f24f958ebb1473d4c8d23f28244c9f799
+Final PR tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
+Final exact-head Core Validation: 35453258878 — PASS
+Merged main: a1791b607496edfaf84593d753f7d1d7662eede1
+Merged-main Core Validation: 35453297160 — PASS
+Full regression: 229 passed
+Branch-aware total coverage: 82.06%
+Installed-wheel Phase 3 service/CLI smoke: PASS
 Phase 4 activation: NO
 ```
 
-The candidate covers the audited host/config/auth/health/readiness/proxy/client/CLI/restart/idempotency and installed-wheel boundaries. Local Python 3.12.3 evidence is supplementary because package metadata and protected CI require Python 3.13.
+Phase 3 satisfies the audited host/config/auth/health/readiness/proxy/client/CLI/restart/idempotency and installed-wheel verification contract. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
 
 ## Permanent Quality Gates
 
@@ -241,4 +242,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE and owner activation approval was granted on 2026-09-19 through protected activation checkpoint #28. After that checkpoint merges, Phase 3 runtime implementation is authorized strictly within the audited verification contract. Phase 4-7 remain inactive.
+Phase 0, Phase 1, Phase 2 and Phase 3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive; the next permitted work is Phase 4 pre-implementation audit only.
