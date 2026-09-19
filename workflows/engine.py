@@ -112,6 +112,8 @@ class WorkflowEngine:
             raise WorkflowRuntimeError("workflow definition does not match persisted run")
         if run.metadata.get("workflow_version") != definition.workflow_version:
             raise WorkflowRuntimeError("workflow version does not match persisted run")
+        if run.metadata.get("definition_hash") != self._definition_hash(definition):
+            raise WorkflowRuntimeError("workflow definition hash does not match persisted run")
         task = self.store.get_task(run.task_id)
         if task is None:
             raise WorkflowRuntimeError("workflow parent task is missing")
@@ -276,6 +278,9 @@ class WorkflowEngine:
                         },
                     )
                 except Exception as exc:
+                    persisted = self._find_run(task.project_id, run.workflow_run_id)
+                    if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                        return self._result_from_run(persisted)
                     return self._fail(
                         task,
                         run,
@@ -286,6 +291,9 @@ class WorkflowEngine:
                         steps,
                         str(exc),
                     )
+                persisted = self._find_run(task.project_id, run.workflow_run_id)
+                if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                    return self._result_from_run(persisted)
                 if result.status != ExecutionStatus.SUCCEEDED:
                     message = result.error.message if result.error else "capability execution failed"
                     return self._fail(
