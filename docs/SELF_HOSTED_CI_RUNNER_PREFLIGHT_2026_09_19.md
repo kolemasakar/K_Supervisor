@@ -126,6 +126,7 @@ The next action is bounded privileged bootstrap through the existing KGM owner p
 ## Reviewed Bootstrap Artifact
 
 ```text
+guardrail implementation commit: cceefcabeaf73b74d4f0d1364980d5be1557b69d
 path: ops/ci/bootstrap-self-hosted-runner.sh
 reviewed content SHA-256: 37b9f1e6674eb313761efd060e08eca7791959f093aec46b244cce988561ff12
 bash syntax check: PASS
