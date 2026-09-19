@@ -32,6 +32,7 @@ from service_api import (
     RELEASES_CONFIRM_SCOPE,
     RELEASES_READ_SCOPE,
     ServiceApiV1,
+    TaskStartRequest,
 )
 from supervisor.task_state import TaskStatus
 from tests.phase13_support import NOW as RELEASE_NOW, build_release_stack
@@ -356,6 +357,7 @@ def test_task_start_replay_survives_restart_without_duplicate_task(tmp_path):
 def test_orphaned_pending_task_command_reconciles_without_duplicate_execution(tmp_path):
     store, _, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
     body = task_body(9)
+    canonical = TaskStartRequest.model_validate(body).model_dump(mode="json")
     command_id = api.operator._command_id("P2", "task-start", "orphan-task")
     task_id = api.operator._derived_id("TASK_SERVICE", command_id)
     workflow_run_id = api.operator._derived_id("WF_SERVICE", command_id)
@@ -367,7 +369,7 @@ def test_orphaned_pending_task_command_reconciles_without_duplicate_execution(tm
             api_version="v1",
             operation="task-start",
             idempotency_key="orphan-task",
-            signature=api.operator._signature(body),
+            signature=api.operator._signature(canonical),
             result_refs={"task_id": task_id, "workflow_run_id": workflow_run_id},
             created_at=now,
             updated_at=now,
