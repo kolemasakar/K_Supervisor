@@ -13,6 +13,8 @@ from models.project import Project
 from persistence.base import PersistenceConflictError, PersistenceStore
 from registry.project_registry import ProjectRegistry
 
+from .operator import OperatorApiError, OperatorControlApi
+
 from .contracts import (
     API_VERSION,
     LIFECYCLE_WRITE_SCOPE,
@@ -39,12 +41,32 @@ class ServiceApiV1:
     BASE_PATH = "/api/v1"
     MAX_IDEMPOTENCY_KEY_LENGTH = 256
 
-    def __init__(self, projects: ProjectRegistry, store: PersistenceStore, telemetry=None):
+    def __init__(
+        self,
+        projects: ProjectRegistry,
+        store: PersistenceStore,
+        telemetry=None,
+        *,
+        kernel=None,
+        workflows=None,
+        human=None,
+        approvals=None,
+        releases=None,
+    ):
         if projects.store is not store:
             raise ValueError("ProjectRegistry and ServiceApiV1 must share one PersistenceStore")
         self.projects = projects
         self.store = store
         self.telemetry = telemetry
+        self.operator = OperatorControlApi(
+            projects,
+            store,
+            kernel=kernel,
+            workflows=workflows,
+            human=human,
+            approvals=approvals,
+            releases=releases,
+        )
 
     def dispatch(
         self,
@@ -57,6 +79,14 @@ class ServiceApiV1:
     ) -> ApiResponse:
         method = method.upper()
         project_id = self._project_id_from_path(path)
+        if (
+            project_id is None
+            and method == "POST"
+            and path.rstrip("/") == f"{self.BASE_PATH}/projects"
+            and isinstance(body, dict)
+        ):
+            candidate = body.get("project_id")
+            project_id = candidate if isinstance(candidate, str) and candidate else None
         try:
             response = self._dispatch(
                 method,
@@ -65,7 +95,7 @@ class ServiceApiV1:
                 body=body,
                 idempotency_key=idempotency_key,
             )
-        except ServiceApiError as exc:
+        except (ServiceApiError, OperatorApiError) as exc:
             response = self.error_response(exc.code, exc.status_code, exc.message)
         except Exception:
             response = self.error_response(
@@ -111,6 +141,16 @@ class ServiceApiV1:
         idempotency_key: str | None,
     ) -> ApiResponse:
         normalized = path.rstrip("/") or "/"
+        operator_response = self.operator.dispatch_if_supported(
+            method,
+            normalized,
+            principal=principal,
+            body=body,
+            idempotency_key=idempotency_key,
+        )
+        if operator_response is not None:
+            return operator_response
+
         if normalized == f"{self.BASE_PATH}/projects":
             if method != "GET":
                 raise ServiceApiError("METHOD_NOT_ALLOWED", 405, "method not allowed")
