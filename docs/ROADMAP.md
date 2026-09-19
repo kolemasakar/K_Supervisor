@@ -4,6 +4,7 @@ K_Supervisor active development roadmap.
 Version: 0.4
 Status: ACTIVE
 Approved: 2026-09-16
+Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
 Current phase: v0.4 Phase 1 — Production Model Provider & AI Execution
@@ -269,6 +270,6 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is ACTIVE after its pre-implementation audit/activation gate and deterministic implementation merge. It remains incomplete until the required owner-controlled live provider smoke passes. Runtime implementation is authorized only for Phase 1 scope defined by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; later phases remain inactive.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is ACTIVE after its pre-implementation audit/activation gate and deterministic implementation merge. The former paid-success live-smoke requirement is no longer a blocking criterion; Phase 1 awaits formal completion review against the amended zero-cost evidence rules. Runtime implementation is authorized only for Phase 1 scope defined by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md` as amended by the zero-cost policy; later phases remain inactive.
 
 Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Frozen Phase 0 contract: `HARDENING_BASELINE_V0_4.md`. Phase 0 completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
