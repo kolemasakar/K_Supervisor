@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
-Canonical compact continuation context for ROADMAP v0.4 Phase 1 live-smoke closure.
+Canonical compact continuation context for ROADMAP v0.4 Phase 1 zero-cost completion review.
 
-Version: 4.3
+Version: 4.4
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -10,6 +10,8 @@ Date: 2026-09-19
 ```text
 docs/PROJECT_HANDOFF_2026_09_19_V0_4_PHASE1_LIVE_SMOKE.md
 docs/PROJECT_STATE.md
+docs/DEVELOPMENT_RESOURCE_POLICY.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
 docs/V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md
@@ -25,7 +27,7 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
+v0.4 Phase 1: ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW
 v0.4 Phase 2-7: PLANNED / INACTIVE
 ```
 
@@ -44,10 +46,14 @@ Latest owner-host credential verification: BLOCKED — credential absent
 Blocker evidence: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_LIVE_SMOKE_BLOCKED_2026_09_19.md
 Latest live-smoke attempt: credential/model present, provider blocked by credit_balance_exhausted
 Billing blocker evidence: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_LIVE_SMOKE_BILLING_BLOCKED_2026_09_19.md
+Owner policy decision: DEVELOPMENT MUST USE ZERO-COST RESOURCES
+Paid OpenAI retry: NOT AUTHORIZED FOR DEVELOPMENT VALIDATION
+Policy: DEVELOPMENT_RESOURCE_POLICY.md
+Amendment: PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md
 ```
 
 ## Next Gate
 
-Configure the owner-host protected environment reference for `secret://project/P11/openai`, whose EnvironmentSecretBackend key is `KSUP_SECRET__PROJECT_P11_OPENAI`. Never place the raw API key in chat, repository state or ordinary logs.
+Do not purchase OpenAI credits or any other paid external resource for development validation. `DEVELOPMENT_RESOURCE_POLICY.md` supersedes the older paid-success live-smoke requirement.
 
-Then follow `PROJECT_HANDOFF_2026_09_19_V0_4_PHASE1_LIVE_SMOKE.md`: verify current main, run exactly one minimal governed `openai.responses` live smoke with `store=false`, record safe evidence, close Phase 1 through protected governance, and only then begin the Phase 2 pre-implementation audit. Phase 2 runtime is not active.
+Verify the policy amendment is merged through protected governance, then perform a formal Phase 1 completion review using the deterministic implementation evidence plus the safe governed provider reachability/failure evidence already recorded. If the amended criteria are satisfied, close Phase 1 through protected governance. Only after Phase 1 is formally COMPLETE may the Phase 2 pre-implementation audit begin; Phase 2 runtime remains inactive.
