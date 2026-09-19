@@ -1,7 +1,7 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.7
+Version: 3.8
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
 Current phase: v0.4 Phase 3 — AUDIT COMPLETE / ACTIVATION PENDING
@@ -153,6 +153,21 @@ Branch-aware total coverage: 83.21%
 ```
 
 Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
+
+## v0.4 Phase 3 — Audit Evidence
+
+```text
+Audit PR: #26
+Initial audit head: 4499c98a47710d6c3c1ac2a71d0cd2264fbe8e86
+Initial Core Validation: 35445444720 — PASS
+Final audit head: 31eff0be47afdbc5837aa08595f3553d9bf022ca
+Final audit tree: 241b9588ecbaf8f9ec02c31f71562d0a0867cf96
+Final exact-head Core Validation: 35445489807 — PASS
+Audit merged main: 31e39bf44e43ca241fb2536aa30bdfc519e0f020
+Runtime/source/test paths changed: NONE
+```
+
+Phase 3 remains inactive. The audit does not authorize runtime implementation.
 
 ## v0.4 Phase 3 — Audited Verification Contract
 
