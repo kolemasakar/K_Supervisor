@@ -145,6 +145,22 @@ class WorkflowEngine:
             if action is not None and action.resolved_at is None:
                 broker.cancel(human_action_id, at)
 
+        for child in self.store.list_tasks(project_id):
+            if child.metadata.get("parent_workflow_run_id") != workflow_run_id:
+                continue
+            child_status = TaskStatus(child.status)
+            if child_status in {
+                TaskStatus.SUCCEEDED,
+                TaskStatus.FAILED,
+                TaskStatus.BLOCKED,
+                TaskStatus.CANCELLED,
+            }:
+                continue
+            try:
+                self.kernel.cancel_task(project_id, child.task_id)
+            except (KeyError, ValueError):
+                pass
+
         task = self.store.get_task(run.task_id)
         if task is None:
             raise WorkflowRuntimeError("workflow parent task is missing")
@@ -179,6 +195,10 @@ class WorkflowEngine:
         current = str(run.metadata.get("current_node_id", definition.start_node_id))
 
         while True:
+            persisted = self._find_run(task.project_id, run.workflow_run_id)
+            if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                return self._result_from_run(persisted)
+
             node = definition.node(current)
             resuming_gate = (
                 run.status == WorkflowExecutionStatus.WAITING_FOR_APPROVAL.value
@@ -341,6 +361,10 @@ class WorkflowEngine:
                     )
                 current = node.approved_node_id if decision else node.rejected_node_id
                 current = current or ""
+
+            persisted = self._find_run(task.project_id, run.workflow_run_id)
+            if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                return self._result_from_run(persisted)
 
             run = run.model_copy(
                 update={
