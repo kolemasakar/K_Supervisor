@@ -2,10 +2,10 @@
 
 Read-only preflight evidence for the approved K_Supervisor self-hosted CI migration.
 
-Version: 1.0
+Version: 1.1
 Status: COMPLETE — PRIVILEGED BOOTSTRAP PENDING
 Date: 2026-09-19
-Decision authority: `SELF_HOSTED_CI_RUNNER_DECISION.md` v1.1
+Decision authority: `SELF_HOSTED_CI_RUNNER_DECISION.md` v1.2
 
 ## Host Evidence
 
@@ -78,6 +78,29 @@ Official runner help confirms interactive registration is supported and a token 
 
 No swap is currently configured. With about 38 GiB free disk, the previously approved 2 GiB swap safety margin remains appropriate if host state is unchanged at privileged execution time. No global swappiness change is approved.
 
+## Resource Guardrail Sizing
+
+Final pre-validation values approved from measured capacity/workload evidence:
+
+```text
+CPUQuota=70%
+MemoryHigh=1G
+MemoryMax=1536M
+TasksMax=128
+Restart override=NONE
+```
+
+Evidence used:
+
+- host: 1 vCPU, 5.8 GiB RAM, about 4.9 GiB available, 38 GiB disk free;
+- KGM production monitor: about 14 MiB, one task, 0% CPU over a 5-second sample;
+- K_Supervisor pytest+coverage benchmark: 229 tests, 82.06% coverage, about 13.5 s, about 80 MiB max RSS, about 61% average CPU;
+- wheel build: about 50 MiB max RSS and about 2 s;
+- standard GitHub runner v2.337.0 systemd template contains no `Restart=` directive;
+- a separate parallel `kgmops` pytest was observed during the later preflight sample and was deliberately not terminated or treated as KGM production load.
+
+These guardrails must be installed before the first self-hosted `Core Validation` run and must apply only to the K_Supervisor runner service/cgroup.
+
 ## Result
 
 ```text
@@ -89,6 +112,7 @@ TAILSCALE_READY=PASS
 RUNNER_PACKAGE_VERIFICATION=PASS
 BOUNDED_DEPENDENCY_PLAN=PASS
 SWAP_2G_APPROVED=YES
+SYSTEMD_GUARDRAIL_SIZING=PASS
 ORIGINAL_BOOTSTRAP=REJECTED_NOT_EXECUTED
 WORKFLOW_MUTATED=NO
 GITHUB_ACTIONS_RUN_TRIGGERED=NO
@@ -102,9 +126,8 @@ The next action is bounded privileged bootstrap through the existing KGM owner p
 ## Reviewed Bootstrap Artifact
 
 ```text
-repository commit: 9eca846bc154e7fb091074d91e72941a20d3bfdd
 path: ops/ci/bootstrap-self-hosted-runner.sh
-staged VM SHA-256: 13ce7221a024acb2c4388b21f59b3edd27d3ccdd14ee54d18edc401d6ab6855e
+reviewed content SHA-256: 37b9f1e6674eb313761efd060e08eca7791959f093aec46b244cce988561ff12
 bash syntax check: PASS
 clean registration environment: PASS
 token CLI argument in project script: ABSENT

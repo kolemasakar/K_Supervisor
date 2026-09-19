@@ -118,9 +118,10 @@ DROPIN_DIR="/etc/systemd/system/${SERVICE_NAME}.d"
 install -d -m 0755 "${DROPIN_DIR}"
 cat > "${DROPIN_DIR}/10-k-supervisor-guardrails.conf" <<'EOF'
 [Service]
-CPUQuota=80%
-MemoryMax=2G
-TasksMax=256
+CPUQuota=70%
+MemoryHigh=1G
+MemoryMax=1536M
+TasksMax=128
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectProc=invisible
@@ -133,10 +134,19 @@ systemctl daemon-reload
 ./svc.sh start
 systemctl is-active --quiet "${SERVICE_NAME}" || fail "runner service is not active"
 
+[[ "$(systemctl show "${SERVICE_NAME}" -p CPUQuotaPerSecUSec --value)" == "700ms" ]] || fail "CPUQuota guardrail mismatch"
+[[ "$(systemctl show "${SERVICE_NAME}" -p MemoryHigh --value)" == "1073741824" ]] || fail "MemoryHigh guardrail mismatch"
+[[ "$(systemctl show "${SERVICE_NAME}" -p MemoryMax --value)" == "1610612736" ]] || fail "MemoryMax guardrail mismatch"
+[[ "$(systemctl show "${SERVICE_NAME}" -p TasksMax --value)" == "128" ]] || fail "TasksMax guardrail mismatch"
+[[ "$(systemctl show "${SERVICE_NAME}" -p Restart --value)" == "no" ]] || fail "unexpected Restart policy override"
+
+echo "SYSTEMD_MEMORY_GUARDRAIL=PASS"
+echo "SYSTEMD_CPU_GUARDRAIL=PASS"
+echo "SYSTEMD_TASKS_GUARDRAIL=PASS"
 echo "RUNNER_BOOTSTRAP=PASS"
 echo "SERVICE=${SERVICE_NAME}"
 id "${RUNNER_USER}"
 swapon --show
-systemctl show "${SERVICE_NAME}"   -p User -p Group -p CPUQuotaPerSecUSec -p MemoryMax -p TasksMax   -p NoNewPrivileges -p PrivateTmp -p ProtectProc -p InaccessiblePaths   --no-pager
+systemctl show "${SERVICE_NAME}"   -p User -p Group -p Restart -p CPUQuotaPerSecUSec -p MemoryHigh -p MemoryMax -p TasksMax   -p NoNewPrivileges -p PrivateTmp -p ProtectProc -p InaccessiblePaths   --no-pager
 
 echo "Do not change the workflow until GitHub confirms this runner online and idle."

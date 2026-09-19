@@ -191,7 +191,17 @@ Required controls:
 - `MemoryHigh` — optional soft-throttling threshold when preflight supports a useful value below `MemoryMax`;
 - `Restart` — do not override the standard GitHub runner service restart behavior unless inspection shows an explicit operational need.
 
-Candidate limits remain provisional until read-only VM preflight records the final approved values.
+Read-only preflight approved the following first-production limits:
+
+```ini
+[Service]
+CPUQuota=70%
+MemoryHigh=1G
+MemoryMax=1536M
+TasksMax=128
+```
+
+Rationale: the VM has one vCPU and 5.8 GiB RAM; measured K_Supervisor validation peaked near 80 MiB RSS and averaged about 61% CPU during pytest+coverage, while the KGM production monitor was about 14 MiB, one task and 0% CPU over a 5-second sample. `CPUQuota=70%` preserves scheduler headroom; `MemoryHigh=1G` provides soft pressure; `MemoryMax=1536M` bounds CI to about one quarter of VM RAM; `TasksMax=128` leaves ample runner/Node/Python headroom without exposing the host default. The upstream GitHub runner unit has no `Restart=` directive, so migration does not add or override restart policy.
 
 ## Python and Dependencies
 
