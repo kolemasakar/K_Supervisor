@@ -50,6 +50,18 @@ The required lower-layer prerequisites identified by the audit are part of Phase
 - owner publication remains explicit;
 - normal protected CI remains deterministic and zero-cost.
 
+## Protected Activation Evidence
+
+```text
+Activation PR: #23
+Initial activation head: e0b8acfaaf5cbca778de75998917a464a74c8c3d
+Initial activation tree: 9144dafa28c1c46db86029173271b332d1b6777d
+Core Validation: 35442484760 — PASS
+Runtime paths changed: NONE
+```
+
+The exact final PR head, including this evidence, must also pass required `Core Validation` before merge.
+
 ## Activation State
 
 ```text
