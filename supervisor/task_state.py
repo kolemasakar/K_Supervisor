@@ -11,16 +11,18 @@ class TaskStatus(StrEnum):
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"
     BLOCKED = "BLOCKED"
+    CANCELLED = "CANCELLED"
 
 
 _ALLOWED = {
-    TaskStatus.NEW: {TaskStatus.ROUTING},
-    TaskStatus.ROUTING: {TaskStatus.RUNNING, TaskStatus.BLOCKED, TaskStatus.FAILED},
-    TaskStatus.RUNNING: {TaskStatus.RETRYING, TaskStatus.SUCCEEDED, TaskStatus.FAILED, TaskStatus.BLOCKED},
-    TaskStatus.RETRYING: {TaskStatus.RUNNING, TaskStatus.FAILED, TaskStatus.BLOCKED},
+    TaskStatus.NEW: {TaskStatus.ROUTING, TaskStatus.CANCELLED},
+    TaskStatus.ROUTING: {TaskStatus.RUNNING, TaskStatus.BLOCKED, TaskStatus.FAILED, TaskStatus.CANCELLED},
+    TaskStatus.RUNNING: {TaskStatus.RETRYING, TaskStatus.SUCCEEDED, TaskStatus.FAILED, TaskStatus.BLOCKED, TaskStatus.CANCELLED},
+    TaskStatus.RETRYING: {TaskStatus.RUNNING, TaskStatus.FAILED, TaskStatus.BLOCKED, TaskStatus.CANCELLED},
     TaskStatus.SUCCEEDED: set(),
     TaskStatus.FAILED: set(),
     TaskStatus.BLOCKED: set(),
+    TaskStatus.CANCELLED: set(),
 }
 
 
