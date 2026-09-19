@@ -200,6 +200,38 @@ def test_project_spec_submit_approve_activate_and_scope_denial(tmp_path):
     store.close()
 
 
+def test_project_spec_rejection_is_authoritative_and_terminal(tmp_path):
+    store, _, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
+    submitted = api.dispatch(
+        "POST",
+        "/api/v1/projects/P2/specs",
+        principal=principal(PROJECT_SPECS_SUBMIT_SCOPE),
+        body={"spec_version": "reject-1", "onboarding": onboarding()},
+        idempotency_key="reject-submit",
+    )
+    spec_id = submitted.body["data"]["project_spec"]["project_spec_id"]
+
+    rejected = api.dispatch(
+        "POST",
+        f"/api/v1/projects/P2/specs/{spec_id}/reject",
+        principal=principal(PROJECT_SPECS_APPROVE_SCOPE),
+        idempotency_key="reject-decision",
+    )
+    assert rejected.status_code == 200
+    assert rejected.body["data"]["project_spec"]["status"] == "REJECTED"
+
+    approve_after_reject = api.dispatch(
+        "POST",
+        f"/api/v1/projects/P2/specs/{spec_id}/approve",
+        principal=principal(PROJECT_SPECS_APPROVE_SCOPE),
+        idempotency_key="approve-after-reject",
+    )
+    assert approve_after_reject.status_code == 409
+    assert approve_after_reject.body["error"]["code"] == "INVALID_TRANSITION"
+    assert store.get_project_spec(spec_id).status == ProjectSpecStatus.REJECTED
+    store.close()
+
+
 def test_project_spec_supersession_preserves_immutable_content_and_approval_evidence(tmp_path):
     store, projects, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
     submitted = api.dispatch(
@@ -469,6 +501,50 @@ def test_workflow_waiting_for_owner_can_be_cancelled_without_exposing_context(tm
     assert actions[0].status == HumanActionStatus.CANCELLED
     assert store.get_task(workflow["task_id"]).status == "CANCELLED"
     store.close()
+
+
+def test_workflow_start_replay_survives_restart_without_duplicate_run(tmp_path):
+    path = tmp_path / "state.db"
+    store, _, _, _, _, _, _, api = build_operator_stack(path)
+    body = {
+        "title": "terminal workflow",
+        "definition": WorkflowDefinition(
+            workflow_id="operator.terminal",
+            workflow_version="1.0.0",
+            start_node_id="done",
+            nodes=(WorkflowNode(node_id="done", node_type=WorkflowNodeType.END),),
+        ).model_dump(mode="json"),
+        "input": {"value": 1},
+    }
+
+    first = api.dispatch(
+        "POST",
+        "/api/v1/projects/P2/workflows",
+        principal=principal(EXECUTIONS_START_SCOPE),
+        body=body,
+        idempotency_key="workflow-restart",
+    )
+    assert first.status_code == 200
+    assert first.body["data"]["workflow"]["status"] == "SUCCEEDED"
+    workflow_run_id = first.body["data"]["workflow"]["workflow_run_id"]
+    assert len(store.list_tasks("P2")) == 1
+    assert len(store.list_workflow_runs("P2")) == 1
+    store.close()
+
+    recovered, _, _, _, _, _, _, recovered_api = build_operator_stack(path)
+    replay = recovered_api.dispatch(
+        "POST",
+        "/api/v1/projects/P2/workflows",
+        principal=principal(EXECUTIONS_START_SCOPE),
+        body=body,
+        idempotency_key="workflow-restart",
+    )
+    assert replay.status_code == 200
+    assert replay.body["meta"]["idempotent_replay"] is True
+    assert replay.body["data"]["workflow"]["workflow_run_id"] == workflow_run_id
+    assert len(recovered.list_tasks("P2")) == 1
+    assert len(recovered.list_workflow_runs("P2")) == 1
+    recovered.close()
 
 
 def test_execution_read_scope_is_independent(tmp_path):
