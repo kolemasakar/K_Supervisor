@@ -83,6 +83,60 @@ def test_active_replay_is_in_progress_and_cancel_wins_over_late_success(tmp_path
     store.close()
 
 
+def test_recovered_pending_without_task_reacquires_single_process_execution_lease(tmp_path):
+    store, _, _, kernel, _, _, _, api = build_operator_stack(tmp_path / "state.db")
+    body = task_body()
+    canonical = TaskStartRequest.model_validate(body).model_dump(mode="json")
+    command_id = api.operator._command_id("P2", "task-start", "restart-lease")
+    task_id = api.operator._derived_id("TASK_SERVICE", command_id)
+    workflow_run_id = api.operator._derived_id("WF_SERVICE", command_id)
+    now = datetime.now(timezone.utc)
+
+    store.claim_service_command(
+        ServiceCommandRecord(
+            command_id=command_id,
+            project_id="P2",
+            api_version="v1",
+            operation="task-start",
+            idempotency_key="restart-lease",
+            signature=api.operator._signature(canonical),
+            result_refs={"task_id": task_id, "workflow_run_id": workflow_run_id},
+            created_at=now,
+            updated_at=now,
+        )
+    )
+
+    original_handler = kernel.dispatcher._handlers["agent.phase2"]
+    nested = []
+
+    def nested_replay(request):
+        replay = api.dispatch(
+            "POST",
+            "/api/v1/projects/P2/tasks",
+            principal=principal(EXECUTIONS_START_SCOPE),
+            body=body,
+            idempotency_key="restart-lease",
+        )
+        nested.append((replay.status_code, replay.body["error"]["code"]))
+        return original_handler(request)
+
+    kernel.dispatcher.register("agent.phase2", nested_replay)
+    response = api.dispatch(
+        "POST",
+        "/api/v1/projects/P2/tasks",
+        principal=principal(EXECUTIONS_START_SCOPE),
+        body=body,
+        idempotency_key="restart-lease",
+    )
+
+    assert response.status_code == 200
+    assert response.body["data"]["task"]["status"] == "SUCCEEDED"
+    assert nested == [(409, "COMMAND_IN_PROGRESS")]
+    assert len(store.list_tasks("P2")) == 1
+    assert store.get_service_command(command_id).status == ServiceCommandStatus.SUCCEEDED
+    store.close()
+
+
 def test_stale_pending_running_task_is_reconciled_after_restart_without_reexecution(tmp_path):
     store, _, _, _, _, _, _, api = build_operator_stack(tmp_path / "state.db")
     body = task_body()
