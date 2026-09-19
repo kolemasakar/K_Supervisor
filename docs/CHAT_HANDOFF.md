@@ -40,6 +40,8 @@ Merged-main Core Validation: 35175392964 — PASS
 Implementation-evidence PR: #15
 Evidence PR Core Validation: 35175773647 — PASS
 Current docs/evidence main: 907f6466d91624002a9ccaf5e9e1c46aa72ccc66
+Latest owner-host credential verification: BLOCKED — credential absent
+Blocker evidence: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_LIVE_SMOKE_BLOCKED_2026_09_19.md
 ```
 
 ## Next Gate
