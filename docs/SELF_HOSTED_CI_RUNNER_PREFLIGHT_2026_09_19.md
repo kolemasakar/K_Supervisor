@@ -129,6 +129,9 @@ The next action is bounded privileged bootstrap through the existing KGM owner p
 guardrail implementation commit: cceefcabeaf73b74d4f0d1364980d5be1557b69d
 path: ops/ci/bootstrap-self-hosted-runner.sh
 reviewed content SHA-256: 37b9f1e6674eb313761efd060e08eca7791959f093aec46b244cce988561ff12
+approved VM staging path: /home/kgmops/runner-bootstrap/bootstrap-self-hosted-runner.sh
+approved VM staging mode: 0700
+staged copy vs repository artifact: IDENTICAL
 bash syntax check: PASS
 clean registration environment: PASS
 token CLI argument in project script: ABSENT
