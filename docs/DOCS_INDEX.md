@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 4.6
+Version: 4.7
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -13,6 +13,7 @@ Date: 2026-09-19
 4. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md` - authoritative Phase 1 completion review.
 5. `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` - completed Phase 2 Operator Control API pre-implementation audit.
 6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md` - owner-approved Phase 2 activation checkpoint.
+7. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md` - authoritative Phase 2 completion evidence.
 7. `ROADMAP.md` - approved active ROADMAP v0.4 sequence and scope.
 7. `TEST_MATRIX.md` - active v0.4 verification contract.
 8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 original implementation evidence.
@@ -49,9 +50,9 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
+v0.4 Phase 2: COMPLETE
 v0.4 Phase 3-7: PLANNED
-Runtime implementation phase: v0.4 Phase 2
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -77,25 +78,22 @@ Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
 Paid retry for development validation: PROHIBITED
 Phase 1 completion: COMPLETE
 Gap-closure Core Validation: 35440664106 — PASS / 192 tests / 84.86% coverage
-Phase 2 activation: YES — checkpoint pending protected merge
+Phase 2 activation: YES — PR #23 / Core Validation 35442514671 — PASS
 ```
 
 ## Current Runtime Baseline
 
 ```text
-Implementation PR: #14
-Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
-Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
-Validated runtime main SHA: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
-Protected PR Core Validation: 35175344558 — PASS
-Merged-main Core Validation: 35175392964 — PASS
-Python workflow: 3.13
-coverage gate: >= 80% PASS
-ResourceWarning gate: PASS
-compileall: PASS
-wheel build/install: PASS
-public CLI/import smoke: PASS
-Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
+Phase 2 implementation PR: #24
+Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
+Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
+Code/test Core Validation: 35443690831 — PASS
+Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
+Final exact-head Core Validation: 35443735846 — PASS
+Merged main SHA: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
+Merged-main Core Validation: 35443778180 — PASS
+Full regression: 214 passed
+Branch-aware coverage: 83.21%
 ```
 
 ## Repository Governance
@@ -108,4 +106,4 @@ Preferred ChatGPT target remains `CHATGPT_PLUGIN`; legacy `GPT_STORE` remains a 
 
 ## Next Work Rule
 
-Phase 1 is COMPLETE. Phase 2 audit is COMPLETE and owner activation is approved. The activation checkpoint must pass protected governance before Phase 2 runtime implementation starts.
+Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 remains PLANNED / INACTIVE. The next permitted work is the Phase 3 pre-implementation audit only. Phase 3 runtime implementation requires its own audit, explicit owner activation and protected `Core Validation` merge gate.
