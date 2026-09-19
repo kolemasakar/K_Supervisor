@@ -7,11 +7,11 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 2 — COMPLETE; next gate: Phase 3 pre-implementation audit
+Current phase: v0.4 Phase 3 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
-Runtime implementation authorized: NO — Phase 2 closed; Phase 3 not activated
+Runtime implementation authorized: NO — Phase 3 audit complete; activation pending
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -113,6 +113,8 @@ The v0.4 program will make the existing control plane practically operable throu
 **Deferred:** raw secret retrieval, direct Tool/Provider invocation endpoints, administrator-wide multi-tenant RBAC.
 
 ## v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI
+
+**Phase 3 status:** PLANNED — AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`. This audit authorizes no runtime change; implementation requires explicit owner approval and a separate protected activation checkpoint.
 
 **Goal:** provide a supported long-running service process and operator client for the Phase 2 API without creating a second control path.
 
@@ -272,4 +274,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-2 are COMPLETE. Phase 3 remains PLANNED / INACTIVE; the next permitted work is its pre-implementation audit only. No Phase 3 runtime change is authorized without a separate audit, owner activation and protected merge.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-2 are COMPLETE. Phase 3 remains PLANNED / INACTIVE with its pre-implementation audit complete. The next permitted step is explicit owner approval and a separate protected activation checkpoint. No Phase 3 runtime change is authorized before that merge.
