@@ -20,14 +20,15 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3-7: PLANNED
+v0.4 Phase 3: PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 4-7: PLANNED
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 2 delivers the additive authenticated Operator Control API with Project/ProjectSpec administration, owner decisions, Task/Workflow execution control, release/publication confirmation, durable command receipts and redacted recovery projections. Phase 3 remains inactive; its pre-implementation audit is the next permitted gate. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 2 delivers the additive authenticated Operator Control API. The Phase 3 Production Single-Node Service Host & Operator CLI pre-implementation audit is complete; Phase 3 remains inactive pending explicit owner approval and a separate protected activation checkpoint. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 
@@ -93,6 +94,7 @@ Start with:
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`;
+- `docs/V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`;
 - `docs/ROADMAP.md`;
 - `docs/TEST_MATRIX.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md`;
