@@ -114,7 +114,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI
 
-**Phase 3 status:** PLANNED — AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`. This audit authorizes no runtime change; implementation requires explicit owner approval and a separate protected activation checkpoint.
+**Phase 3 status:** PLANNED — AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`. Audit PR #26 final head `31eff0be...` passed exact-head `Core Validation` `35445489807` and merged as `31e39bf4...`; runtime/source/test paths were unchanged. This audit authorizes no runtime change; implementation requires explicit owner approval and a separate protected activation checkpoint.
 
 **Goal:** provide a supported long-running service process and operator client for the Phase 2 API without creating a second control path.
 
