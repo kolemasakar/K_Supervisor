@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.3
+Version: 3.4
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 1 — ACTIVE / FREE-RESOURCE COMPLETION REVIEW
+Current phase: v0.4 Phase 1 — COMPLETE; Phase 2 audit next
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -28,7 +28,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | Phase | Verification focus | Status |
 | --- | --- | --- |
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
-| 1 | governed production MODEL provider, protected credentials, failure/usage normalization, zero-cost validation path | ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW |
+| 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | PLANNED |
 | 3 | service host, health/readiness, shutdown, CLI parity | PLANNED |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
@@ -101,6 +101,23 @@ Required deterministic behaviors:
 - existing offline model/provider registry and SideEffectGateway tests remain green;
 - a no-cost owner-controlled live provider smoke may supplement evidence when available; successful paid live inference is not a completion requirement, and paid credits/subscriptions must not be purchased for validation.
 
+## Phase 1 Completion Review
+
+```text
+Gap-closure PR: #21
+Validated code/test head: 4bfacabec2da3e48618efd6ee0dd9f9b4c2e1d88
+Validated code/test tree: 77f1c5aad6b34a8408353f8655c2ac5b06fcb886
+Core Validation: 35440664106 — PASS
+Full regression: 192 passed
+Branch-aware total coverage: 84.86%
+Non-reference model-backed capability path: PASS
+Zero-transport DENY behavior: PASS
+Safe credit_balance_exhausted normalization: PASS
+Paid successful live inference required: NO
+```
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
+
 ## Permanent Quality Gates
 
 ```text
@@ -128,4 +145,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 is COMPLETE. Phase 1 is ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW. Runtime implementation remains constrained by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md` as amended by `DEVELOPMENT_RESOURCE_POLICY.md`. A successful paid live smoke is not required. Phase 1 must be formally re-evaluated and closed under the amended zero-cost criteria before Phase 2 activation. Phases 2-7 remain inactive. No later phase runtime work may begin without its own pre-implementation audit/activation gate.
+Phase 0 and Phase 1 are COMPLETE. Phase 2 remains PLANNED / INACTIVE. Only the Phase 2 pre-implementation audit may begin next; no Phase 2 runtime work is authorized until its own audit/activation gate is approved and merged. Phases 3-7 remain inactive.

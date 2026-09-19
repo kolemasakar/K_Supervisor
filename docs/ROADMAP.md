@@ -7,11 +7,11 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 1 — Production Model Provider & AI Execution
+Current phase: v0.4 Phase 1 — COMPLETE; next gate: Phase 2 pre-implementation audit
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
-Phase 1 implementation: MERGED / CI-VALIDATED — FREE-RESOURCE COMPLETION REVIEW
-Runtime implementation authorized: YES — Phase 1 scope only
+Phase 1 implementation: COMPLETE
+Runtime implementation authorized: NO — Phase 1 closed; Phase 2 not activated
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -83,7 +83,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 **Deferred:** production-quality bespoke intelligence for every domain/reference agent, mandatory multi-provider routing, model fine-tuning/training and remote-agent federation.
 
-**Phase 1 implementation status:** IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW. PR #14 merged exact implementation tree `7fabf5220d4370124bb245445c84f9ed77eb2041` as main `8f748e993737cebe45a6e8ebaac74d8c0e10d1b7`; protected PR `Core Validation` `35175344558` and merged-main `Core Validation` `35175392964` both passed. A governed OpenAI Responses attempt reached the provider and was rejected with `credit_balance_exhausted`. Under `DEVELOPMENT_RESOURCE_POLICY.md`, purchasing credits solely to satisfy development evidence is prohibited and successful paid live inference is no longer a blocking Phase 1 criterion. Phase 1 requires a formal completion review under the amended criteria before Phase 2 activation. Evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`, `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_LIVE_SMOKE_BILLING_BLOCKED_2026_09_19.md`, and `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md`.
+**Phase 1 status:** COMPLETE. PR #14 established the production `openai.responses` provider boundary; PR #21 closes the remaining non-reference capability/agent path with `ModelBackedAgent` and provider-neutral `PriorityModelSelector`. Deterministic full regression on the validated PR #21 code/test candidate passed 192 tests at 84.86% branch-aware coverage in Core Validation `35440664106`. Real OpenAI endpoint reachability and normalized `credit_balance_exhausted` evidence are retained as supplemental evidence; `DEVELOPMENT_RESOURCE_POLICY.md` prohibits purchasing credits solely for development validation. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
 
 ## v0.4 Phase 2 — Operator Control API
 
@@ -270,6 +270,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 is COMPLETE. v0.4 Phase 1 is ACTIVE after its pre-implementation audit/activation gate and deterministic implementation merge. The former paid-success live-smoke requirement is no longer a blocking criterion; Phase 1 awaits formal completion review against the amended zero-cost evidence rules. Runtime implementation is authorized only for Phase 1 scope defined by `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md` as amended by the zero-cost policy; later phases remain inactive.
-
-Canonical approval evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md`. Frozen Phase 0 contract: `HARDENING_BASELINE_V0_4.md`. Phase 0 completion evidence: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md`.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phase 0 and Phase 1 are COMPLETE. Phase 2 remains PLANNED / INACTIVE; the next permitted work is its pre-implementation audit. No Phase 2 runtime change is authorized until a separate Phase 2 audit/activation gate is approved and merged through protected governance.

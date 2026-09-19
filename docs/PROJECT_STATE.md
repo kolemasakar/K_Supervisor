@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation and the zero-cost development policy amendment.
 
-Version: 4.4
+Version: 4.5
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -16,10 +16,10 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW
+v0.4 Phase 1: COMPLETE
 v0.4 Phase 2-7: PLANNED
-Current approved implementation phase: v0.4 Phase 1
-Runtime implementation phase: v0.4 Phase 1
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -56,7 +56,7 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
-Phase 1  Production Model Provider & AI Execution                   ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW
+Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       PLANNED
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
@@ -65,7 +65,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 is complete. Phase 1 pre-implementation audit, protected activation and deterministic runtime implementation are complete. A governed OpenAI Responses attempt reached the provider and failed with `credit_balance_exhausted`. The new zero-cost development policy prohibits purchasing credits solely for development validation, so successful paid live inference is no longer a blocking criterion. Phase 1 remains ACTIVE pending formal completion review under the amended criteria; Phases 2-7 remain inactive.
+Phase 0 and Phase 1 are complete. Phase 1 includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. A governed real OpenAI endpoint attempt reached the provider and normalized `credit_balance_exhausted`; under the zero-cost policy this is supplemental evidence and no paid retry is required. Phase 2 remains PLANNED / INACTIVE pending its pre-implementation audit; Phases 3-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -105,11 +105,19 @@ Merged-main Core Validation: 35175392964 — PASS
 Local candidate: 187 passed / 85.02% branch coverage (Python 3.12.3, non-authoritative)
 Live OpenAI Responses attempt: credential/model present; provider returned credit_balance_exhausted
 Paid provider purchase for validation: NOT AUTHORIZED
-Phase 1 completion: FORMAL FREE-RESOURCE COMPLETION REVIEW PENDING
+Phase 1 completion: COMPLETE — PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
+Gap-closure PR: #21
+Validated gap-closure Core Validation: 35440664106 — PASS / 192 tests / 84.86% coverage
 Phase 2 activation: NO
 ```
 
 Implementation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`.
+
+## Phase 1 Completion Evidence
+
+The formal completion review identified and closed the remaining non-reference capability adapter gap. `ModelBackedAgent` invokes selected MODEL providers only through `SideEffectGateway.execute_provider()`; `PriorityModelSelector` keeps selection provider-neutral. The validated PR #21 code/test candidate passed full regression, packaging and public CLI/import gates.
+
+Completion checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
 
 ## Development Resource Policy
 
