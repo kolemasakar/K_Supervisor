@@ -98,3 +98,24 @@ PHASE4_ACTIVATION=NO
 ## Next Gate
 
 The next action is bounded privileged bootstrap through the existing KGM owner path. Workflow mutation is prohibited until the dedicated runner is independently confirmed as repository-scoped, online/idle, resource-limited and isolated according to `SELF_HOSTED_CI_RUNNER_DECISION.md`.
+
+## Reviewed Bootstrap Artifact
+
+```text
+repository commit: 9eca846bc154e7fb091074d91e72941a20d3bfdd
+path: ops/ci/bootstrap-self-hosted-runner.sh
+staged VM SHA-256: 13ce7221a024acb2c4388b21f59b3edd27d3ccdd14ee54d18edc401d6ab6855e
+bash syntax check: PASS
+clean registration environment: PASS
+token CLI argument in project script: ABSENT
+broad upstream dependency installer: ABSENT
+workflow runs caused by script commit: NONE
+```
+
+## Management Execution Boundary
+
+Read-only review found the existing KGM GitHub workflows `tailscale-kgm-control.yml` and `tailscale-kgm-bootstrap.yml`; both currently run on GitHub-hosted Ubuntu runners. They are therefore not an authorized bootstrap route while the included hosted quota is exhausted.
+
+The existing `kgmops` sudo contract is intentionally limited to KGM health/restart/log operations and is insufficient for runner installation. It must not be expanded.
+
+The next gate is a bounded privileged owner session through the approved external KGM management path/Tailscale SSH. No workflow mutation is permitted before that bootstrap completes and the runner is independently confirmed online/idle.
