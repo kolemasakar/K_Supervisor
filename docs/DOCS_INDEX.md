@@ -11,15 +11,15 @@ Date: 2026-09-19
 2. `DEVELOPMENT_RESOURCE_POLICY.md` - permanent zero-cost development/validation resource policy.
 3. `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md` - owner-approved v0.4 policy amendment and Phase 1 impact.
 4. `ROADMAP.md` - approved active ROADMAP v0.4 phase sequence and scope.
-7. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 implementation/CI evidence.
-8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - current Phase 0 completion evidence and next gate.
-5. `HARDENING_BASELINE_V0_4.md` - frozen v0.4 product/security/compatibility contract.
-6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md` - explicit owner approval boundary.
+5. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 implementation/CI evidence.
+6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_0_COMPLETE.md` - Phase 0 completion evidence and predecessor gate.
+7. `HARDENING_BASELINE_V0_4.md` - frozen v0.4 product/security/compatibility contract.
+8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_APPROVED.md` - explicit owner approval boundary.
 9. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable pre-approval audit evidence that produced v0.4.
 10. `TEST_MATRIX.md` - active v0.4 verification plan and permanent quality gates.
 11. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 cumulative test evidence.
 12. `VISION.md` - product direction and success definition.
-13. `OPERATIONS_RUNBOOK.md` - current deployment, backup/restore/upgrade, recovery and publication procedures.
+13. `OPERATIONS_RUNBOOK.md` - deployment, backup/restore/upgrade, recovery and publication procedures.
 14. `COMPATIBILITY_POLICY.md` - public compatibility rules.
 15. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
 16. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
@@ -34,7 +34,7 @@ Date: 2026-09-19
 25. `RELEASE_MANAGER.md` - release targets and owner/workspace publication boundary.
 26. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap snapshot.
 27. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 final closure evidence.
-26. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
+28. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
 
 Historical phase checkpoints and transition handoffs remain preserved and are not rewritten to reflect later roadmap state.
 
