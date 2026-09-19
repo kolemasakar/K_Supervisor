@@ -889,7 +889,40 @@ class OperatorControlApi:
         try:
             run = self._find_workflow(command.project_id, workflow_run_id)
         except OperatorApiError:
-            return None
+            task_id = command.result_refs.get("task_id")
+            task = self.store.get_task(task_id) if isinstance(task_id, str) else None
+            if task is None:
+                return None
+            if task.project_id != command.project_id:
+                self._fail_command(
+                    command.command_id,
+                    "EXECUTION_INTERRUPTED",
+                    409,
+                    "RECOVERY",
+                )
+                raise OperatorApiError(
+                    "EXECUTION_INTERRUPTED",
+                    409,
+                    "previous workflow execution was interrupted and reconciled",
+                    "RECOVERY",
+                )
+            if task.status not in {"SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"}:
+                try:
+                    self.kernel.cancel_task(command.project_id, task.task_id)
+                except (KeyError, ValueError):
+                    pass
+            self._fail_command(
+                command.command_id,
+                "EXECUTION_INTERRUPTED",
+                409,
+                "RECOVERY",
+            )
+            raise OperatorApiError(
+                "EXECUTION_INTERRUPTED",
+                409,
+                "previous workflow execution was interrupted and reconciled",
+                "RECOVERY",
+            )
         if run.status != "RUNNING":
             self._succeed_command(command.command_id)
             return self._success(
