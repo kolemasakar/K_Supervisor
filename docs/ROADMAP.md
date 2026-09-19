@@ -4,16 +4,17 @@ K_Supervisor active development roadmap.
 Version: 0.4
 Status: ACTIVE
 Approved: 2026-09-16
-Amended: 2026-09-19 — zero-cost development policy
+Amended: 2026-09-19 — zero-cost development policy / hosted-CI quota clarification
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 4 — LOCAL AUDIT COMPLETE / PROTECTED MERGE DEFERRED
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
 Phase 3: COMPLETE
 Runtime implementation authorized: NO
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
+Hosted GitHub Actions: NEW RUNS DEFERRED — included quota exhausted / no billable validation authorized
 
 ## Program Objective
 
@@ -141,6 +142,8 @@ The v0.4 program will make the existing control plane practically operable throu
 **Deferred:** certificate issuance/renewal, Kubernetes/operator orchestration, horizontal scaling and multi-node service coordination.
 
 ## v0.4 Phase 4 — GitHub Repository Provider & Governed VCS Handoff
+
+**Phase 4 status:** PRE-IMPLEMENTATION AUDIT LOCAL COMPLETE / PROTECTED MERGE DEFERRED. Audit candidate: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`. Runtime implementation is not authorized. The protected audit PR is intentionally deferred while the owner-reported included GitHub Actions quota is exhausted; required CI/ruleset governance remains mandatory and will not be bypassed.
 
 **Goal:** let K_Supervisor bootstrap and update a real GitHub repository through existing Project Factory/provisioning/policy boundaries.
 

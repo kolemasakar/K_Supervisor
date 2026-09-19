@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.9
+Version: 4.0
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 4 — LOCAL AUDIT COMPLETE / PROTECTED MERGE DEFERRED
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -30,8 +30,8 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
-| 3 | service host, health/readiness, shutdown, CLI parity | ACTIVE |
-| 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
+| 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
+| 4 | GitHub repository/VCS provider and governed handoff | AUDIT LOCAL COMPLETE / PROTECTED MERGE DEFERRED |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
 | 7 | end-to-end single-node product qualification | PLANNED |
@@ -215,6 +215,31 @@ Phase 4 activation: NO
 
 Phase 3 satisfies the audited host/config/auth/health/readiness/proxy/client/CLI/restart/idempotency and installed-wheel verification contract. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
 
+## v0.4 Phase 4 — Audit-Prepared Verification Contract
+
+Audit candidate: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`.
+
+Phase 4 is not activated. After protected audit merge plus separate owner-approved activation, deterministic verification must cover:
+
+- GitHub provider availability/auth and protected-reference credential enforcement;
+- deterministic repository create vs resolve-existing;
+- owner/name/visibility/default-branch mismatch rejection;
+- safe private-resource 404 handling;
+- conflict-protected bootstrap files;
+- one deterministic root bootstrap commit for a newly created empty repository;
+- deterministic working branch + one logical commit + pull-request handoff for an existing repository;
+- policy DENY / REQUIRE_APPROVAL and access-reference denial invoking GitHub zero times;
+- protected-branch/permission denial with no bypass, force-push or automatic merge;
+- idempotent branch/commit/PR/tag recovery after partial/uncertain provider outcomes;
+- normalized auth/permission/not-found/conflict/rate-limit/timeout/transient/malformed-response errors;
+- primary/secondary rate-limit backoff rules;
+- owner-intervention fallback and safe resumption;
+- optional release tag preparation without tag force-move or GitHub Release publication;
+- filesystem repository regression;
+- cumulative regression and permanent quality gates.
+
+The audit PR itself is deferred while new GitHub-hosted Actions runs may be billable under the exhausted included quota.
+
 ## Permanent Quality Gates
 
 ```text
@@ -236,10 +261,10 @@ zero-cost development resource policy         PASS / no paid-only phase gate
 
 ## Live External Evidence Rule
 
-Normal protected CI remains deterministic, credential-free and zero-cost to the project owner. `DEVELOPMENT_RESOURCE_POLICY.md` is authoritative for external development resources.
+Protected CI remains deterministic and credential-free, but new hosted runs are permitted only while they are available at no additional project-attributable cost. `DEVELOPMENT_RESOURCE_POLICY.md` is authoritative; the current included GitHub Actions quota is exhausted, so new hosted runs are deferred.
 
 A live external smoke is supplemental when the required operation is available without payment. If successful live evidence requires purchasing credits, a subscription or paid infrastructure, it is non-blocking and must be replaced by deterministic contract/integration evidence plus safe governed failure/reachability evidence where useful. No phase may require a paid-only external service to pass development validation.
 
 ## Activation Rule
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive; the next permitted work is Phase 4 pre-implementation audit only.
+Phase 0, Phase 1, Phase 2 and Phase 3 are COMPLETE. Phase 4 pre-implementation audit is locally complete but not protected/merged. No runtime implementation phase is active. Phase 4-7 remain inactive; the next permitted protected action is the Phase 4 audit PR when zero-cost CI capacity is available.

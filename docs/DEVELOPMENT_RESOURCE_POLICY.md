@@ -2,7 +2,7 @@
 
 Permanent development-resource policy for K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 Date: 2026-09-19
 Authority: owner-approved project invariant
@@ -37,6 +37,21 @@ When a live external check is available at zero cost, it may be used as suppleme
 When successful live evidence requires payment, the paid live check is non-blocking. Required development evidence must instead come from deterministic contract tests, policy/side-effect boundary tests, safe failure normalization, local integration tests, or a no-cost provider/service path.
 
 A real-provider reachability attempt that safely terminates at authentication, quota, billing or another provider-controlled gate may be retained as supplemental evidence, but the project must not purchase access solely to convert that attempt into a successful phase gate.
+
+## Hosted CI Quota Exhaustion
+
+When an included hosted-CI quota is exhausted and further hosted execution may create a charge, new hosted CI runs are not authorized under this policy.
+
+During such a quota-exhaustion window:
+
+- local deterministic tests, compile checks, packaging checks and documentation work may continue on owner-controlled zero-cost resources;
+- branches and commits may be prepared only when doing so does not trigger paid hosted execution;
+- pull requests, manual workflow dispatches, reruns or other actions that would start potentially billable hosted CI must be deferred;
+- required protected-CI gates remain mandatory and must not be bypassed or weakened;
+- the affected protected merge/completion gate remains pending until included/free CI capacity is available again or another explicitly verified zero-cost protected runner path is approved;
+- later work should be batched to reduce unnecessary hosted-CI invocations while preserving required protected validation.
+
+On 2026-09-19 the owner reported GitHub Actions included usage at 2,000 / 2,000 minutes. The account UI indicated that further usage may be billed and that included usage resets on 2026-10-01. K_Supervisor therefore treats new GitHub-hosted Actions runs as unavailable for zero-cost development until no-cost capacity is confirmed again.
 
 ## Scope and Precedence
 

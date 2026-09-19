@@ -21,14 +21,15 @@ v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
-v0.4 Phase 4-7: PLANNED / INACTIVE
+v0.4 Phase 4: PRE-IMPLEMENTATION AUDIT LOCAL COMPLETE / PROTECTED MERGE DEFERRED
+v0.4 Phase 5-7: PLANNED / INACTIVE
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0-3 are complete. Phase 3 implementation PR #29 passed initial, final exact-head and merged-main protected `Core Validation`, including the 229-test suite, 82.06% branch-aware coverage and installed-wheel service/CLI smoke. Phase 4 remains planned/inactive; the next permitted work is its pre-implementation audit only. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0-3 are complete. Phase 4 pre-implementation audit is locally complete on a docs-only preparation branch, but its protected PR/merge is deferred because the owner-reported included GitHub Actions quota is exhausted and further hosted usage may be billable. Phase 4 runtime remains inactive and unauthorized. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 
@@ -100,6 +101,7 @@ Extension groups:
 
 Start with:
 
+- `docs/V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_IMPLEMENTED.md`;
 - `docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md`;
