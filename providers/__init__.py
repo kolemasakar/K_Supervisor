@@ -16,7 +16,7 @@ from .openai_responses import (
     OpenAITransportResponse,
     OpenAITransportTimeout,
 )
-from .model_hook import ModelSelectionHook
+from .model_hook import ModelSelectionHook, PriorityModelSelector
 
 __all__ = [
     "Provider",
@@ -25,6 +25,7 @@ __all__ = [
     "ProviderResponse",
     "ModelProfile",
     "ModelSelectionHook",
+    "PriorityModelSelector",
     "EmailProvider",
     "OutboundEmail",
     "ProviderExecutionError",
