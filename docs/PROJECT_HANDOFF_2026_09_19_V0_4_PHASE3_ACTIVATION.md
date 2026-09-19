@@ -99,6 +99,18 @@ All development, testing, CI, validation, smoke testing and qualification must u
 
 Paid-only providers, cloud hosting, public DNS, certificates or other paid infrastructure must not become a Phase 3 development or completion gate.
 
+## Handoff Synchronization Governance
+
+```text
+Handoff synchronization PR: #27
+Initial sync head: f737355c4fcc8943911f5e4f29e14c6a5c3564e9
+Initial sync tree: 3e35a7910734b42abea852875e7069c7d05172b6
+Initial Core Validation: 35448399360 — PASS
+Runtime/source/test paths changed: NONE
+```
+
+PR #27 is documentation-only. Protected branch governance requires the exact final PR head to pass `Core Validation` before merge.
+
 ## Exact Next Gate
 
 Phase 3 is **not activated** by this handoff.
