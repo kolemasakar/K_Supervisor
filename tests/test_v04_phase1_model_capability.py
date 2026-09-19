@@ -86,6 +86,8 @@ def build_stack(tmp_path, *, allowed=True, transport=None):
 
     policy = {
         "allowed_side_effects": ["WRITE_EXTERNAL"] if allowed else [],
+        "approval_side_effects": [],
+        "approval_risk_classes": [],
         "denied_side_effects": [] if allowed else ["WRITE_EXTERNAL"],
         "allowed_access_refs": [CREDENTIAL.uri],
     }
