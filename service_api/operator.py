@@ -505,6 +505,7 @@ class OperatorControlApi:
             replay = self._reconcile_task_command(existing)
             if replay is not None:
                 return replay
+            self._mark_active(command_id)
 
         try:
             try:
@@ -602,6 +603,7 @@ class OperatorControlApi:
             replay = self._reconcile_workflow_command(existing)
             if replay is not None:
                 return replay
+            self._mark_active(command_id)
 
         try:
             try:
