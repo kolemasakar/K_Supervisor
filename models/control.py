@@ -70,6 +70,7 @@ class ServiceCommandRecord(ContractModel):
     result_refs: JsonObject = {}
     error_code: str | None = None
     error_category: str | None = None
+    error_status_code: int | None = None
     created_at: datetime
     updated_at: datetime
     completed_at: datetime | None = None
@@ -86,14 +87,14 @@ class ServiceCommandRecord(ContractModel):
         if self.completed_at is not None and self.completed_at < self.created_at:
             raise ValueError("service command completed_at precedes created_at")
         if self.status == ServiceCommandStatus.PENDING:
-            if self.completed_at is not None or self.error_code is not None:
+            if self.completed_at is not None or self.error_code is not None or self.error_status_code is not None:
                 raise ValueError("pending service command cannot be completed")
         elif self.status == ServiceCommandStatus.SUCCEEDED:
             if self.completed_at is None:
                 raise ValueError("successful service command requires completed_at")
-            if self.error_code is not None or self.error_category is not None:
+            if self.error_code is not None or self.error_category is not None or self.error_status_code is not None:
                 raise ValueError("successful service command cannot contain an error")
         elif self.status == ServiceCommandStatus.FAILED:
-            if self.completed_at is None or not self.error_code:
-                raise ValueError("failed service command requires completion and error code")
+            if self.completed_at is None or not self.error_code or self.error_status_code is None:
+                raise ValueError("failed service command requires completion, error code and status")
         return self
