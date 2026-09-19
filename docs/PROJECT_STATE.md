@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.4
+Version: 5.5
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -220,6 +220,27 @@ Phase 3 is complete. Runtime implementation authorization is NONE; Phase 4 remai
 `DEVELOPMENT_RESOURCE_POLICY.md` is a permanent owner-approved invariant: development, testing, CI, validation, smoke testing and qualification must not require a new project-attributable payment. Paid-only provider access may remain a supported production/operator deployment option, but it cannot be a development or phase-completion dependency.
 
 Historical live-smoke blocker evidence remains factual. The `credit_balance_exhausted` result is retained as safe provider-reachability/failure-normalization evidence; the project will not buy credits solely to convert it into a successful development smoke.
+
+## Self-Hosted CI Transition
+
+Owner approval was given on 2026-09-19 to migrate `Core Validation` from GitHub-hosted `ubuntu-latest` compute to a repository-scoped self-hosted runner on `kgm-e4-owner-pilot`.
+
+Decision authority: `SELF_HOSTED_CI_RUNNER_DECISION.md`.
+
+```text
+Migration status: APPROVED / NOT YET COMPLETE
+Runner host: kgm-e4-owner-pilot
+Runner OS: Ubuntu 24.04.4 LTS / ARM64
+Runner account: dedicated ghrunner / no sudo
+Approved concurrency: 1 job
+Required check name: Core Validation — unchanged
+Protected-main ruleset: unchanged
+Phase 4 activation: NO
+```
+
+Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. The transition must register and verify the runner online before the workflow `runs-on` target changes.
+
+This infrastructure work does not activate a roadmap runtime phase.
 
 ## Repository Governance
 

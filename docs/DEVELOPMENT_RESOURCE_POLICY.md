@@ -2,7 +2,7 @@
 
 Permanent development-resource policy for K_Supervisor.
 
-Version: 1.0
+Version: 1.1
 Status: ACTIVE
 Date: 2026-09-19
 Authority: owner-approved project invariant
@@ -37,6 +37,21 @@ When a live external check is available at zero cost, it may be used as suppleme
 When successful live evidence requires payment, the paid live check is non-blocking. Required development evidence must instead come from deterministic contract tests, policy/side-effect boundary tests, safe failure normalization, local integration tests, or a no-cost provider/service path.
 
 A real-provider reachability attempt that safely terminates at authentication, quota, billing or another provider-controlled gate may be retained as supplemental evidence, but the project must not purchase access solely to convert that attempt into a successful phase gate.
+
+## CI Compute Policy
+
+Protected CI may use owner-controlled self-hosted compute when it is available at no additional project-attributable cost.
+
+An approved self-hosted runner must preserve the same repository ruleset, pull-request gate, required-check identity and deterministic quality gates as the hosted runner it replaces. Moving compute to a self-hosted runner does not authorize bypassing, weakening or skipping protected validation.
+
+When an included GitHub-hosted Actions quota is exhausted and additional hosted execution may be billable:
+
+- new potentially billable hosted CI runs are not authorized;
+- local deterministic validation and self-hosted protected CI may continue;
+- required protected CI remains mandatory;
+- a transition to self-hosted compute must be documented and validated before becoming the normal path.
+
+The approved K_Supervisor self-hosted runner design is defined in `SELF_HOSTED_CI_RUNNER_DECISION.md`.
 
 ## Scope and Precedence
 
