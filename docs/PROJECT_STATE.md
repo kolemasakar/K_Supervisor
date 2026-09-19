@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation and the zero-cost development policy amendment.
 
-Version: 4.6
+Version: 4.7
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -17,10 +17,10 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
 v0.4 Phase 3-7: PLANNED
-Current approved implementation phase: NONE
-Runtime implementation phase: NONE
+Current approved implementation phase: v0.4 Phase 2
+Runtime implementation phase: v0.4 Phase 2
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -58,7 +58,7 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
-Phase 2  Operator Control API                                       AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+Phase 2  Operator Control API                                       ACTIVE — IMPLEMENTATION AUTHORIZED
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
@@ -66,7 +66,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 and Phase 1 are complete. Phase 2 pre-implementation audit is complete and identifies the required lower-layer authority, idempotency, cancellation and redaction constraints for the Operator Control API. Phase 2 remains INACTIVE with runtime implementation authorization `NO` until an explicit owner-approved activation checkpoint is merged through protected governance. Phases 3-7 remain inactive.
+Phase 0 and Phase 1 are complete. Phase 2 pre-implementation audit is complete and the owner has explicitly approved activation. Phase 2 runtime implementation is authorized only within `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`; Phase 3-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -126,12 +126,25 @@ Audit authority: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
 
 ```text
 Audit status: COMPLETE
-Activation: PENDING OWNER APPROVAL
-Runtime implementation authorization: NO
+Activation: OWNER APPROVED / PROTECTED CHECKPOINT PENDING MERGE
+Runtime implementation authorization: YES — audited Phase 2 scope only
 Zero-cost development policy: REQUIRED
 ```
 
 The audit preserves the v0.3 Phase 5 Service/API compatibility surface and authorizes no runtime change by itself.
+
+## Phase 2 Activation
+
+Activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md`.
+
+```text
+Owner approval: YES — 2026-09-19
+Authorized runtime scope: Phase 2 audit only
+Phase 3 activation: NO
+Zero-cost development: REQUIRED
+```
+
+Runtime implementation begins only after the activation checkpoint passes protected `Core Validation` and merges.
 
 ## Development Resource Policy
 
