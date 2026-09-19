@@ -233,7 +233,7 @@ Phase 4 activation: NO
 Phase 4 runtime implementation authorization: NO
 ```
 
-The audit freezes an additive GitHub Provider/RepositoryAdapter/VCS handoff architecture using protected references, existing policy/SideEffectGateway enforcement, deterministic idempotency/recovery and owner intervention. It does not authorize runtime work.
+The audit freezes an additive GitHub Provider/RepositoryAdapter/VCS handoff architecture using protected references, existing policy/SideEffectGateway enforcement, deterministic idempotency/recovery and owner intervention. It does not authorize runtime work. Exact continuation procedure: `PROJECT_HANDOFF_2026_09_19_V0_4_PHASE4_AUDIT_PENDING_CI.md`.
 
 ## Development Resource Policy
 
