@@ -1,16 +1,16 @@
 # PERSISTENCE
 Документ описує persistence boundary, SQLite hardening, durable control state, Project Registry та recovery semantics K_Supervisor.
 
-Version: 1.8
+Version: 1.9
 Status: ACTIVE
-Baseline: ROADMAP v0.3 COMPLETE — Phase 8 operational persistence qualified
+Baseline: ROADMAP v0.4 Phase 2 Operator Control API
 Date: 2026-09-16
 
 ## 1. Purpose
 
 Persistence is platform-owned authoritative state. v0.3 Phase 1 hardened storage lifecycle/schema evolution; Phase 2 moved critical control state onto durable restart-safe records and strengthened atomic state+audit writes; Phase 3 added authoritative side-effect attempt/outcome state; Phase 5 adds durable Service/API mutation replay receipts and uses the same transaction boundary as Project lifecycle writes.
 
-Agents do not access SQLite directly.
+Agents do not access SQLite directly. v0.4 Phase 2 reuses the same generic resource/event layout for ProjectSpec status transitions and generic Service/API command receipts.
 
 ## 2. Persistence Boundary
 
@@ -76,16 +76,17 @@ NotificationEvent
 ApprovalRecord
 RuntimeIdempotencyRecord
 ServiceMutationRecord
+ServiceCommandRecord
 SideEffectExecutionRecord
 ```
 
 `RuntimeIdempotencyRecord` stores the project-scoped semantic command scope, canonical input signature and prior successful `AgentRunResult`. This supports replay after supported store/process restart without invoking the handler again.
 
-`ServiceMutationRecord` stores the project/API/operation/idempotency-key scope, canonical request signature and resulting `Project` snapshot for completed Service/API mutations. It is immutable by deterministic identifier and supports restart-safe replay without a second lifecycle transition.
+`ServiceMutationRecord` remains the immutable predecessor receipt for the original Project lifecycle/operational API routes. `ServiceCommandRecord` is the additive v0.4 Phase 2 generic command resource. It stores deterministic project/API/operation/key identity, canonical request signature, PENDING/SUCCEEDED/FAILED state, safe result references and normalized safe failure metadata. Request bodies and resolved secrets are not persisted.
 
 `SideEffectExecutionRecord` stores the normalized Tool/Provider attempt identity, project/request/agent/capability/component correlation, idempotency key, canonical input signature, policy decision, status, normalized output/error and completion time.
 
-ProjectSpec, ArtifactReference, RuntimeIdempotencyRecord and ServiceMutationRecord are immutable by identifier. Conflicting immutable payloads raise `PersistenceConflictError`.
+ProjectSpec content remains immutable by identifier. v0.4 Phase 2 permits only controlled ProjectSpec lifecycle metadata changes (`status`, `updated_at`, `approved_at`) through `transition_project_spec()` with audit; all other content changes fail with `PersistenceConflictError`. ArtifactReference, RuntimeIdempotencyRecord and legacy ServiceMutationRecord remain immutable. ServiceCommandRecord uses an immutable initial claim followed by controlled status completion updates.
 
 ## 6. Durable Events
 
@@ -117,13 +118,15 @@ Phase 2/3/5 add and use atomic persistence helpers for:
 - ApprovalRecord mutation + required audit;
 - side-effect PENDING claim + `SIDE_EFFECT_ATTEMPTED` audit;
 - side-effect terminal outcome + `SIDE_EFFECT_SUCCEEDED` / `SIDE_EFFECT_FAILED` audit;
-- Service/API lifecycle/operational transition + resulting Project snapshot + transition audit + immutable ServiceMutationRecord receipt through one outer transaction.
+- Service/API lifecycle/operational transition + resulting Project snapshot + transition audit + immutable ServiceMutationRecord receipt through one outer transaction;
+- ProjectSpec status transition + audit while preserving immutable specification content;
+- local Phase 2 domain mutation + ServiceCommandRecord completion in one outer transaction where the operation is transaction-local.
 
 ProjectSpec activation builds the audit record before committing the resulting active Project snapshot and audit together. The immutable ProjectSpec record itself remains independently durable history.
 
 Failure-injection tests prove that an audit failure inside the lifecycle transaction rolls back both the transition event and resulting Project snapshot.
 
-This is not a universal distributed transaction across repositories or external providers. Phase 3 owns centralized external side-effect enforcement; Phase 5 only extends local authoritative transactionality to Service/API mutation receipts.
+This is not a universal distributed transaction across repositories or external providers. Phase 2 execution commands first claim a PENDING ServiceCommandRecord, release the SQLite write transaction, perform runtime work, then persist terminal command state. No SQLite write transaction spans provider/tool/runtime execution.
 
 ## 8. Approval Control State
 
@@ -173,6 +176,7 @@ NotificationDeliveryAttempts
 ApprovalRecords
 RuntimeIdempotencyRecords
 ServiceMutationRecords
+ServiceCommandRecords
 TelemetryRecords
 SideEffectExecutionRecords
 PolicyDecisions
@@ -184,6 +188,12 @@ ReleaseValidationRecords
 This is the authoritative project-scoped reconstruction boundary for currently persisted control records.
 
 Phase 2 verifies a project waiting for owner intervention with an active Task/WorkflowRun survives restart and can resume through the normal Human Intervention Broker without hidden process memory.
+
+## 10.1 Phase 2 Service Command Recovery
+
+Phase 2 restart recovery uses deterministic command IDs plus durable Task/Workflow references. A completed command is replayed without repeating material mutation. A stale PENDING command is reconciled against durable execution state: terminal state completes/replays the command; stale nonterminal state is cancelled and normalized as interrupted rather than blindly re-executed. Same-key/different-signature use fails closed.
+
+Because `service_command` is another generic resource kind, physical SQLite schema version remains `2`.
 
 ## 11. Resource Hygiene and Concurrency
 
@@ -212,7 +222,7 @@ Phase 5 persistence verification covers durable service mutation replay, restart
 
 ## 13. Current Boundary
 
-Phase 5 adds restart-visible Service/API mutation receipts without introducing a second project state store or new physical schema. A completed receipt is authoritative for same-key replay; a different request signature under the same deterministic scope fails closed. The receipt is committed in the same supported SQLite transaction as the underlying Project transition/audit.
+Legacy Phase 5 receipts remain compatible. v0.4 Phase 2 adds generic command receipts and controlled ProjectSpec lifecycle persistence without introducing a second project state store or physical schema change. Local-only commands may commit state + receipt atomically; long-running execution commands use claim/execute/complete semantics with restart reconciliation.
 
 Universal distributed transactions, multi-node consensus, distributed databases and exactly-once guarantees across external systems remain outside this persistence boundary.
 
