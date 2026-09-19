@@ -175,6 +175,15 @@ class SupervisorKernel:
             except Exception as exc:
                 result = self._failure(request, "EXECUTION_ERROR", str(exc), False)
 
+            persisted_task = self.store.get_task(task.task_id)
+            if (
+                persisted_task is not None
+                and persisted_task.status == TaskStatus.CANCELLED.value
+                and result.status != ExecutionStatus.CANCELLED
+            ):
+                result = self._cancelled_result(request)
+                task = persisted_task
+
             self.store.save_agent_run(result)
             last_result = result
 
@@ -246,6 +255,26 @@ class SupervisorKernel:
                 run.model_copy(update={"status": "CANCELLED", "updated_at": self._now()})
             )
         return cancelled
+
+    @staticmethod
+    def _cancelled_result(request: AgentRunRequest) -> AgentRunResult:
+        return AgentRunResult(
+            request_id=request.request_id,
+            project_id=request.project_id,
+            task_id=request.task_id,
+            workflow_run_id=request.workflow_run_id,
+            run_id=request.run_id,
+            agent_id=request.agent_id,
+            capability_id=request.capability_id,
+            capability_version=request.capability_version,
+            status=ExecutionStatus.CANCELLED,
+            error=AgentError(
+                code="EXECUTION_CANCELLED",
+                category="CANCELLED",
+                message="execution was cancelled by operator request",
+                retryable=False,
+            ),
+        )
 
     @staticmethod
     def _failure(
