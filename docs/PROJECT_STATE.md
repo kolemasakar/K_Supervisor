@@ -245,7 +245,7 @@ Phase 4 activation: NO
 
 Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. Connection-manager review requires read-only bootstrap inspection, KGM workload preflight, dedicated `/opt` isolation and runner-specific systemd resource limits before migration closure. The transition must register and verify the runner online before the workflow `runs-on` target changes.
 
-This infrastructure work does not activate a roadmap runtime phase.
+This infrastructure work does not activate a roadmap runtime phase. Read-only preflight evidence: `SELF_HOSTED_CI_RUNNER_PREFLIGHT_2026_09_19.md`; privileged bootstrap remains pending. Read-only preflight authority/evidence: `SELF_HOSTED_CI_RUNNER_PREFLIGHT_2026_09_19.md`; privileged bootstrap remains pending.
 
 ## Repository Governance
 
