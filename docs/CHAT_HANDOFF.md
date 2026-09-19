@@ -74,6 +74,15 @@ Key implementation guards after activation:
 - transport timeout/disconnect does not redefine material mutation outcome; same idempotency key is used for reconciliation/retry;
 - installed-wheel service+CLI smoke remains zero-cost.
 
+## Phase 3 Audit Governance
+
+```text
+Phase 3 audit PR: #26
+Initial audit head: 4499c98a47710d6c3c1ac2a71d0cd2264fbe8e86
+Initial audit Core Validation: 35445444720 — PASS
+Runtime/source/test paths changed: NONE
+```
+
 ## Next Gate
 
 Phase 3 audit is COMPLETE, but activation is **not approved**.
