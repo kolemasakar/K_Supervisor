@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.8
+Version: 3.9
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 3 — AUDIT COMPLETE / ACTIVATION PENDING
+Current phase: v0.4 Phase 3 — ACTIVE
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -30,7 +30,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
-| 3 | service host, health/readiness, shutdown, CLI parity | PLANNED — AUDIT COMPLETE / ACTIVATION PENDING |
+| 3 | service host, health/readiness, shutdown, CLI parity | ACTIVE |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
@@ -167,13 +167,13 @@ Audit merged main: 31e39bf44e43ca241fb2536aa30bdfc519e0f020
 Runtime/source/test paths changed: NONE
 ```
 
-Phase 3 remains inactive. The audit does not authorize runtime implementation.
+Phase 3 audit alone did not authorize runtime implementation. Owner activation approval was granted on 2026-09-19 through the separate protected activation checkpoint; after its merge the audited Phase 3 verification contract is active.
 
 ## v0.4 Phase 3 — Audited Verification Contract
 
 Audit authority: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`.
 
-Phase 3 remains inactive. After a separate owner-approved activation checkpoint merges, required deterministic verification includes:
+After the owner-approved activation checkpoint merges, required deterministic Phase 3 verification includes:
 
 - installed-wheel service starts with valid config and fails closed on invalid bind/port/auth/config;
 - one production composition root owns SQLite/control-plane resource lifecycle; production code does not import test fixtures;
@@ -224,4 +224,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE, but Phase 3 remains inactive pending explicit owner approval and a separate protected activation checkpoint. Phase 4-7 remain inactive; no Phase 3 runtime implementation is authorized.
+Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE and owner activation approval was granted on 2026-09-19 through protected activation checkpoint #28. After that checkpoint merges, Phase 3 runtime implementation is authorized strictly within the audited verification contract. Phase 4-7 remain inactive.

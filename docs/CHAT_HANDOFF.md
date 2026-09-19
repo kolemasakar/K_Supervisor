@@ -1,13 +1,14 @@
 # CHAT_HANDOFF
 Canonical compact continuation context after ROADMAP v0.4 Phase 3 pre-implementation audit.
 
-Version: 5.0
+Version: 5.1
 Status: ACTIVE
 Date: 2026-09-19
 
 ## Start Here
 
 ```text
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md
 docs/PROJECT_HANDOFF_2026_09_19_V0_4_PHASE3_ACTIVATION.md
 docs/PROJECT_STATE.md
 docs/ROADMAP.md
@@ -28,10 +29,10 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 3: ACTIVE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Current approved implementation phase: NONE
-Runtime implementation phase: NONE
+Current approved implementation phase: Phase 3
+Runtime implementation phase: Phase 3 — audited scope only
 ```
 
 ## Phase 2 Runtime Baseline
@@ -50,11 +51,11 @@ Runtime merged tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
 Merged-main Core Validation: 35443778180 — PASS
 ```
 
-Current main after merged Phase 3 audit:
+Current main at Phase 3 activation approval:
 
 ```text
-main: 31e39bf44e43ca241fb2536aa30bdfc519e0f020
-tree: 241b9588ecbaf8f9ec02c31f71562d0a0867cf96
+main: 3f1f386434f73d4cbd85ddd6dfad6135ae21f520
+tree: 66d92d290be42e503ea0df3f923a8af212b4eb38
 main vs Phase 2 runtime baseline: ahead-only / README+docs only
 runtime/source/test changes after Phase 2 runtime merge: NONE
 ```
@@ -100,8 +101,8 @@ Runtime/source/test paths changed: NONE
 
 ## Next Gate
 
-Phase 3 audit is COMPLETE and merged, but activation is **not approved**.
+Phase 3 audit is COMPLETE and merged. Owner activation approval was granted on 2026-09-19 through protected checkpoint #28.
 
-The next permitted step is explicit owner approval. After approval, create a docs-only Phase 3 activation checkpoint, pass protected `Core Validation`, merge it, and only then begin Phase 3 runtime implementation.
+After the activation checkpoint merges, continue Phase 3 runtime implementation strictly in the audited order from `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`; preserve the Phase 2 runtime predecessor and all permanent quality/resource gates.
 
 Do not activate Phase 4.
