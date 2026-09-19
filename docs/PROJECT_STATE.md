@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation and the zero-cost development policy amendment.
+Canonical current snapshot of K_Supervisor at ROADMAP v0.4 Phase 2 completion.
 
-Version: 4.7
+Version: 4.8
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -17,33 +17,32 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
+v0.4 Phase 2: COMPLETE
 v0.4 Phase 3-7: PLANNED
-Current approved implementation phase: v0.4 Phase 2
-Runtime implementation phase: v0.4 Phase 2
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Implementation PR: #14
-Implementation head: 0d6a3ed863c687ec9461135a306180014c248312
-Implementation tree: 7fabf5220d4370124bb245445c84f9ed77eb2041
-Validated main SHA: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
-Protected PR Core Validation: 35175344558 — PASS
-Merged-main Core Validation: 35175392964 — PASS
+Phase 2 implementation PR: #24
+Validated code/test head: d6503d9a0a3f64ee14a003c22e61c03a1bfdf960
+Validated code/test tree: c5ccce4e3ad93de69e16d55bd441bf934e7e92cc
+Protected Core Validation: 35443466438 — PASS
 Python workflow: 3.13
-coverage gate: >= 80% PASS
+Full regression: 210 passed
+Branch-aware coverage: 83.12%
+coverage gate >=80%: PASS
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
-Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
-Paid retry for development evidence: PROHIBITED by DEVELOPMENT_RESOURCE_POLICY.md
+Zero-cost development policy: PASS
 ```
 
-Local Phase 1 candidate verification passed `187 tests` with branch-aware coverage `85.02%` on Python 3.12.3 (non-authoritative). GitHub Actions Python 3.13 is authoritative and passed on both PR #14 and merged `main`. The v0.3 baseline remains preserved as predecessor evidence.
+The exact final PR #24 head, including synchronized completion documentation, must pass protected `Core Validation` before merge. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
 
 ## v0.4 Approval State
 
@@ -58,7 +57,7 @@ The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contrac
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
-Phase 2  Operator Control API                                       ACTIVE — IMPLEMENTATION AUTHORIZED
+Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
@@ -66,7 +65,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 and Phase 1 are complete. Phase 2 pre-implementation audit is complete and the owner has explicitly approved activation. Phase 2 runtime implementation is authorized only within `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`; Phase 3-7 remain inactive.
+Phase 0, Phase 1 and Phase 2 are complete subject to the protected completion merge represented by PR #24. Phase 2 delivers the audited Operator Control API without activating a production service host. Phase 3-7 remain inactive; the next permitted work after completion merge is Phase 3 pre-implementation audit only.
 
 ## Phase 0 Completion Evidence
 
@@ -109,7 +108,7 @@ Paid provider purchase for validation: NOT AUTHORIZED
 Phase 1 completion: COMPLETE — PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md
 Gap-closure PR: #21
 Validated gap-closure Core Validation: 35440664106 — PASS / 192 tests / 84.86% coverage
-Phase 2 activation: NO
+Phase 2 activation: YES — PR #23 / Core Validation 35442514671 PASS / merged
 ```
 
 Implementation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`.
@@ -126,8 +125,8 @@ Audit authority: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
 
 ```text
 Audit status: COMPLETE
-Activation: OWNER APPROVED / PROTECTED CHECKPOINT PENDING MERGE
-Runtime implementation authorization: YES — audited Phase 2 scope only
+Activation: COMPLETE — protected PR #23 merged
+Runtime implementation authorization: NO — Phase 2 completion closes runtime scope
 Zero-cost development policy: REQUIRED
 ```
 
@@ -144,7 +143,23 @@ Phase 3 activation: NO
 Zero-cost development: REQUIRED
 ```
 
-Runtime implementation begins only after the activation checkpoint passes protected `Core Validation` and merges.
+Activation checkpoint passed protected governance and merged before runtime implementation began.
+
+## Phase 2 Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
+
+```text
+Implementation PR: #24
+Validated code/test head: d6503d9a0a3f64ee14a003c22e61c03a1bfdf960
+Validated tree: c5ccce4e3ad93de69e16d55bd441bf934e7e92cc
+Core Validation: 35443466438 — PASS
+Full regression: 210 passed
+Branch-aware coverage: 83.12%
+Phase 3 activation: NO
+```
+
+Phase 2 completion becomes authoritative only through protected merge of the exact final PR #24 head. No Phase 3 runtime implementation is authorized.
 
 ## Development Resource Policy
 

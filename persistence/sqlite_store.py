@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
-from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
+from models.control import RuntimeIdempotencyRecord, ServiceCommandRecord, ServiceMutationRecord
 from models.extension import ExtensionTrustRecord
 from models.side_effect import SideEffectExecutionRecord
 from models.intervention import (
@@ -311,6 +311,28 @@ class SQLitePersistenceStore(PersistenceStore):
         rows = self.conn.execute("SELECT payload FROM resources WHERE kind='project' ORDER BY rowid").fetchall()
         return tuple(Project.model_validate_json(row["payload"]) for row in rows)
     def save_project_spec(self, value): self._save("project_spec", value.project_spec_id, value.project_id, value, True)
+    def transition_project_spec(self, value, audit):
+        with self.transaction():
+            current = self._get("project_spec", value.project_spec_id, ProjectSpec)
+            if current is None:
+                raise KeyError(value.project_spec_id)
+            before = current.model_dump(mode="json")
+            after = value.model_dump(mode="json")
+            for field in ("status", "updated_at", "approved_at"):
+                before.pop(field, None)
+                after.pop(field, None)
+            if before != after:
+                raise PersistenceConflictError(
+                    f"project_spec immutable content changed: {value.project_spec_id}"
+                )
+            self._save(
+                "project_spec",
+                value.project_spec_id,
+                value.project_id,
+                value,
+                commit=False,
+            )
+            self._audit(audit)
     def get_project_spec(self, project_spec_id): return self._get("project_spec", project_spec_id, ProjectSpec)
     def list_project_specs(self, project_id): return self._list("project_spec", project_id, ProjectSpec)
     def append_lifecycle_transition(self, value): self._event("lifecycle_transition", value.project_id, value.timestamp.isoformat(), value)
@@ -380,6 +402,10 @@ class SQLitePersistenceStore(PersistenceStore):
     def save_service_mutation(self, value): self._save("service_mutation", value.record_id, value.project_id, value, True)
     def get_service_mutation(self, record_id): return self._get("service_mutation", record_id, ServiceMutationRecord)
     def list_service_mutations(self, project_id): return self._list("service_mutation", project_id, ServiceMutationRecord)
+    def claim_service_command(self, value): self._create("service_command", value.command_id, value.project_id, value)
+    def save_service_command(self, value): self._save("service_command", value.command_id, value.project_id, value)
+    def get_service_command(self, command_id): return self._get("service_command", command_id, ServiceCommandRecord)
+    def list_service_commands(self, project_id): return self._list("service_command", project_id, ServiceCommandRecord)
     def claim_side_effect_execution(self, value, audit):
         with self.transaction():
             self._create("side_effect_execution", value.execution_id, value.project_id, value, commit=False)

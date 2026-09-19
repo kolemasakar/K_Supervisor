@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import hashlib
+import json
 
 from models.enums import ExecutionStatus, ProjectOperationalState
 from models.task import Task, WorkflowRun
@@ -49,11 +51,20 @@ class WorkflowEngine:
         input_data: dict,
         *,
         approvals: dict[str, bool] | None = None,
+        task_id: str | None = None,
+        workflow_run_id: str | None = None,
     ) -> WorkflowExecutionResult:
         self._require_active_project(project_id)
+        if task_id is not None and self.store.get_task(task_id) is not None:
+            raise ValueError(f"task already exists: {task_id}")
+        if workflow_run_id is not None and any(
+            item.workflow_run_id == workflow_run_id
+            for item in self.store.list_workflow_runs(project_id)
+        ):
+            raise ValueError(f"workflow run already exists: {workflow_run_id}")
         now = self._now()
         task = Task(
-            task_id=self.kernel.ids.new("TASK"),
+            task_id=task_id or self.kernel.ids.new("TASK"),
             project_id=project_id,
             title=title,
             status=TaskStatus.NEW.value,
@@ -69,7 +80,7 @@ class WorkflowEngine:
 
         context = {"__input__": input_data}
         run = WorkflowRun(
-            workflow_run_id=self.kernel.ids.new("WF"),
+            workflow_run_id=workflow_run_id or self.kernel.ids.new("WF"),
             project_id=project_id,
             task_id=task.task_id,
             workflow_id=definition.workflow_id,
@@ -101,15 +112,77 @@ class WorkflowEngine:
             raise WorkflowRuntimeError("workflow definition does not match persisted run")
         if run.metadata.get("workflow_version") != definition.workflow_version:
             raise WorkflowRuntimeError("workflow version does not match persisted run")
+        if run.metadata.get("definition_hash") != self._definition_hash(definition):
+            raise WorkflowRuntimeError("workflow definition hash does not match persisted run")
         task = self.store.get_task(run.task_id)
         if task is None:
             raise WorkflowRuntimeError("workflow parent task is missing")
         if run.status in {
             WorkflowExecutionStatus.SUCCEEDED.value,
             WorkflowExecutionStatus.FAILED.value,
+            WorkflowExecutionStatus.CANCELLED.value,
         }:
             return self._result_from_run(run)
         return self._drive(task, run, definition, approvals or {})
+
+    def cancel(
+        self,
+        project_id: str,
+        workflow_run_id: str,
+    ) -> WorkflowExecutionResult:
+        run = self._find_run(project_id, workflow_run_id)
+        if run.status == WorkflowExecutionStatus.CANCELLED.value:
+            return self._result_from_run(run)
+        if run.status in {
+            WorkflowExecutionStatus.SUCCEEDED.value,
+            WorkflowExecutionStatus.FAILED.value,
+        }:
+            raise ValueError(f"workflow is not cancellable: {run.status}")
+
+        at = self._now()
+        human_action_id = run.metadata.get("human_action_id")
+        broker = getattr(self.approval_requester, "broker", None)
+        if isinstance(human_action_id, str) and broker is not None:
+            action = self.store.get_human_action(human_action_id)
+            if action is not None and action.resolved_at is None:
+                broker.cancel(human_action_id, at)
+
+        for child in self.store.list_tasks(project_id):
+            if child.metadata.get("parent_workflow_run_id") != workflow_run_id:
+                continue
+            child_status = TaskStatus(child.status)
+            if child_status in {
+                TaskStatus.SUCCEEDED,
+                TaskStatus.FAILED,
+                TaskStatus.BLOCKED,
+                TaskStatus.CANCELLED,
+            }:
+                continue
+            try:
+                self.kernel.cancel_task(project_id, child.task_id)
+            except (KeyError, ValueError):
+                pass
+
+        task = self.store.get_task(run.task_id)
+        if task is None:
+            raise WorkflowRuntimeError("workflow parent task is missing")
+        task_status = TaskStatus(task.status)
+        if task_status not in {
+            TaskStatus.SUCCEEDED,
+            TaskStatus.FAILED,
+            TaskStatus.BLOCKED,
+            TaskStatus.CANCELLED,
+        }:
+            self.store.save_task(transition_task(task, TaskStatus.CANCELLED, at))
+
+        cancelled = run.model_copy(
+            update={
+                "status": WorkflowExecutionStatus.CANCELLED.value,
+                "updated_at": at,
+            }
+        )
+        self.store.save_workflow_run(cancelled)
+        return self._result_from_run(cancelled)
 
     def _drive(
         self,
@@ -124,6 +197,10 @@ class WorkflowEngine:
         current = str(run.metadata.get("current_node_id", definition.start_node_id))
 
         while True:
+            persisted = self._find_run(task.project_id, run.workflow_run_id)
+            if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                return self._result_from_run(persisted)
+
             node = definition.node(current)
             resuming_gate = (
                 run.status == WorkflowExecutionStatus.WAITING_FOR_APPROVAL.value
@@ -201,6 +278,9 @@ class WorkflowEngine:
                         },
                     )
                 except Exception as exc:
+                    persisted = self._find_run(task.project_id, run.workflow_run_id)
+                    if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                        return self._result_from_run(persisted)
                     return self._fail(
                         task,
                         run,
@@ -211,6 +291,9 @@ class WorkflowEngine:
                         steps,
                         str(exc),
                     )
+                persisted = self._find_run(task.project_id, run.workflow_run_id)
+                if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                    return self._result_from_run(persisted)
                 if result.status != ExecutionStatus.SUCCEEDED:
                     message = result.error.message if result.error else "capability execution failed"
                     return self._fail(
@@ -287,6 +370,10 @@ class WorkflowEngine:
                 current = node.approved_node_id if decision else node.rejected_node_id
                 current = current or ""
 
+            persisted = self._find_run(task.project_id, run.workflow_run_id)
+            if persisted.status == WorkflowExecutionStatus.CANCELLED.value:
+                return self._result_from_run(persisted)
+
             run = run.model_copy(
                 update={
                     "status": WorkflowExecutionStatus.RUNNING.value,
@@ -354,11 +441,21 @@ class WorkflowEngine:
     ) -> dict:
         return {
             "workflow_version": definition.workflow_version,
+            "definition_hash": WorkflowEngine._definition_hash(definition),
             "current_node_id": current,
             "context": context,
             "visits": visits,
             "steps": steps,
         }
+
+    @staticmethod
+    def _definition_hash(definition: WorkflowDefinition) -> str:
+        encoded = json.dumps(
+            definition.model_dump(mode="json"),
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
 
     @staticmethod
     def _result_from_run(run: WorkflowRun) -> WorkflowExecutionResult:

@@ -8,7 +8,7 @@ from models.agent import AgentRunResult
 from models.artifact import ArtifactReference
 from models.audit import AuditEvent
 from models.base import ensure_tz
-from models.control import RuntimeIdempotencyRecord, ServiceMutationRecord
+from models.control import RuntimeIdempotencyRecord, ServiceCommandRecord, ServiceMutationRecord
 from models.side_effect import SideEffectExecutionRecord
 from models.enums import ProjectLifecycleState, ProjectOperationalState, ProjectSpecStatus
 from models.intervention import (
@@ -48,6 +48,7 @@ class ProjectRecoverySnapshot(BaseModel):
     approvals: tuple[ApprovalRecord, ...] = ()
     runtime_idempotency: tuple[RuntimeIdempotencyRecord, ...] = ()
     service_mutations: tuple[ServiceMutationRecord, ...] = ()
+    service_commands: tuple[ServiceCommandRecord, ...] = ()
     side_effect_executions: tuple[SideEffectExecutionRecord, ...] = ()
     policy_decisions: tuple[PolicyDecision, ...] = ()
     audit_events: tuple[AuditEvent, ...] = ()
@@ -86,6 +87,94 @@ class ProjectRegistry:
         if self.store.get_project(spec.project_id) is None:
             raise KeyError(spec.project_id)
         self.store.save_project_spec(spec)
+
+    def transition_spec_status(
+        self,
+        project_id: str,
+        project_spec_id: str,
+        to_status: ProjectSpecStatus,
+        at: datetime,
+    ) -> ProjectSpec:
+        self._require(project_id)
+        current = self.store.get_project_spec(project_spec_id)
+        if current is None or current.project_id != project_id:
+            raise KeyError(project_spec_id)
+        if current.status == to_status:
+            return current
+
+        allowed = {
+            ProjectSpecStatus.DRAFT: {
+                ProjectSpecStatus.REVIEW_REQUIRED,
+                ProjectSpecStatus.APPROVED,
+                ProjectSpecStatus.REJECTED,
+            },
+            ProjectSpecStatus.REVIEW_REQUIRED: {
+                ProjectSpecStatus.APPROVED,
+                ProjectSpecStatus.REJECTED,
+            },
+            ProjectSpecStatus.APPROVED: {ProjectSpecStatus.SUPERSEDED},
+            ProjectSpecStatus.REJECTED: set(),
+            ProjectSpecStatus.SUPERSEDED: set(),
+        }
+        if to_status not in allowed[current.status]:
+            raise ValueError(
+                f"invalid ProjectSpec status transition: {current.status} -> {to_status}"
+            )
+
+        at = ensure_tz(at)
+        approved_at = current.approved_at
+        if to_status == ProjectSpecStatus.APPROVED:
+            approved_at = at
+        elif to_status not in {ProjectSpecStatus.SUPERSEDED}:
+            approved_at = None
+
+        updated = current.model_copy(
+            update={
+                "status": to_status,
+                "approved_at": approved_at,
+                "updated_at": at,
+            }
+        )
+        audit = build_audit_event(
+            project_id=project_id,
+            category="PROJECT",
+            event_type=f"PROJECT_SPEC_{to_status.value}",
+            occurred_at=at,
+            resource_type="ProjectSpec",
+            resource_id=project_spec_id,
+            details={
+                "from_status": current.status.value,
+                "to_status": to_status.value,
+            },
+        )
+        self.store.transition_project_spec(updated, audit)
+        return updated
+
+    def approve_spec(
+        self,
+        project_id: str,
+        project_spec_id: str,
+        at: datetime,
+    ) -> ProjectSpec:
+        return self.transition_spec_status(
+            project_id,
+            project_spec_id,
+            ProjectSpecStatus.APPROVED,
+            at,
+        )
+
+    def reject_spec(
+        self,
+        project_id: str,
+        project_spec_id: str,
+        at: datetime,
+    ) -> ProjectSpec:
+        return self.transition_spec_status(
+            project_id,
+            project_spec_id,
+            ProjectSpecStatus.REJECTED,
+            at,
+        )
 
     def activate_spec(self, project_id: str, spec: ProjectSpec, at: datetime) -> Project:
         project = self._require(project_id)
@@ -205,6 +294,7 @@ class ProjectRegistry:
             approvals=self.store.list_approvals(project_id),
             runtime_idempotency=self.store.list_runtime_idempotency(project_id),
             service_mutations=self.store.list_service_mutations(project_id),
+            service_commands=self.store.list_service_commands(project_id),
             side_effect_executions=self.store.list_side_effect_executions(project_id),
             policy_decisions=self.store.list_policy_decisions(project_id),
             audit_events=self.store.list_audit_events(project_id),

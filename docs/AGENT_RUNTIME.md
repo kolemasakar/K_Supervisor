@@ -1,9 +1,9 @@
 # AGENT_RUNTIME
 Опис runtime-рівня K_Supervisor для контрольованого виконання агентів, normalized failures та durable idempotency.
 
-Version: 1.2
+Version: 1.3
 Status: ACTIVE
-Baseline: v0.3 Phase 4 COMPLETE
+Baseline: v0.4 Phase 2 Operator Control API
 Date: 2026-09-16
 
 ## Purpose
@@ -51,6 +51,25 @@ Retry orchestration remains owned by Supervisor.
 Timeout/cancellation and handler failures are normalized to `AgentRunResult`; raw execution exceptions do not cross the runtime boundary. Returned results are correlation-validated before acceptance.
 
 The in-process adapter remains cooperative. `ProcessRuntimeAdapter` enforces timeout/cancellation in the parent process: cooperative cancellation is requested first, then termination and kill escalation use bounded joins. Worker exit without a valid result envelope is normalized as a runtime worker crash.
+
+## Operator Cancellation Authority
+
+v0.4 Phase 2 adds durable Task/Workflow operator cancellation above the existing runtime adapter boundary.
+
+```text
+ServiceApiV1
+  -> OperatorControlApi
+  -> SupervisorKernel.cancel_task() / WorkflowEngine.cancel()
+  -> AgentRuntimeDispatcher.cancel(run_id) when an active runtime run exists
+```
+
+Task and Workflow state now include terminal `CANCELLED` semantics. The kernel records the active runtime `run_id` in Task metadata before dispatch so an operator cancellation can reach the existing runtime dispatcher without creating a second execution path.
+
+If cancellation is persisted while a handler is already executing, a later success result cannot overwrite the durable cancellation. The kernel re-checks authoritative Task state before accepting the returned result and normalizes it as `CANCELLED`.
+
+Workflow cancellation also cancels linked unresolved workflow-owner action and active child tasks identified by `parent_workflow_run_id`. The workflow drive loop re-checks persisted cancellation before writing subsequent RUNNING state.
+
+Cancellation remains cooperative for the in-process adapter and parent-enforced for `ProcessRuntimeAdapter`.
 
 ## Runtime Idempotency
 
@@ -110,7 +129,7 @@ Resource accounting remains cooperative inside the handler. Phase 3 centralizes 
 
 Durable runtime idempotency records are project-scoped persistence resources and are included in `ProjectRecoverySnapshot`. Runtime handler/process-local execution stacks themselves are not serialized as authoritative state.
 
-Workflow/Task/Human Intervention durable records determine restart recovery and resumability through their existing platform boundaries.
+Workflow/Task/Human Intervention durable records determine restart recovery and resumability through their existing platform boundaries. Phase 2 ServiceCommandRecord correlation prevents a restart from blindly duplicating Task/Workflow start commands.
 
 ## Validation
 
@@ -125,7 +144,7 @@ branch-aware coverage: 85.13%
 ResourceWarning gate: PASS
 ```
 
-Phase 4 verifies isolated success/correlation, parent-enforced timeout, cancellation escalation, worker crash containment, runtime-limit normalization and successful recovery on the next run. All predecessor runtime/idempotency/health regressions remain green.
+Phase 4 verifies isolated success/correlation, parent-enforced timeout, cancellation escalation, worker crash containment, runtime-limit normalization and successful recovery on the next run. v0.4 Phase 2 additionally verifies operator cancellation, late-success suppression, durable CANCELLED state and stale execution-command reconciliation. All predecessor runtime/idempotency/health regressions remain green.
 
 ## Current Limits
 

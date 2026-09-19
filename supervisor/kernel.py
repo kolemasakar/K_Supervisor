@@ -77,6 +77,8 @@ class SupervisorKernel:
         policy: dict | None = None,
         limits: dict | None = None,
         metadata: dict | None = None,
+        task_id: str | None = None,
+        workflow_run_id: str | None = None,
     ) -> AgentRunResult:
         project = self.projects.get(project_id)
         if project is None:
@@ -86,9 +88,17 @@ class SupervisorKernel:
                 f"project is not ACTIVE: {project_id} ({project.operational_state})"
             )
 
+        if task_id is not None and self.store.get_task(task_id) is not None:
+            raise ValueError(f"task already exists: {task_id}")
+        if workflow_run_id is not None and any(
+            item.workflow_run_id == workflow_run_id
+            for item in self.store.list_workflow_runs(project_id)
+        ):
+            raise ValueError(f"workflow run already exists: {workflow_run_id}")
+
         now = self._now()
         task = Task(
-            task_id=self.ids.new("TASK"),
+            task_id=task_id or self.ids.new("TASK"),
             project_id=project_id,
             title=title,
             status=TaskStatus.NEW.value,
@@ -105,7 +115,7 @@ class SupervisorKernel:
         task = self._save_task_state(task, TaskStatus.ROUTING)
 
         workflow = WorkflowRun(
-            workflow_run_id=self.ids.new("WF"),
+            workflow_run_id=workflow_run_id or self.ids.new("WF"),
             project_id=project_id,
             task_id=task.task_id,
             workflow_id="supervisor.single_capability",
@@ -145,6 +155,17 @@ class SupervisorKernel:
                 limits=limits or {},
                 metadata={"attempt": attempt},
             )
+            task = task.model_copy(
+                update={
+                    "updated_at": self._now(),
+                    "metadata": {
+                        **task.metadata,
+                        "current_run_id": request.run_id,
+                        "last_run_id": request.run_id,
+                    },
+                }
+            )
+            self.store.save_task(task)
 
             try:
                 result = self.dispatcher.dispatch(request)
@@ -153,6 +174,15 @@ class SupervisorKernel:
                 result = self._failure(request, "INTERNAL_ERROR", str(exc), False)
             except Exception as exc:
                 result = self._failure(request, "EXECUTION_ERROR", str(exc), False)
+
+            persisted_task = self.store.get_task(task.task_id)
+            if (
+                persisted_task is not None
+                and persisted_task.status == TaskStatus.CANCELLED.value
+                and result.status != ExecutionStatus.CANCELLED
+            ):
+                result = self._cancelled_result(request)
+                task = persisted_task
 
             self.store.save_agent_run(result)
             last_result = result
@@ -182,6 +212,15 @@ class SupervisorKernel:
             )
             return last_result
 
+        if last_result.status == ExecutionStatus.CANCELLED:
+            current = self.store.get_task(task.task_id) or task
+            if current.status != TaskStatus.CANCELLED.value:
+                current = self._save_task_state(current, TaskStatus.CANCELLED)
+            self.store.save_workflow_run(
+                workflow.model_copy(update={"status": "CANCELLED", "updated_at": self._now()})
+            )
+            return last_result
+
         task = self._save_task_state(task, TaskStatus.FAILED)
         self.store.save_workflow_run(
             workflow.model_copy(update={"status": "FAILED", "updated_at": self._now()})
@@ -189,6 +228,53 @@ class SupervisorKernel:
         if self.escalation_hook is not None:
             self.escalation_hook(task, last_result, self.retry_policy.max_attempts)
         return last_result
+
+    def cancel_task(self, project_id: str, task_id: str) -> Task:
+        task = self.store.get_task(task_id)
+        if task is None or task.project_id != project_id:
+            raise KeyError(task_id)
+        status = TaskStatus(task.status)
+        if status == TaskStatus.CANCELLED:
+            return task
+        if status in {TaskStatus.SUCCEEDED, TaskStatus.FAILED, TaskStatus.BLOCKED}:
+            raise ValueError(f"task is not cancellable: {status.value}")
+
+        run_id = task.metadata.get("current_run_id")
+        cancel = getattr(self.dispatcher, "cancel", None)
+        if isinstance(run_id, str) and callable(cancel):
+            cancel(run_id)
+
+        cancelled = transition_task(task, TaskStatus.CANCELLED, self._now())
+        self.store.save_task(cancelled)
+        for run in self.store.list_workflow_runs(project_id):
+            if run.task_id != task_id:
+                continue
+            if run.status in {"SUCCEEDED", "FAILED", "BLOCKED", "CANCELLED"}:
+                continue
+            self.store.save_workflow_run(
+                run.model_copy(update={"status": "CANCELLED", "updated_at": self._now()})
+            )
+        return cancelled
+
+    @staticmethod
+    def _cancelled_result(request: AgentRunRequest) -> AgentRunResult:
+        return AgentRunResult(
+            request_id=request.request_id,
+            project_id=request.project_id,
+            task_id=request.task_id,
+            workflow_run_id=request.workflow_run_id,
+            run_id=request.run_id,
+            agent_id=request.agent_id,
+            capability_id=request.capability_id,
+            capability_version=request.capability_version,
+            status=ExecutionStatus.CANCELLED,
+            error=AgentError(
+                code="EXECUTION_CANCELLED",
+                category="CANCELLED",
+                message="execution was cancelled by operator request",
+                retryable=False,
+            ),
+        )
 
     @staticmethod
     def _failure(
