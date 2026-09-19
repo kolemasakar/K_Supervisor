@@ -4,7 +4,7 @@ Active cumulative verification contract for approved ROADMAP v0.4.
 Version: 3.6
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 2 — ACTIVE / IMPLEMENTATION AUTHORIZED
+Current phase: v0.4 Phase 2 — COMPLETE; Phase 3 audit next
 Date: 2026-09-19
 
 ## Preserved Regression Floor
@@ -29,7 +29,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | --- | --- | --- |
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
-| 2 | operator API lifecycle, scopes, idempotency, redaction | ACTIVE — IMPLEMENTATION AUTHORIZED |
+| 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
 | 3 | service host, health/readiness, shutdown, CLI parity | PLANNED |
 | 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
@@ -122,7 +122,7 @@ Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_COMPLETE.md`.
 
 Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`.
 
-Phase 2 is owner-approved for activation. After the protected activation checkpoint merges, required deterministic verification includes:
+Phase 2 is COMPLETE. The following deterministic verification contract was satisfied:
 
 - backward compatibility of all v0.3 Phase 5 Service/API routes/scopes/idempotency;
 - safe fixed-state Project registration/onboarding;
@@ -136,6 +136,23 @@ Phase 2 is owner-approved for activation. After the protected activation checkpo
 - cross-project resource isolation;
 - no raw-secret, direct Tool or direct Provider endpoint;
 - no paid external resource requirement.
+
+## v0.4 Phase 2 — Completion Evidence
+
+```text
+Implementation PR: #24
+Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
+Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
+Code/test Core Validation: 35443690831 — PASS
+Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
+Final exact-head Core Validation: 35443735846 — PASS
+Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
+Merged-main Core Validation: 35443778180 — PASS
+Full regression: 214 passed
+Branch-aware total coverage: 83.21%
+```
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
 
 ## Permanent Quality Gates
 
@@ -164,4 +181,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 and Phase 1 are COMPLETE. Phase 2 pre-implementation audit is COMPLETE and owner activation is approved. Runtime implementation is authorized only after the activation checkpoint merges through protected governance and remains limited to the audited Phase 2 verification contract. Phases 3-7 remain inactive.
+Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3-7 remain inactive. The next permitted work is the Phase 3 pre-implementation audit only; no Phase 3 runtime implementation is authorized.
