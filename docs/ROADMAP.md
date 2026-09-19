@@ -87,7 +87,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 2 — Operator Control API
 
-**Phase 2 status:** COMPLETE. Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`; activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md`; completion checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`. PR #24 implements the additive Operator Control API, durable command receipts, authoritative ProjectSpec decisions and Task/Workflow cancellation. Validated candidate `d6503d9a...` passed 210 tests at 83.12% branch-aware coverage in Core Validation `35443466438`. Exact final PR head validation remains the protected merge gate.
+**Phase 2 status:** COMPLETE. Canonical audit: `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md`; activation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md`; completion checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`. PR #24 implements the additive Operator Control API, durable command receipts, authoritative ProjectSpec decisions and Task/Workflow cancellation. Final code/test candidate `f9f7284c...` passed 214 tests at 83.21% branch-aware coverage in Core Validation `35443690831`; final PR head `067828df...` passed `35443735846` and merged as `9b532e4d...`; merged-main Core Validation `35443778180` also passed.
 
 **Goal:** let an authenticated owner/operator drive the approved control-plane lifecycle through one versioned service boundary instead of direct Python composition.
 
@@ -272,4 +272,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-2 are COMPLETE subject to protected merge of the exact Phase 2 completion candidate. Phase 3 remains PLANNED / INACTIVE; the next permitted work is its pre-implementation audit only. No Phase 3 runtime change is authorized without a separate audit, owner activation and protected merge.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-2 are COMPLETE. Phase 3 remains PLANNED / INACTIVE; the next permitted work is its pre-implementation audit only. No Phase 3 runtime change is authorized without a separate audit, owner activation and protected merge.
