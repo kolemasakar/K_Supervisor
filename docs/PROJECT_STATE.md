@@ -228,7 +228,7 @@ Owner approval was given on 2026-09-19 to migrate `Core Validation` from GitHub-
 Decision authority: `SELF_HOSTED_CI_RUNNER_DECISION.md`.
 
 ```text
-Migration status: APPROVED / NOT YET COMPLETE
+Migration status: APPROVED / RUNNER PACKAGE STAGED / PRIVILEGED REGISTRATION PENDING
 Runner host: kgm-e4-owner-pilot
 Runner OS: Ubuntu 24.04.4 LTS / ARM64
 Runner account: dedicated ghrunner / no sudo
@@ -238,7 +238,7 @@ Protected-main ruleset: unchanged
 Phase 4 activation: NO
 ```
 
-Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. The transition must register and verify the runner online before the workflow `runs-on` target changes.
+Measured on the VM: 229 tests + branch coverage complete in about 13.5 seconds at 82.06% total coverage; wheel build completes in about 2 seconds. VM resources are sufficient for one serialized job. Official runner v2.337.0 ARM64 has been downloaded and SHA-256 verified in VM staging. The transition must register and verify the runner online before the workflow `runs-on` target changes.
 
 This infrastructure work does not activate a roadmap runtime phase.
 

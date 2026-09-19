@@ -129,10 +129,19 @@ Before registration:
 1. create dedicated `ghrunner` account;
 2. create isolated runner installation/work directories;
 3. add a 2 GiB swap file as an OOM safety margin;
-4. install the official Linux ARM64 GitHub Actions Runner, version compatible with `actions/setup-python@v7` (runner >= 2.327.1);
+4. install the selected official Linux ARM64 GitHub Actions Runner v2.337.0 (compatible with `actions/setup-python@v7`);
 5. register it only for `kolemasakar/K_Supervisor`;
 6. install/start it as a systemd service under `ghrunner`;
 7. verify runner status is online and idle.
+
+Selected runner artifact:
+
+```text
+release: actions/runner v2.337.0
+artifact: actions-runner-linux-arm64-2.337.0.tar.gz
+sha256: 9b1dc70626422526e3c94767cf024896beb15da5342a3f4819bf2feac13e0393
+staging verification: PASS
+```
 
 Docker is not required by the current `Core Validation` workflow and will not be installed as part of this migration.
 
