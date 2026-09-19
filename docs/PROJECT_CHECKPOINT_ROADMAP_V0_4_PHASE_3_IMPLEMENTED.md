@@ -3,7 +3,7 @@
 Контрольна точка реалізації ROADMAP v0.4 Phase 3 — Production Single-Node Service Host & Operator CLI.
 
 Version: 1.0
-Status: IMPLEMENTATION CANDIDATE — PROTECTED VALIDATION PENDING
+Status: IMPLEMENTED — PROTECTED MERGE PENDING
 Roadmap: v0.4
 Phase: 3
 Date: 2026-09-19
@@ -13,10 +13,13 @@ Activated predecessor tree: `6aef5afe60712b660cc9d67f375a2a8c2df90286`
 ## Implementation Evidence
 
 ```text
-Implementation PR: PENDING
-Initial implementation head: PENDING
-Initial implementation tree: PENDING
-Protected PR Core Validation: PENDING
+Implementation PR: #29
+Initial implementation head: 46bca5223d5e42d9051f886832a7d12a87a5d812
+Initial implementation tree: 82da649caa8afff0c04124f3a9dd2b61e9c886e8
+Protected PR Core Validation: 35452558739 — PASS
+Authoritative CI regression: 229 passed
+Authoritative CI branch-aware coverage: 82.06%
+Installed-wheel Phase 3 service/CLI smoke: PASS
 Final exact-head Core Validation: PENDING
 Merged main SHA: PENDING
 Merged-main Core Validation: PENDING

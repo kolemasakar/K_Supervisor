@@ -28,7 +28,7 @@ v0.3 Phase 9: NOT DEFINED
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 3 is active under protected activation checkpoint #28 and has an implementation candidate for the single-node Service Host, protected bearer configuration, health/readiness, trusted-proxy boundary, HTTP client and operator CLI. Phase 4 remains inactive. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0-2 are complete. Phase 3 is active under protected activation checkpoint #28; implementation PR #29 has passed its initial protected `Core Validation` (`35452558739`) for the single-node Service Host, protected bearer configuration, health/readiness, trusted-proxy boundary, HTTP client and operator CLI. Final exact-head validation and merge remain pending. Phase 4 remains inactive. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 

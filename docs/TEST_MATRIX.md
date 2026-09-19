@@ -208,7 +208,7 @@ Local branch-aware total coverage: 82.06%
 ResourceWarning gate: PASS / no warnings
 compileall: PASS
 Local installed-wheel smoke: PASS (Python 3.12.3 supplementary only)
-Authoritative Python 3.13 protected Core Validation: PENDING
+Authoritative Python 3.13 protected Core Validation: 35452558739 — PASS / 229 tests / 82.06% coverage / installed-wheel Phase 3 smoke PASS
 Phase 4 activation: NO
 ```
 
