@@ -326,6 +326,7 @@ def test_orphaned_workflow_parent_task_is_reconciled_without_restart_execution(t
 
 def test_workflow_resume_rejects_same_version_with_changed_definition(tmp_path):
     store, _, _, _, workflows, _, _, _ = build_operator_stack(tmp_path / "state.db")
+    workflows.approval_requester = None
     original = WorkflowDefinition(
         workflow_id="phase2.identity",
         workflow_version="1.0.0",
