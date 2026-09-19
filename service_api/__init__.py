@@ -1,4 +1,7 @@
 from .auth import ServiceAuthenticator, StaticBearerAuthenticator
+from .client import ServiceClientError, ServiceClientResponse, ServiceClientV1
+from .host import HostState, ServiceHost, ServiceHostApplication, create_service_host
+from .runtime import ServiceRuntime, build_service_runtime
 from .contracts import (
     API_VERSION,
     READ_SCOPE,
@@ -66,4 +69,13 @@ __all__ = [
     "ServiceAuthenticator",
     "StaticBearerAuthenticator",
     "WsgiServiceAppV1",
+    "ServiceClientError",
+    "ServiceClientResponse",
+    "ServiceClientV1",
+    "HostState",
+    "ServiceHost",
+    "ServiceHostApplication",
+    "create_service_host",
+    "ServiceRuntime",
+    "build_service_runtime",
 ]

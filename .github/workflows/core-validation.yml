@@ -55,3 +55,73 @@ jobs:
           cd /tmp
           k-supervisor version
           python -c "import ksupervisor; print(ksupervisor.__version__)"
+      - name: Installed wheel Phase 3 service and CLI smoke
+        run: |
+          cd /tmp
+          python - <<'PY'
+          import json
+          import os
+          import sqlite3
+          import subprocess
+          import tempfile
+          from pathlib import Path
+          from urllib.request import urlopen
+
+          from ksupervisor.config import PlatformConfig
+          from ksupervisor.service import build_service_runtime, create_service_host
+
+          token = "phase3-wheel-smoke-token"
+          os.environ["KSUP_SECRET__SERVICE_OWNER"] = token
+
+          with tempfile.TemporaryDirectory() as raw:
+              root = Path(raw)
+              db = root / "state.db"
+              server_config = PlatformConfig(
+                  state_db_path=str(db),
+                  service_host={
+                      "bind_host": "127.0.0.1",
+                      "port": 0,
+                      "workers": 2,
+                      "principals": [{
+                          "principal_id": "wheel-smoke",
+                          "scopes": ["projects:read"],
+                          "token_ref": {"uri": "secret://service/owner"},
+                      }],
+                  },
+              )
+              runtime = build_service_runtime(server_config)
+              host = create_service_host(runtime)
+              host.start()
+              address, port = host.address
+              base = f"http://{address}:{port}"
+
+              with urlopen(base + "/healthz", timeout=3) as response:
+                  assert response.status == 200
+                  assert json.loads(response.read()) == {"status": "live"}
+              with urlopen(base + "/readyz", timeout=3) as response:
+                  assert response.status == 200
+                  assert json.loads(response.read()) == {"status": "ready"}
+
+              client_config = root / "client.json"
+              client_config.write_text(json.dumps({
+                  "service_client": {
+                      "base_url": base,
+                      "token_ref": {"uri": "secret://service/owner"},
+                      "timeout_seconds": 3,
+                  }
+              }), encoding="utf-8")
+              completed = subprocess.run(
+                  ["k-supervisor", "projects", "list", "--config", str(client_config)],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              assert json.loads(completed.stdout)["data"]["projects"] == []
+              assert host.stop()
+
+              connection = sqlite3.connect(db)
+              try:
+                  assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+              finally:
+                  connection.close()
+          PY

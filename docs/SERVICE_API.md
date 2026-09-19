@@ -1,9 +1,9 @@
 # SERVICE_API
 Versioned Service/API boundary for K_Supervisor owner/operator control.
 
-Version: 2.0
+Version: 2.1
 Status: ACTIVE
-Baseline: v0.4 Phase 2
+Baseline: v0.4 Phase 3 implementation candidate
 Date: 2026-09-19
 Public API version: v1
 
@@ -11,7 +11,7 @@ Public API version: v1
 
 `ServiceApiV1` is the supported versioned owner/operator boundary over the existing K_Supervisor control plane. It remains a thin orchestration layer: lifecycle rules, ProjectSpec state, Human Intervention, Policy Approval, execution and release/publication authority stay in their domain services.
 
-Production hosting/TLS/long-running process concerns remain Phase 3 scope.
+Phase 3 supplies the single-node hosting/client boundary around this API while preserving all v1 business semantics. TLS certificate lifecycle remains external.
 
 ## 2. Public Boundary
 
@@ -305,6 +305,26 @@ public CLI/import smoke: PASS
 
 The exact final PR head including synchronized documentation must pass protected `Core Validation` before Phase 2 completion merge.
 
-## 13. Hosting Boundary
+## 13. Phase 3 Hosting Boundary
 
-Phase 2 defines the versioned operator control surface, not the production process host. Bind/port configuration, graceful server lifecycle, TLS/reverse-proxy contract and operator CLI-over-HTTP are Phase 3 work and remain inactive until a separate audit/activation gate.
+The Phase 2 versioned operator surface remains authoritative. Phase 3 adds only operational transport/composition infrastructure:
+
+```text
+ServiceRuntime
+  -> one authoritative SQLite/control-plane composition
+  -> StaticBearerAuthenticator from protected token references
+  -> WsgiServiceAppV1
+  -> bounded ServiceHost
+
+ServiceClientV1
+  -> /api/v1 over HTTP(S)
+  -> operator CLI
+```
+
+The host adds `GET /healthz` and `GET /readyz` as minimal unauthenticated operational probes outside the business API. Readiness becomes false during drain. The host bounds worker count and socket timeout, preserves the 64 KiB WSGI request-body limit, stops new application requests before resource close, and leaves in-flight material outcomes to existing Service/API durability/idempotency authority.
+
+The safe default bind is loopback. Non-loopback binding requires explicit proxy mode and trusted proxy address/CIDR configuration. Forwarded headers are ignored by default; in proxy mode, only trusted peers may supply forwarding data and `X-Forwarded-Proto` must indicate HTTPS. Certificate issuance/renewal remains external.
+
+The reusable `ServiceClientV1` contains transport logic only. Operator CLI mutation commands call this client, never persistence/registry/kernel/workflow mutation authorities. Plaintext bearer tokens are not CLI arguments; client and host credentials resolve from protected references/environment injection.
+
+The installed-wheel Core Validation smoke runs outside the checkout and verifies host startup, health/readiness, authenticated CLI-over-HTTP access, clean shutdown and SQLite integrity.
