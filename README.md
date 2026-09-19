@@ -19,15 +19,15 @@ ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
-v0.4 Phase 2: AUDIT COMPLETE / INACTIVE — ACTIVATION PENDING
+v0.4 Phase 2: ACTIVE — IMPLEMENTATION AUTHORIZED
 v0.4 Phase 3-7: PLANNED
-Runtime implementation phase: NONE
+Runtime implementation phase: v0.4 Phase 2
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Continuation State
 
-ROADMAP v0.4 is approved; Phases 0 and 1 are complete. Phase 1 includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. The Phase 2 Operator Control API pre-implementation audit is complete, but Phase 2 remains inactive until an explicit owner-approved activation checkpoint is merged. The zero-cost development policy remains permanent.
+ROADMAP v0.4 is approved; Phases 0 and 1 are complete. Phase 1 includes the production OpenAI Responses adapter, provider-neutral model selection, and a reusable non-reference `ModelBackedAgent` path through `SideEffectGateway`. The Phase 2 Operator Control API pre-implementation audit is complete and owner activation is approved; runtime work begins after the protected activation checkpoint merges and remains limited to the audited scope. The zero-cost development policy remains permanent.
 
 ## Current Runtime Baseline
 
