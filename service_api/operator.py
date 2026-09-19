@@ -4,6 +4,7 @@ import hashlib
 import json
 from collections.abc import Callable
 from datetime import datetime, timezone
+from threading import RLock
 from typing import Any
 
 from pydantic import ValidationError
@@ -78,6 +79,8 @@ class OperatorControlApi:
         self.human = human
         self.approvals = approvals
         self.releases = releases
+        self._active_commands: set[str] = set()
+        self._active_lock = RLock()
 
     def dispatch_if_supported(
         self,
@@ -504,37 +507,40 @@ class OperatorControlApi:
                 return replay
 
         try:
-            self.kernel.run_task(
-                project_id,
-                request.title,
-                request.requirement,
-                request.input,
-                context=request.context,
-                policy=request.policy,
-                limits=request.limits,
-                task_id=task_id,
-                workflow_run_id=workflow_run_id,
-                metadata={"service_command_id": command_id},
-            )
-        except ProjectNotRunnableError as exc:
-            self._fail_command(command_id, "PROJECT_NOT_RUNNABLE", 409, "PROJECT_STATE")
-            raise OperatorApiError("PROJECT_NOT_RUNNABLE", 409, "project is not runnable") from exc
-        except NoProviderError as exc:
-            self._fail_command(command_id, "DEPENDENCY_UNAVAILABLE", 503, "DEPENDENCY")
-            raise OperatorApiError("DEPENDENCY_UNAVAILABLE", 503, "execution provider unavailable") from exc
-        except (ValidationError, ValueError) as exc:
-            self._fail_command(command_id, "INVALID_REQUEST", 400, "VALIDATION")
-            raise OperatorApiError("INVALID_REQUEST", 400, "invalid task execution request") from exc
-        except Exception as exc:
-            self._fail_command(command_id, "INTERNAL_ERROR", 500, "INTERNAL")
-            raise OperatorApiError("INTERNAL_ERROR", 500, "internal service error") from exc
+            try:
+                self.kernel.run_task(
+                    project_id,
+                    request.title,
+                    request.requirement,
+                    request.input,
+                    context=request.context,
+                    policy=request.policy,
+                    limits=request.limits,
+                    task_id=task_id,
+                    workflow_run_id=workflow_run_id,
+                    metadata={"service_command_id": command_id},
+                )
+            except ProjectNotRunnableError as exc:
+                self._fail_command(command_id, "PROJECT_NOT_RUNNABLE", 409, "PROJECT_STATE")
+                raise OperatorApiError("PROJECT_NOT_RUNNABLE", 409, "project is not runnable") from exc
+            except NoProviderError as exc:
+                self._fail_command(command_id, "DEPENDENCY_UNAVAILABLE", 503, "DEPENDENCY")
+                raise OperatorApiError("DEPENDENCY_UNAVAILABLE", 503, "execution provider unavailable") from exc
+            except (ValidationError, ValueError) as exc:
+                self._fail_command(command_id, "INVALID_REQUEST", 400, "VALIDATION")
+                raise OperatorApiError("INVALID_REQUEST", 400, "invalid task execution request") from exc
+            except Exception as exc:
+                self._fail_command(command_id, "INTERNAL_ERROR", 500, "INTERNAL")
+                raise OperatorApiError("INTERNAL_ERROR", 500, "internal service error") from exc
 
-        self._succeed_command(command_id)
-        task = self.store.get_task(task_id)
-        return self._success(
-            {"task": self._task_payload(task)},
-            meta={"idempotent_replay": False},
-        )
+            self._succeed_command(command_id)
+            task = self.store.get_task(task_id)
+            return self._success(
+                {"task": self._task_payload(task)},
+                meta={"idempotent_replay": False},
+            )
+        finally:
+            self._clear_active(command_id)
 
     def _cancel_task(self, project_id, task_id, principal, idempotency_key):
         self._require_scope(principal, EXECUTIONS_CANCEL_SCOPE)
@@ -598,31 +604,34 @@ class OperatorControlApi:
                 return replay
 
         try:
-            self.workflows.start(
-                project_id,
-                request.title,
-                request.definition,
-                request.input,
-                approvals=request.approvals,
-                task_id=task_id,
-                workflow_run_id=workflow_run_id,
-            )
-        except ProjectNotRunnableError as exc:
-            self._fail_command(command_id, "PROJECT_NOT_RUNNABLE", 409, "PROJECT_STATE")
-            raise OperatorApiError("PROJECT_NOT_RUNNABLE", 409, "project is not runnable") from exc
-        except (ValidationError, WorkflowRuntimeError, ValueError) as exc:
-            self._fail_command(command_id, "INVALID_REQUEST", 400, "VALIDATION")
-            raise OperatorApiError("INVALID_REQUEST", 400, "invalid workflow execution request") from exc
-        except Exception as exc:
-            self._fail_command(command_id, "INTERNAL_ERROR", 500, "INTERNAL")
-            raise OperatorApiError("INTERNAL_ERROR", 500, "internal service error") from exc
+            try:
+                self.workflows.start(
+                    project_id,
+                    request.title,
+                    request.definition,
+                    request.input,
+                    approvals=request.approvals,
+                    task_id=task_id,
+                    workflow_run_id=workflow_run_id,
+                )
+            except ProjectNotRunnableError as exc:
+                self._fail_command(command_id, "PROJECT_NOT_RUNNABLE", 409, "PROJECT_STATE")
+                raise OperatorApiError("PROJECT_NOT_RUNNABLE", 409, "project is not runnable") from exc
+            except (ValidationError, WorkflowRuntimeError, ValueError) as exc:
+                self._fail_command(command_id, "INVALID_REQUEST", 400, "VALIDATION")
+                raise OperatorApiError("INVALID_REQUEST", 400, "invalid workflow execution request") from exc
+            except Exception as exc:
+                self._fail_command(command_id, "INTERNAL_ERROR", 500, "INTERNAL")
+                raise OperatorApiError("INTERNAL_ERROR", 500, "internal service error") from exc
 
-        self._succeed_command(command_id)
-        run = self._find_workflow(project_id, workflow_run_id)
-        return self._success(
-            {"workflow": self._workflow_payload(run)},
-            meta={"idempotent_replay": False},
-        )
+            self._succeed_command(command_id)
+            run = self._find_workflow(project_id, workflow_run_id)
+            return self._success(
+                {"workflow": self._workflow_payload(run)},
+                meta={"idempotent_replay": False},
+            )
+        finally:
+            self._clear_active(command_id)
 
     def _cancel_workflow(self, project_id, workflow_run_id, principal, idempotency_key):
         self._require_scope(principal, EXECUTIONS_CANCEL_SCOPE)
@@ -835,9 +844,12 @@ class OperatorControlApi:
             if existing.status == ServiceCommandStatus.FAILED:
                 self._raise_recorded_failure(existing)
             return existing, signature
+        self._mark_active(command_id)
         return None, signature
 
     def _reconcile_task_command(self, command):
+        if self._is_active(command.command_id):
+            raise OperatorApiError("COMMAND_IN_PROGRESS", 409, "task command is in progress")
         task_id = command.result_refs.get("task_id")
         task = self.store.get_task(task_id) if isinstance(task_id, str) else None
         if task is None:
@@ -848,9 +860,27 @@ class OperatorControlApi:
                 {"task": self._task_payload(task)},
                 meta={"idempotent_replay": True},
             )
-        raise OperatorApiError("COMMAND_IN_PROGRESS", 409, "task command is in progress")
+
+        try:
+            self.kernel.cancel_task(command.project_id, task.task_id)
+        except (KeyError, ValueError):
+            pass
+        self._fail_command(
+            command.command_id,
+            "EXECUTION_INTERRUPTED",
+            409,
+            "RECOVERY",
+        )
+        raise OperatorApiError(
+            "EXECUTION_INTERRUPTED",
+            409,
+            "previous task execution was interrupted and reconciled",
+            "RECOVERY",
+        )
 
     def _reconcile_workflow_command(self, command):
+        if self._is_active(command.command_id):
+            raise OperatorApiError("COMMAND_IN_PROGRESS", 409, "workflow command is in progress")
         workflow_run_id = command.result_refs.get("workflow_run_id")
         if not isinstance(workflow_run_id, str):
             return None
@@ -864,7 +894,35 @@ class OperatorControlApi:
                 {"workflow": self._workflow_payload(run)},
                 meta={"idempotent_replay": True},
             )
-        raise OperatorApiError("COMMAND_IN_PROGRESS", 409, "workflow command is in progress")
+
+        try:
+            self.workflows.cancel(command.project_id, workflow_run_id)
+        except (KeyError, ValueError):
+            pass
+        self._fail_command(
+            command.command_id,
+            "EXECUTION_INTERRUPTED",
+            409,
+            "RECOVERY",
+        )
+        raise OperatorApiError(
+            "EXECUTION_INTERRUPTED",
+            409,
+            "previous workflow execution was interrupted and reconciled",
+            "RECOVERY",
+        )
+
+    def _mark_active(self, command_id: str) -> None:
+        with self._active_lock:
+            self._active_commands.add(command_id)
+
+    def _clear_active(self, command_id: str) -> None:
+        with self._active_lock:
+            self._active_commands.discard(command_id)
+
+    def _is_active(self, command_id: str) -> bool:
+        with self._active_lock:
+            return command_id in self._active_commands
 
     def _succeed_command(self, command_id):
         record = self.store.get_service_command(command_id)
