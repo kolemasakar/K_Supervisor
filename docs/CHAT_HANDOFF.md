@@ -52,6 +52,8 @@ Final PR tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
 Final exact-head Core Validation: 35443735846 — PASS
 Merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
 Merged-main Core Validation: 35443778180 — PASS
+Closure PR: #25
+Initial closure Core Validation: 35443950367 — PASS
 ```
 
 Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md`.
