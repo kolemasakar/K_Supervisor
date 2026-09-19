@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.4
+Version: 5.5
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -224,6 +224,30 @@ Historical live-smoke blocker evidence remains factual. The `credit_balance_exha
 ## Repository Governance
 
 Repository ruleset `main-core-validation` (id `23556478`) protects the default branch, requires pull requests and GitHub Actions `Core Validation`, blocks deletion/non-fast-forward updates, and has no bypass actors. This remains the minimum v0.4 merge gate.
+
+## CI Infrastructure Migration
+
+The owner approved migration of `Core Validation` from GitHub-hosted `ubuntu-latest` to a repository-scoped self-hosted ARM64 runner on `kgm-e4-owner-pilot`. Canonical approval checkpoint: `PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md`.
+
+Current migration state:
+
+```text
+Owner-observed hosted Actions quota: 2000/2000
+Quota reset: 2026-10-01
+Paid Actions usage: DENIED
+Current workflow runs-on: ubuntu-latest
+Target runs-on: [self-hosted, linux, arm64, k-supervisor-ci]
+Runner scope: kolemasakar/K_Supervisor only
+Runner account: ghrunner
+Management path: existing KGM owner / OCI OIDC / ephemeral Tailscale / Tailscale SSH
+SentinelX re-enrollment: NO
+kgmops privilege expansion: NO
+Workflow mutation: NOT YET AUTHORIZED — wait for runner online/idle
+Systemd resource guardrails: REQUIRED before controlled Core Validation
+Phase 4 activation: NO
+```
+
+This is an operational CI migration, not a ROADMAP phase activation. Runtime/source behavior remains unchanged. The required status context must remain exactly `Core Validation`.
 
 ## ChatGPT Compatibility Boundary
 
