@@ -464,10 +464,15 @@ Audit PR: #26
 Initial audit head: 4499c98a47710d6c3c1ac2a71d0cd2264fbe8e86
 Initial audit tree: b39c88572d2d1ca6baf32194f4798e9ba07f7fe6
 Initial Core Validation: 35445444720 — PASS
+
+Final audit head: 31eff0be47afdbc5837aa08595f3553d9bf022ca
+Final audit tree: 241b9588ecbaf8f9ec02c31f71562d0a0867cf96
+Final exact-head Core Validation: 35445489807 — PASS
+Audit merged main: 31e39bf44e43ca241fb2536aa30bdfc519e0f020
 Runtime/source/test paths changed: NONE
 ```
 
-The exact final PR head, including this governance evidence, must also pass required protected `Core Validation` before merge.
+Protected audit governance is complete. The merged audit remains documentation-only and does not activate Phase 3.
 
 ## 19. Audit Outcome
 
