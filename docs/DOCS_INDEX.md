@@ -1,7 +1,7 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 4.7
+Version: 4.8
 Status: ACTIVE
 Date: 2026-09-19
 
@@ -14,6 +14,7 @@ Date: 2026-09-19
 5. `V0_4_PHASE2_PREIMPLEMENTATION_AUDIT.md` - completed Phase 2 Operator Control API pre-implementation audit.
 6. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_ACTIVATED.md` - owner-approved Phase 2 activation checkpoint.
 7. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md` - authoritative Phase 2 completion evidence.
+8. `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md` - completed v0.4 Phase 3 service-host/operator-CLI pre-implementation audit.
 7. `ROADMAP.md` - approved active ROADMAP v0.4 sequence and scope.
 7. `TEST_MATRIX.md` - active v0.4 verification contract.
 8. `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md` - Phase 1 original implementation evidence.
@@ -51,7 +52,8 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3-7: PLANNED
+v0.4 Phase 3: PLANNED — AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 4-7: PLANNED
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
@@ -106,4 +108,4 @@ Preferred ChatGPT target remains `CHATGPT_PLUGIN`; legacy `GPT_STORE` remains a 
 
 ## Next Work Rule
 
-Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 remains PLANNED / INACTIVE. The next permitted work is the Phase 3 pre-implementation audit only. Phase 3 runtime implementation requires its own audit, explicit owner activation and protected `Core Validation` merge gate.
+Phase 0, Phase 1 and Phase 2 are COMPLETE. Phase 3 pre-implementation audit is COMPLETE, but Phase 3 remains PLANNED / INACTIVE pending explicit owner approval and a separate protected activation checkpoint. Phase 4-7 remain inactive.
