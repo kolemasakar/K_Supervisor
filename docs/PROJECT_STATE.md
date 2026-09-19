@@ -1,9 +1,9 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation merge; live provider smoke remains pending.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 1 implementation and the zero-cost development policy amendment.
 
-Version: 4.3
+Version: 4.4
 Status: ACTIVE
-Date: 2026-09-17
+Date: 2026-09-19
 
 ## Current Baseline
 
@@ -16,7 +16,7 @@ ROADMAP v0.2: COMPLETE
 ROADMAP v0.3: COMPLETE
 ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
-v0.4 Phase 1: ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
+v0.4 Phase 1: ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW
 v0.4 Phase 2-7: PLANNED
 Current approved implementation phase: v0.4 Phase 1
 Runtime implementation phase: v0.4 Phase 1
@@ -38,7 +38,8 @@ ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
-Live OpenAI Responses smoke: PENDING
+Live OpenAI Responses attempt: REACHED PROVIDER / credit_balance_exhausted
+Paid retry for development evidence: PROHIBITED by DEVELOPMENT_RESOURCE_POLICY.md
 ```
 
 Local Phase 1 candidate verification passed `187 tests` with branch-aware coverage `85.02%` on Python 3.12.3 (non-authoritative). GitHub Actions Python 3.13 is authoritative and passed on both PR #14 and merged `main`. The v0.3 baseline remains preserved as predecessor evidence.
@@ -49,13 +50,13 @@ ROADMAP v0.4 was explicitly approved on 2026-09-16. Approval evidence: `PROJECT_
 
 The approved product target is an owner-operable, production-deployable single-node K_Supervisor with a governed production model-inference path, complete operator API/CLI surface, a production GitHub repository/VCS adapter, current Plugin-native release packaging, concrete telemetry/supply-chain evidence, and final end-to-end product qualification.
 
-The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contract is `HARDENING_BASELINE_V0_4.md`.
+The post-v0.3 audit is `POST_V0_3_PRODUCT_GAP_AUDIT.md`. The frozen v0.4 contract is `HARDENING_BASELINE_V0_4.md`. The owner-approved zero-cost development amendment is `DEVELOPMENT_RESOURCE_POLICY.md` with checkpoint `PROJECT_CHECKPOINT_ROADMAP_V0_4_FREE_RESOURCE_AMENDMENT.md`; it supersedes older paid external-evidence requirements only where payment would be necessary.
 
 ## v0.4 Phase State
 
 ```text
 Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
-Phase 1  Production Model Provider & AI Execution                   ACTIVE — IMPLEMENTED / LIVE SMOKE PENDING
+Phase 1  Production Model Provider & AI Execution                   ACTIVE — IMPLEMENTED / FREE-RESOURCE COMPLETION REVIEW
 Phase 2  Operator Control API                                       PLANNED
 Phase 3  Production Single-Node Service Host & Operator CLI         PLANNED
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          PLANNED
@@ -64,7 +65,7 @@ Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0 is complete. Phase 1 pre-implementation audit, protected activation and deterministic runtime implementation are complete. Phase 1 remains ACTIVE because the required owner-controlled live OpenAI Responses smoke has not yet been recorded. Runtime changes remain authorized only within `V0_4_PHASE1_PREIMPLEMENTATION_AUDIT.md`; Phases 2-7 remain inactive.
+Phase 0 is complete. Phase 1 pre-implementation audit, protected activation and deterministic runtime implementation are complete. A governed OpenAI Responses attempt reached the provider and failed with `credit_balance_exhausted`. The new zero-cost development policy prohibits purchasing credits solely for development validation, so successful paid live inference is no longer a blocking criterion. Phase 1 remains ACTIVE pending formal completion review under the amended criteria; Phases 2-7 remain inactive.
 
 ## Phase 0 Completion Evidence
 
@@ -102,12 +103,19 @@ Protected PR Core Validation: 35175344558 — PASS
 Merged main: 8f748e993737cebe45a6e8ebaac74d8c0e10d1b7
 Merged-main Core Validation: 35175392964 — PASS
 Local candidate: 187 passed / 85.02% branch coverage (Python 3.12.3, non-authoritative)
-Live OpenAI Responses smoke: PENDING — no approved live credential reference configured on owner host
-Phase 1 completion: BLOCKED ON LIVE SMOKE ONLY
+Live OpenAI Responses attempt: credential/model present; provider returned credit_balance_exhausted
+Paid provider purchase for validation: NOT AUTHORIZED
+Phase 1 completion: FORMAL FREE-RESOURCE COMPLETION REVIEW PENDING
 Phase 2 activation: NO
 ```
 
 Implementation checkpoint: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_1_IMPLEMENTED.md`.
+
+## Development Resource Policy
+
+`DEVELOPMENT_RESOURCE_POLICY.md` is a permanent owner-approved invariant: development, testing, CI, validation, smoke testing and qualification must not require a new project-attributable payment. Paid-only provider access may remain a supported production/operator deployment option, but it cannot be a development or phase-completion dependency.
+
+Historical live-smoke blocker evidence remains factual. The `credit_balance_exhausted` result is retained as safe provider-reachability/failure-normalization evidence; the project will not buy credits solely to convert it into a successful development smoke.
 
 ## Repository Governance
 
@@ -148,4 +156,4 @@ v0.4 does not approve distributed worker clusters/remote-agent federation, distr
 
 ## Validation Rule
 
-Completed v0.2 and v0.3 suites remain the cumulative regression floor. Phase-specific v0.4 tests are additive. No runtime phase may claim completion without its committed implementation baseline, phase-specific evidence, required external live-smoke evidence where explicitly specified, and protected `Core Validation` PASS.
+Completed v0.2 and v0.3 suites remain the cumulative regression floor. Phase-specific v0.4 tests are additive. No runtime phase may claim completion without its committed implementation baseline, phase-specific evidence, zero-cost validation evidence required by `DEVELOPMENT_RESOURCE_POLICY.md`, and protected `Core Validation` PASS. Paid-only external evidence is never a required completion gate.
