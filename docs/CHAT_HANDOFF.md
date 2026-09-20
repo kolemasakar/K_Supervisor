@@ -1,13 +1,14 @@
 # CHAT_HANDOFF
 Canonical compact continuation context after ROADMAP v0.4 Phase 3 completion and approval of the self-hosted CI migration.
 
-Version: 5.2
+Version: 5.3
 Status: ACTIVE
-Date: 2026-09-19
+Date: 2026-09-20
 
 ## Start Here
 
 ```text
+docs/PROJECT_CHECKPOINT_SELF_HOSTED_CI_PREFLIGHT_2026_09_20.md
 docs/PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md
 docs/PROJECT_STATE.md
 docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md
@@ -73,7 +74,7 @@ Owner approval checkpoint: `PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED
 
 ```text
 SELF_HOSTED_RUNNER_PLAN=APPROVED
-MIGRATION_EXECUTION=NOT_STARTED
+MIGRATION_EXECUTION=PREFLIGHT_COMPLETE_BOOTSTRAP_PENDING
 VM=kgm-e4-owner-pilot
 OS=Ubuntu 24.04 ARM64
 RUNNER_USER=ghrunner
@@ -83,7 +84,10 @@ MANAGEMENT_PATH=existing KGM owner / OCI OIDC / ephemeral Tailscale / Tailscale 
 SENTINELX_REENROLLMENT=NO
 KGMOPS_PRIVILEGE_EXPANSION=NO
 WORKFLOW_MUTATION=NO
-RESOURCE_GUARDRAILS=REQUIRED
+READ_ONLY_INSPECTION=PASS
+VM_PREFLIGHT=PASS
+RESOURCE_GUARDRAILS=CPUQuota_70%,MemoryHigh_1G,MemoryMax_1536M,TasksMax_128
+PRIVILEGED_BOOTSTRAP=PENDING_OWNER_INTERACTIVE_SESSION
 PHASE4_ACTIVATION=NO
 ```
 
@@ -105,12 +109,11 @@ Privileged owner access is bootstrap/systemd administration only.
 
 ## Immediate Continuation
 
-1. Read-only inspect `/home/kgmops/runner-bootstrap/bootstrap-self-hosted-runner.sh`.
-2. Perform VM CPU/RAM/disk/swap/systemd/network/ARM64 preflight and verify no unacceptable KGM contention.
-3. Derive safe `MemoryMax`, `CPUQuota`, `TasksMax` and, if appropriate, `MemoryHigh`.
-4. Only after runner registration and `online / idle` confirmation may `.github/workflows/core-validation.yml` move to:
+1. From the approved interactive owner/bootstrap session, run `sudo /home/kgmops/runner-bootstrap/bootstrap-self-hosted-runner.sh` and enter a fresh short-lived K_Supervisor repository registration token only at the runner prompt.
+2. Read-only verify runner registration, `online / idle`, labels, ghrunner isolation, swap, systemd guardrails and KGM service health.
+3. Only after runner registration and `online / idle` confirmation may `.github/workflows/core-validation.yml` move to:
    `runs-on: [self-hosted, linux, arm64, k-supervisor-ci]`.
-5. Run one controlled `Core Validation` and confirm the existing ruleset accepts the unchanged status context.
-6. Record completion evidence in a final migration checkpoint.
+4. Run one controlled `Core Validation` and confirm the existing ruleset accepts the unchanged status context.
+5. Record completion evidence in a final migration checkpoint.
 
 Do not activate ROADMAP v0.4 Phase 4 as part of the CI migration.
