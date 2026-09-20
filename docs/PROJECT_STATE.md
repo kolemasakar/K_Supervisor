@@ -1,9 +1,9 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.5
+Version: 5.6
 Status: ACTIVE
-Date: 2026-09-19
+Date: 2026-09-20
 
 ## Current Baseline
 
@@ -242,6 +242,10 @@ Runner account: ghrunner
 Management path: existing KGM owner / OCI OIDC / ephemeral Tailscale / Tailscale SSH
 SentinelX re-enrollment: NO
 kgmops privilege expansion: NO
+Read-only bootstrap inspection: PASS
+VM preflight: PASS — PROJECT_CHECKPOINT_SELF_HOSTED_CI_PREFLIGHT_2026_09_20.md
+Systemd guardrail plan: APPROVED — CPUQuota=70%, MemoryHigh=1G, MemoryMax=1536M, TasksMax=128
+Privileged bootstrap: PENDING OWNER INTERACTIVE SESSION
 Workflow mutation: NOT YET AUTHORIZED — wait for runner online/idle
 Systemd resource guardrails: REQUIRED before controlled Core Validation
 Phase 4 activation: NO
