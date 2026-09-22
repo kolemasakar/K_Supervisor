@@ -277,4 +277,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive. The next permitted work is Phase 4 pre-implementation audit only; Phase 4 runtime implementation requires its own completed audit, explicit owner activation and protected merge gate.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-4 are COMPLETE. No runtime implementation phase is active. Phase 5-7 remain inactive. The next permitted work is Phase 5 pre-implementation audit only; Phase 5 runtime implementation requires its own completed audit, explicit owner activation and protected merge gate.
