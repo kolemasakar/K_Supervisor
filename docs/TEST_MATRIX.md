@@ -4,7 +4,7 @@ Active cumulative verification contract for approved ROADMAP v0.4.
 Version: 4.0
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
+Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT PENDING
 Date: 2026-09-22
 
 ## Preserved Regression Floor
@@ -31,7 +31,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
 | 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
-| 4 | GitHub repository/VCS provider and governed handoff | AUDIT COMPLETE / ACTIVATION PENDING |
+| 4 | GitHub repository/VCS provider and governed handoff | COMPLETE |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
 | 7 | end-to-end single-node product qualification | PLANNED |
@@ -247,6 +247,26 @@ After a separate owner-approved activation checkpoint merges, required determini
 
 A live GitHub smoke is supplemental and owner-controlled when it can be executed at zero cost. It is not an ordinary protected-PR merge dependency.
 
+## v0.4 Phase 4 — Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_COMPLETE.md`.
+
+```text
+Provider boundary PR: #36 / Core Validation 35742759396 — PASS
+VCS handoff PR: #37 / Core Validation 35743886773 — PASS
+ProjectFactory wiring PR: #38 / Core Validation 35748024918 — PASS
+Service/API + CLI PR: #39 / Core Validation 35753867888 — PASS
+Qualification PR: #40 / Core Validation 35755061918 — PASS
+Qualification main: 8ba51416c561e841ae7a43c5941426b681299e80
+Merged-main Core Validation: 35755228146 — PASS
+Full regression: 279 passed
+Branch-aware total coverage: 81.54%
+Installed-wheel Phase 4 repository Service/API/CLI smoke: PASS
+Zero-cost validation: PASS
+```
+
+The audited Phase 4 deterministic verification contract is satisfied. Live GitHub evidence remains supplemental and is not a protected merge dependency.
+
 ## Permanent Quality Gates
 
 ```text
@@ -274,4 +294,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive; the next permitted work is Phase 4 pre-implementation audit only.
+Phase 0 through Phase 4 are COMPLETE. No runtime implementation phase is active. Phase 5-7 remain inactive; the next permitted work is Phase 5 pre-implementation audit only.
