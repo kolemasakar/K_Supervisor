@@ -100,7 +100,14 @@ class TargetPreparer:
             generated = profile.generate(spec, release, target)
         self._apply_files(repository, generated, context)
         files = self._list_files(repository, context)
-        missing = profile.validate(files)
+        missing = tuple(
+            dict.fromkeys(
+                (
+                    *profile.validate(files),
+                    *sorted({item.path for item in generated}.difference(files)),
+                )
+            )
+        )
         if missing:
             failed = transition_target(target, ReleaseStatus.FAILED, at)
             self.store.save_release_target(failed)
