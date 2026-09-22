@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from factory.contracts import BootstrapFile
 from release_manager import ReleaseManager, ReleaseProfileValidationError
 from tests.phase13_support import NOW, build_release_stack
 
@@ -284,5 +285,125 @@ def test_marketplace_plugin_id_is_not_accepted_as_app_id_or_manifest_field(tmp_p
         manifest = json.loads((root / "package" / "plugin.json").read_text(encoding="utf-8"))
         assert "pluginId" not in manifest
         assert "plugin_id" not in manifest
+    finally:
+        store.close()
+
+
+def test_explicit_package_reference_is_copied_into_skill_resources(tmp_path):
+    config = {
+        "plugin_name": "release-demo",
+        "package_references": [
+            {
+                "source": "docs/REFERENCE.md",
+                "destination": "reference.md",
+                "required": True,
+            }
+        ],
+    }
+    store, repos, repository, manager = _prepare(tmp_path, config)
+    try:
+        repos.apply_files(
+            repository,
+            (BootstrapFile("docs/REFERENCE.md", "# Canonical reference\n"),),
+        )
+        manager.handle_first_working(
+            "P13", "0.1.0", repository, NOW, satisfied_criteria=("release tests pass",)
+        )
+        root = Path(repository.locator) / "release" / "chatgpt_plugin"
+        packaged = (
+            root
+            / "package"
+            / "skills"
+            / "release-demo"
+            / "references"
+            / "reference.md"
+        )
+        inventory = json.loads((root / "MIGRATION_INVENTORY.json").read_text(encoding="utf-8"))
+
+        assert packaged.read_text(encoding="utf-8") == "# Canonical reference\n"
+        assert inventory["packaged_references"] == [
+            {
+                "source": "docs/REFERENCE.md",
+                "destination": "reference.md",
+                "required": True,
+                "target": (
+                    "release/chatgpt_plugin/package/skills/"
+                    "release-demo/references/reference.md"
+                ),
+                "status": "PACKAGED",
+            }
+        ]
+    finally:
+        store.close()
+
+
+def test_required_package_reference_blocks_readiness_when_missing(tmp_path):
+    config = {
+        "package_references": [
+            {"source": "docs/MISSING.md", "required": True}
+        ],
+    }
+    store, _, repository, manager = _prepare(tmp_path, config)
+    try:
+        with pytest.raises(ReleaseProfileValidationError, match="PLUGIN_REFERENCE_MISSING"):
+            manager.handle_first_working(
+                "P13", "0.1.0", repository, NOW, satisfied_criteria=("release tests pass",)
+            )
+    finally:
+        store.close()
+
+
+def test_optional_package_reference_records_missing_without_fabricating_file(tmp_path):
+    config = {
+        "package_references": [
+            {"source": "docs/OPTIONAL.md", "required": False}
+        ],
+    }
+    store, _, repository, manager = _prepare(tmp_path, config)
+    try:
+        manager.handle_first_working(
+            "P13", "0.1.0", repository, NOW, satisfied_criteria=("release tests pass",)
+        )
+        root = Path(repository.locator) / "release" / "chatgpt_plugin"
+        inventory = json.loads((root / "MIGRATION_INVENTORY.json").read_text(encoding="utf-8"))
+        item = inventory["packaged_references"][0]
+
+        assert item["status"] == "MISSING_OPTIONAL"
+        assert not (
+            root
+            / "package"
+            / "skills"
+            / "release-demo"
+            / "references"
+            / "docs"
+            / "OPTIONAL.md"
+        ).exists()
+    finally:
+        store.close()
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "../secret.txt",
+        ".env",
+        ".env.production",
+        ".ssh/id_ed25519",
+        "secrets/api-secret.txt",
+        "keys/private-key.pem",
+    ],
+)
+def test_package_reference_rejects_unsafe_or_credential_like_paths(source, tmp_path):
+    config = {
+        "package_references": [
+            {"source": source, "required": True}
+        ],
+    }
+    store, _, repository, manager = _prepare(tmp_path, config)
+    try:
+        with pytest.raises(ReleaseProfileValidationError, match="PLUGIN_REFERENCE_UNSAFE"):
+            manager.handle_first_working(
+                "P13", "0.1.0", repository, NOW, satisfied_criteria=("release tests pass",)
+            )
     finally:
         store.close()
