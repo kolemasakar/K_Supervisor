@@ -7,12 +7,12 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
+Current phase: v0.4 Phase 5 — ACTIVATED / IMPLEMENTATION AUTHORIZED
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
 Phase 3: COMPLETE
-Runtime implementation authorized: NO
+Runtime implementation authorized: YES — v0.4 Phase 5 audited scope only
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -170,7 +170,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 5 — Plugin-Native ChatGPT/Codex Release Packaging
 
-**Phase 5 status:** PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`. Runtime/source/test implementation remains unauthorized until a separate owner-approved activation checkpoint passes protected governance and merges.
+**Phase 5 status:** ACTIVATED — IMPLEMENTATION AUTHORIZED. Canonical audit: `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`. Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_ACTIVATED.md`. Runtime/source/test implementation is authorized only within the audited scope after the protected activation checkpoint merges.
 
 **Goal:** evolve `CHATGPT_PLUGIN` from portable migration evidence into a versioned, currently importable Plugin package while preserving owner/workspace control.
 
