@@ -7,7 +7,7 @@ name = "k-supervisor"
 version = "0.1.0"
 description = "AI project lifecycle supervisor and modular multi-agent platform"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.15"
 dependencies = ["pydantic>=2.10,<3"]
 
 [project.optional-dependencies]
