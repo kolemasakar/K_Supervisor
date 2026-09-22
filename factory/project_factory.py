@@ -72,6 +72,8 @@ class ProjectFactory:
         try:
             repository = adapter.prepare(target, context=context)
         except RepositoryGovernanceBlockedError as exc:
+            if exc.human_action_id is not None:
+                raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
             self._block_for_repository(project_id, target, at, str(exc))
         except RepositoryUnavailableError as exc:
             if target.provisioning != "AUTOMATABLE":
@@ -83,6 +85,8 @@ class ProjectFactory:
         try:
             adapter.apply_files(repository, files, context=context)
         except RepositoryGovernanceBlockedError as exc:
+            if exc.human_action_id is not None:
+                raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
             self._block_for_repository(project_id, target, at, str(exc))
 
         expected = {item.path for item in files}
