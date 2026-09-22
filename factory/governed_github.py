@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import hashlib
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from access import AccessReference
 from integrations.gateway import SideEffectGateway
 from models.agent import AgentRunRequest
 from models.side_effect import SideEffectExecutionStatus
-from policy.contracts import SideEffect
+from policy.approval import PolicyApprovalBroker
+from policy.contracts import PolicyEffect, SideEffect
 
 from .contracts import BootstrapFile, ManagedRepository, RepositoryOperationContext, RepositoryTarget
 from .errors import (
@@ -22,8 +23,13 @@ class GovernedGitHubRepositoryAdapter:
     provider = "GITHUB"
     provider_id = "github.repository"
 
-    def __init__(self, gateway: SideEffectGateway) -> None:
+    def __init__(
+        self,
+        gateway: SideEffectGateway,
+        approval_broker: PolicyApprovalBroker | None = None,
+    ) -> None:
         self.gateway = gateway
+        self.approval_broker = approval_broker
         self._targets: dict[str, RepositoryTarget] = {}
 
     def prepare(
@@ -131,6 +137,19 @@ class GovernedGitHubRepositoryAdapter:
             },
             idempotency_key=f"{context.idempotency_key}:{key_suffix}",
         )
+        approval = None
+        decision = self.gateway.policy.evaluate(request)
+        if decision.effect == PolicyEffect.REQUIRE_APPROVAL and self.approval_broker is not None:
+            approval = self.approval_broker.request(request, datetime.now(timezone.utc))
+            request = request.model_copy(
+                update={
+                    "policy": {
+                        **request.policy,
+                        "approval_id": approval.approval_id,
+                    }
+                }
+            )
+
         result = self.gateway.execute_provider(
             request,
             self.provider_id,
@@ -143,7 +162,12 @@ class GovernedGitHubRepositoryAdapter:
             return result
         category = str(result.metadata.get("error_category") or "").upper()
         message = result.error_message or "GitHub repository operation failed"
-        if result.status == SideEffectExecutionStatus.BLOCKED or category in {
+        if result.status == SideEffectExecutionStatus.BLOCKED:
+            raise RepositoryGovernanceBlockedError(
+                message,
+                None if approval is None else approval.human_action_id,
+            )
+        if category in {
             "AUTHENTICATION",
             "PERMISSION",
             "CONFLICT",
