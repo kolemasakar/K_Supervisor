@@ -205,3 +205,78 @@ class GovernedGitHubRepositoryAdapter:
         if target is None:
             raise RepositoryUnavailableError("GitHub repository target context is unavailable")
         return target
+
+
+def build_governed_github_repository_adapter(
+    store,
+    projects,
+    human,
+    secret_backend,
+) -> GovernedGitHubRepositoryAdapter:
+    """Build an isolated repository-governance stack without polluting runtime agent routing."""
+
+    from models.agent import AgentDescriptor, CapabilityRef
+    from models.capability import CapabilityDescriptor
+    from policy.approval import PolicyApprovalBroker
+    from policy.engine import PolicyEngine
+    from providers import GitHubRepositoryProvider
+    from registry import AgentRegistry, CapabilityRegistry, ProviderRegistry
+
+    from .github import GitHubRestClient
+
+    capabilities = CapabilityRegistry()
+    capability = CapabilityDescriptor(
+        capability_id="repository.github",
+        capability_version="1.0.0",
+        description="Governed GitHub repository and VCS operations.",
+        operations=GitHubRepositoryProvider.OPERATIONS,
+        input_schema="schema://internal/repository/github/input",
+        output_schema="schema://internal/repository/github/output",
+        side_effects=(
+            SideEffect.READ_EXTERNAL.value,
+            SideEffect.WRITE_EXTERNAL.value,
+            SideEffect.CREATE_RESOURCE.value,
+            SideEffect.MODIFY_RESOURCE.value,
+        ),
+        risk_class="HIGH",
+    )
+    capabilities.register(capability)
+
+    agents = AgentRegistry(capabilities)
+    agents.register(
+        AgentDescriptor(
+            agent_id="system.repository.github",
+            agent_type="SYSTEM",
+            agent_version="1.0.0",
+            display_name="Governed GitHub Repository",
+            capabilities=(
+                CapabilityRef(
+                    capability_id=capability.capability_id,
+                    capability_version=capability.capability_version,
+                ),
+            ),
+            status="AVAILABLE",
+        )
+    )
+
+    approval_broker = PolicyApprovalBroker(store, agents, human)
+    policy = PolicyEngine(
+        projects,
+        agents,
+        approvals=approval_broker,
+    )
+    providers = ProviderRegistry()
+    providers.register(
+        GitHubRepositoryProvider(
+            GitHubRestClient(secret_backend)
+        )
+    )
+    gateway = SideEffectGateway(
+        store,
+        policy,
+        providers=providers,
+    )
+    return GovernedGitHubRepositoryAdapter(
+        gateway,
+        approval_broker=approval_broker,
+    )
