@@ -9,8 +9,13 @@ from models.intervention import HumanActionRequest
 from registry.project_registry import ProjectRegistry
 from supervisor.human_intervention import HumanInterventionBroker
 
-from .contracts import BootstrapResult, RepositoryTarget
-from .errors import BootstrapBlockedError, BootstrapValidationError, RepositoryUnavailableError
+from .contracts import BootstrapResult, RepositoryOperationContext, RepositoryTarget
+from .errors import (
+    BootstrapBlockedError,
+    BootstrapValidationError,
+    RepositoryGovernanceBlockedError,
+    RepositoryUnavailableError,
+)
 from .repository import RepositoryAdapter
 from .templates import generate_bootstrap_files
 from .validator import validate_bootstrap
@@ -55,12 +60,25 @@ class ProjectFactory:
             )
 
         target = RepositoryTarget.from_spec(spec)
+        context = RepositoryOperationContext(
+            project_id=project_id,
+            project_spec_id=spec.project_spec_id,
+            idempotency_key=f"project-factory:{spec.project_spec_id}:bootstrap",
+        )
         adapter = self.adapters.get(target.provider)
         if adapter is None:
             self._block_for_repository(project_id, target, at, "repository provider adapter is unavailable")
 
         try:
-            repository = adapter.prepare(target)
+            repository = (
+                adapter.prepare(target, context=context)
+                if getattr(adapter, "supports_operation_context", False)
+                else adapter.prepare(target)
+            )
+        except RepositoryGovernanceBlockedError as exc:
+            if exc.human_action_id is not None:
+                raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
+            self._block_for_repository(project_id, target, at, str(exc))
         except RepositoryUnavailableError as exc:
             if target.provisioning != "AUTOMATABLE":
                 self._block_for_repository(project_id, target, at, str(exc))
@@ -68,10 +86,22 @@ class ProjectFactory:
 
         files = generate_bootstrap_files(spec, target)
         validate_bootstrap(spec, target, files)
-        adapter.apply_files(repository, files)
+        try:
+            if getattr(adapter, "supports_operation_context", False):
+                adapter.apply_files(repository, files, context=context)
+            else:
+                adapter.apply_files(repository, files)
+        except RepositoryGovernanceBlockedError as exc:
+            if exc.human_action_id is not None:
+                raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
+            self._block_for_repository(project_id, target, at, str(exc))
 
         expected = {item.path for item in files}
-        actual = set(adapter.list_files(repository))
+        actual = set(
+            adapter.list_files(repository, context=context)
+            if getattr(adapter, "supports_operation_context", False)
+            else adapter.list_files(repository)
+        )
         missing = sorted(expected.difference(actual))
         if missing:
             raise BootstrapValidationError(f"repository is missing generated files: {', '.join(missing)}")

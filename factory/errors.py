@@ -14,6 +14,12 @@ class RepositoryUnavailableError(ProjectFactoryError):
     pass
 
 
+class RepositoryGovernanceBlockedError(RepositoryUnavailableError):
+    def __init__(self, message: str, human_action_id: str | None = None):
+        super().__init__(message)
+        self.human_action_id = human_action_id
+
+
 class BootstrapBlockedError(ProjectFactoryError):
     def __init__(self, message: str, human_action_id: str | None = None):
         super().__init__(message)

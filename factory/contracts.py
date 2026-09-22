@@ -75,6 +75,13 @@ class RepositoryTarget:
 
 
 @dataclass(frozen=True)
+class RepositoryOperationContext:
+    project_id: str
+    project_spec_id: str
+    idempotency_key: str
+
+
+@dataclass(frozen=True)
 class ManagedRepository:
     provider: str
     repository_id: str

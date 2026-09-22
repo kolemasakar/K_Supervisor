@@ -277,6 +277,29 @@ def test_tag_create_replay_and_divergence_are_safe():
     assert raised.value.code == "GITHUB_TAG_CONFLICT"
 
 
+def test_list_files_returns_recursive_blob_paths_only():
+    transport = FakeTransport(
+        response(body=repo_body()),
+        response(body=ref_body("commit2")),
+        response(body={"tree": {"sha": "tree2"}}),
+        response(
+            body={
+                "tree": [
+                    {"path": "README.md", "type": "blob"},
+                    {"path": "docs", "type": "tree"},
+                    {"path": "docs/VISION.md", "type": "blob"},
+                ]
+            }
+        ),
+    )
+
+    result = provider(transport).execute(request("list_files", {}))
+
+    assert result.payload == {"files": ["README.md", "docs/VISION.md"]}
+    assert result.metadata == {"recursive": True}
+    assert [item["method"] for item in transport.calls] == ["GET", "GET", "GET", "GET"]
+
+
 def test_file_operation_rejects_unsafe_paths_before_material_write():
     transport = FakeTransport(response(body=repo_body()))
 
