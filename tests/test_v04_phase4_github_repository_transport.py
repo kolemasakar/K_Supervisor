@@ -64,6 +64,9 @@ def github_spec(**repository_updates) -> ProjectSpec:
         "repository_credential_ref": "secret://project/P4/github",
         **repository_updates,
     }
+    for key in ("repository_credential_ref", "credential_ref"):
+        if repository.get(key) is None:
+            repository.pop(key, None)
     data = base.model_dump(mode="python")
     data["repository"] = repository
     return ProjectSpec.model_validate(data)
