@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 
+from access import AccessReference
 from models.project import ProjectSpec
 
 
@@ -31,6 +32,7 @@ class RepositoryTarget:
     default_branch: str
     ci_required: bool
     provisioning: str
+    credential_ref: AccessReference | None = None
 
     @classmethod
     def from_spec(cls, spec: ProjectSpec) -> "RepositoryTarget":
@@ -38,15 +40,37 @@ class RepositoryTarget:
         name = str(data.get("repository_name") or data.get("name") or spec.short_name)
         if not name or "/" in name or "\\" in name:
             raise ValueError("repository_name must be a single path segment")
+        provider = str(data.get("repository_provider") or data.get("provider") or "FILESYSTEM").strip().upper()
+        owner_value = data.get("repository_owner") or data.get("owner")
+        owner = None if owner_value is None else str(owner_value).strip()
+        if owner == "":
+            owner = None
+        if owner is not None and ("/" in owner or "\\" in owner):
+            raise ValueError("repository_owner must be a single path segment")
+
+        visibility = str(data.get("repository_visibility") or data.get("visibility") or "PRIVATE").strip().upper()
+        if visibility not in {"PUBLIC", "PRIVATE", "INTERNAL"}:
+            raise ValueError("repository_visibility must be PUBLIC, PRIVATE or INTERNAL")
+
+        provisioning = str(data.get("provisioning") or "AUTOMATABLE").strip().upper()
+        if provider == "GITHUB" and provisioning == "AUTOMATABLE" and owner is None:
+            raise ValueError("automatable GitHub repository requires explicit repository_owner")
+
+        credential_value = data.get("repository_credential_ref") or data.get("credential_ref")
+        credential_ref = None
+        if credential_value is not None:
+            credential_ref = AccessReference(uri=str(credential_value))
+
         return cls(
-            provider=str(data.get("repository_provider") or data.get("provider") or "FILESYSTEM").upper(),
-            owner=data.get("repository_owner") or data.get("owner"),
-            name=name,
-            visibility=str(data.get("repository_visibility") or data.get("visibility") or "PRIVATE").upper(),
+            provider=provider,
+            owner=owner,
+            name=name.strip(),
+            visibility=visibility,
             url=data.get("repository_url") or data.get("url"),
-            default_branch=str(data.get("default_branch") or "main"),
+            default_branch=str(data.get("default_branch") or "main").strip(),
             ci_required=bool(data.get("ci_required", True)),
-            provisioning=str(data.get("provisioning") or "AUTOMATABLE").upper(),
+            provisioning=provisioning,
+            credential_ref=credential_ref,
         )
 
 
