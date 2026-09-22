@@ -1,9 +1,9 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.6
+Version: 5.7
 Status: ACTIVE
-Date: 2026-09-20
+Date: 2026-09-22
 
 ## Current Baseline
 
@@ -227,31 +227,37 @@ Repository ruleset `main-core-validation` (id `23556478`) protects the default b
 
 ## CI Infrastructure Migration
 
-The owner approved migration of `Core Validation` from GitHub-hosted `ubuntu-latest` to a repository-scoped self-hosted ARM64 runner on `kgm-e4-owner-pilot`. Canonical approval checkpoint: `PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md`.
+The approved migration of protected `Core Validation` from GitHub-hosted `ubuntu-latest` to the repository-scoped ARM64 self-hosted runner is complete.
 
-Current migration state:
+Canonical completion authority: `PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_COMPLETE_2026_09_22.md`.
 
 ```text
-Owner-observed hosted Actions quota: 2000/2000
-Quota reset: 2026-10-01
-Paid Actions usage: DENIED
-Current workflow runs-on: ubuntu-latest
-Target runs-on: [self-hosted, linux, arm64, k-supervisor-ci]
-Runner scope: kolemasakar/K_Supervisor only
-Runner account: ghrunner
-Management path: existing KGM owner / OCI OIDC / ephemeral Tailscale / Tailscale SSH
-SentinelX re-enrollment: NO
-kgmops privilege expansion: NO
-Read-only bootstrap inspection: PASS
-VM preflight: PASS — PROJECT_CHECKPOINT_SELF_HOSTED_CI_PREFLIGHT_2026_09_20.md
-Systemd guardrail plan: APPROVED — CPUQuota=70%, MemoryHigh=1G, MemoryMax=1536M, TasksMax=128
-Privileged bootstrap: PENDING OWNER INTERACTIVE SESSION
-Workflow mutation: NOT YET AUTHORIZED — wait for runner online/idle
-Systemd resource guardrails: REQUIRED before controlled Core Validation
-Phase 4 activation: NO
+SELF_HOSTED_CI_MIGRATION=COMPLETE
+Migration PR=#32
+Migration head=19e1df12a1e6b6f4a59c0539f69c2f1f7f3827e4
+Merged main=2945871da17531552ff36f7e22e5cdf19afe1375
+Pre-PR self-hosted push validation=35729485398 — PASS
+Protected PR Core Validation=35729696043 — PASS
+Merged-main Core Validation=35731755438 — PASS
+Runner=kgm-e4-owner-pilot
+Runner version=2.337.0
+Runner selector=[self-hosted, linux, arm64, k-supervisor-ci]
+Runner runtime account=ghrunner
+Runner scope=repository / kolemasakar/K_Supervisor
+Required check=Core Validation — UNCHANGED
+Workflow permissions=contents: read
+External fork contributors=approval required for all external contributors
+Systemd guardrails=PASS
+Recovery surface cleanup=PASS
+KGM production service=ACTIVE after cleanup
+KGMOPS_PRIVILEGE_EXPANSION=NO
+SentinelX re-enrollment=NO
+Phase 4 activation=NO
 ```
 
-This is an operational CI migration, not a ROADMAP phase activation. Runtime/source behavior remains unchanged. The required status context must remain exactly `Core Validation`.
+Temporary recovery artifacts used during owner bootstrap were removed: temporary Ubuntu SSH key, OCI Run Command policy, OCI dynamic group, serial console connection, local temporary key material, temporary KGM recovery workflows and temporary KGM recovery branch.
+
+This remains an operational CI migration only. Runtime/source behavior is unchanged. The next permitted roadmap work remains Phase 4 pre-implementation audit only.
 
 ## ChatGPT Compatibility Boundary
 
