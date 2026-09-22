@@ -146,6 +146,7 @@ def test_provider_descriptor_and_resolve_are_read_only_and_safe():
         "resolve_repository",
         "create_repository",
         "bootstrap_files",
+        "list_files",
         "handoff_pull_request",
         "create_tag",
     }

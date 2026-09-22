@@ -213,6 +213,8 @@ def build_governed_github_repository_adapter(
     projects,
     human,
     secret_backend,
+    *,
+    transport=None,
 ) -> GovernedGitHubRepositoryAdapter:
     """Build an isolated repository-governance stack without polluting runtime agent routing."""
 
@@ -269,7 +271,7 @@ def build_governed_github_repository_adapter(
     providers = ProviderRegistry()
     providers.register(
         GitHubRepositoryProvider(
-            GitHubRestClient(secret_backend)
+            GitHubRestClient(secret_backend, transport=transport)
         )
     )
     gateway = SideEffectGateway(
