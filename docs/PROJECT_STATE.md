@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 4 completion.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 4 completion and Phase 5 pre-implementation audit.
 
-Version: 6.0
+Version: 6.1
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -20,7 +20,8 @@ v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
-v0.4 Phase 5-7: PLANNED / INACTIVE
+v0.4 Phase 5: AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 6-7: PLANNED / INACTIVE
 Current approved implementation phase: NONE
 Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
@@ -67,12 +68,12 @@ Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          COMPLETE
-Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
+Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              AUDIT COMPLETE / ACTIVATION PENDING
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 is COMPLETE. The governed GitHub repository/VCS provider, ProjectFactory integration, explicit Service/API + CLI operator surface, deterministic recovery tests and installed-wheel qualification are merged and green. No runtime implementation phase is active; the next permitted work is Phase 5 pre-implementation audit only.
+Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 is COMPLETE. The governed GitHub repository/VCS provider, ProjectFactory integration, explicit Service/API + CLI operator surface, deterministic recovery tests and installed-wheel qualification are merged and green. Phase 5 pre-implementation audit is COMPLETE. No runtime implementation phase is active; the next permitted work is a separate owner activation decision for Phase 5.
 
 ## Phase 0 Completion Evidence
 
@@ -252,6 +253,21 @@ Phase 5 activation: NO
 ```
 
 Phase 4 is complete. Runtime implementation authorization is NONE; Phase 5 remains planned/inactive.
+
+## Phase 5 Pre-Implementation Audit
+
+Audit authority: `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`.
+
+```text
+Audit baseline main: c9337ea8d22849a5e8895e7cb5b86e0c9f012112
+Audit baseline tree: 5b50cd52d00c17c0d67c481d3d46ffc5df07e92d
+Validated runtime predecessor: 8ba51416c561e841ae7a43c5941426b681299e80
+Phase 5 pre-implementation audit: COMPLETE
+Phase 5 activation: NO / PENDING OWNER APPROVAL
+Phase 5 runtime implementation authorization: NO
+```
+
+The audit freezes a portable Agent Plugins 1.0 package as the preferred new native format, preserves `GPT_STORE` as a legacy compatibility target, requires valid skill/app/marketplace artifacts with local deterministic validation, and keeps installation/sharing/workspace availability/public submission under explicit owner or workspace-admin control.
 
 ## Development Resource Policy
 
