@@ -37,7 +37,7 @@ class RepositoryTarget:
     @classmethod
     def from_spec(cls, spec: ProjectSpec) -> "RepositoryTarget":
         data = spec.repository
-        name = str(data.get("repository_name") or data.get("name") or spec.short_name)
+        name = str(data.get("repository_name") or data.get("name") or spec.short_name).strip()
         if not name or "/" in name or "\\" in name:
             raise ValueError("repository_name must be a single path segment")
         provider = str(data.get("repository_provider") or data.get("provider") or "FILESYSTEM").strip().upper()
@@ -64,10 +64,10 @@ class RepositoryTarget:
         return cls(
             provider=provider,
             owner=owner,
-            name=name.strip(),
+            name=name,
             visibility=visibility,
             url=data.get("repository_url") or data.get("url"),
-            default_branch=str(data.get("default_branch") or "main").strip(),
+            default_branch=str(data.get("default_branch") or "main").strip() or "main",
             ci_required=bool(data.get("ci_required", True)),
             provisioning=provisioning,
             credential_ref=credential_ref,
