@@ -10,7 +10,12 @@ from registry.project_registry import ProjectRegistry
 from supervisor.human_intervention import HumanInterventionBroker
 
 from .contracts import BootstrapResult, RepositoryOperationContext, RepositoryTarget
-from .errors import BootstrapBlockedError, BootstrapValidationError, RepositoryUnavailableError
+from .errors import (
+    BootstrapBlockedError,
+    BootstrapValidationError,
+    RepositoryGovernanceBlockedError,
+    RepositoryUnavailableError,
+)
 from .repository import RepositoryAdapter
 from .templates import generate_bootstrap_files
 from .validator import validate_bootstrap
@@ -66,6 +71,8 @@ class ProjectFactory:
 
         try:
             repository = adapter.prepare(target, context=context)
+        except RepositoryGovernanceBlockedError as exc:
+            self._block_for_repository(project_id, target, at, str(exc))
         except RepositoryUnavailableError as exc:
             if target.provisioning != "AUTOMATABLE":
                 self._block_for_repository(project_id, target, at, str(exc))
@@ -73,7 +80,10 @@ class ProjectFactory:
 
         files = generate_bootstrap_files(spec, target)
         validate_bootstrap(spec, target, files)
-        adapter.apply_files(repository, files, context=context)
+        try:
+            adapter.apply_files(repository, files, context=context)
+        except RepositoryGovernanceBlockedError as exc:
+            self._block_for_repository(project_id, target, at, str(exc))
 
         expected = {item.path for item in files}
         actual = set(adapter.list_files(repository, context=context))
