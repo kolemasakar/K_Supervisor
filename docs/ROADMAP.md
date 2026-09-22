@@ -7,7 +7,7 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 6 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 6 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
@@ -198,7 +198,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 6 — Production Telemetry & Supply-Chain Hardening
 
-**Phase 6 status:** PRE-IMPLEMENTATION AUDIT PENDING. Runtime/source/test implementation is not authorized.
+**Phase 6 status:** PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`. Runtime/source/test/workflow implementation remains unauthorized until a separate owner-approved activation checkpoint passes protected governance and merges.
 
 **Goal:** make the single-node product diagnosable and release artifacts independently inspectable without making external collectors mandatory.
 
@@ -281,4 +281,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-5 are COMPLETE after protected merge of the Phase 5 completion checkpoint. No runtime implementation phase is active. The next permitted work is Phase 6 pre-implementation audit only; Phase 6 runtime implementation requires its own completed audit, explicit owner activation and protected merge gate.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE. No runtime implementation phase is active; Phase 6 runtime/source/test/workflow implementation requires explicit owner activation and a protected activation merge.
