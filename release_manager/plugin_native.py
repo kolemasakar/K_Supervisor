@@ -11,8 +11,15 @@ from .errors import ReleaseProfileValidationError
 AGENT_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 PLUGIN_PACKAGE_ROOT = "release/chatgpt_plugin/package"
 PLUGIN_MANIFEST_PATH = f"{PLUGIN_PACKAGE_ROOT}/plugin.json"
+PLUGIN_APP_PATH = f"{PLUGIN_PACKAGE_ROOT}/.app.json"
+MIGRATION_INVENTORY_PATH = "release/chatgpt_plugin/MIGRATION_INVENTORY.json"
+REGRESSION_CASES_PATH = "release/chatgpt_plugin/REGRESSION_CASES.json"
+MARKETPLACE_ROOT = "release/chatgpt_plugin/marketplace"
+MARKETPLACE_CATALOG_PATH = f"{MARKETPLACE_ROOT}/.agents/plugins/marketplace.json"
 
 _PLUGIN_NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+_APP_ID_RE = re.compile(r"^(?:asdk_app_|connector_|templated_apps_)[A-Za-z0-9._:-]+$")
+_MARKETPLACE_PLUGIN_ID_RE = re.compile(r"^plugin_[A-Za-z0-9._:-]+$")
 _SEMVER_RE = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
@@ -28,6 +35,13 @@ class NativePluginPackage:
     skill_path: str
     manifest_content: str
     skill_content: str
+    app_path: str | None = None
+    app_content: str | None = None
+    migration_inventory_path: str = MIGRATION_INVENTORY_PATH
+    migration_inventory_content: str = ""
+    regression_cases_path: str = REGRESSION_CASES_PATH
+    regression_cases_content: str = ""
+    marketplace_files: tuple[tuple[str, str], ...] = ()
 
 
 def normalize_plugin_slug(value: str) -> str:
