@@ -34,11 +34,13 @@ class SideEffectGateway:
         *,
         tools: ToolRegistry | None = None,
         providers: ProviderRegistry | None = None,
+        observability=None,
     ):
         self.store = store
         self.policy = policy
         self.tools = tools or ToolRegistry()
         self.providers = providers or ProviderRegistry()
+        self.observability = observability
 
     @staticmethod
     def _now() -> datetime:
@@ -56,6 +58,7 @@ class SideEffectGateway:
         version_constraint: str = "*",
     ) -> SideEffectResult:
         decision = self.policy.evaluate(request)
+        self._observe_policy(request, decision, operation)
         blocked = self._authorize(
             request,
             decision,
@@ -118,6 +121,7 @@ class SideEffectGateway:
         version_constraint: str = "*",
     ) -> SideEffectResult:
         decision = self.policy.evaluate(request)
+        self._observe_policy(request, decision, operation)
         blocked = self._authorize(
             request,
             decision,
@@ -140,7 +144,15 @@ class SideEffectGateway:
                 "provider operation is unavailable",
             )
 
-        return self._execute(
+        provider_type = provider.descriptor.provider_type
+        self._observe_provider(
+            request,
+            provider.descriptor.provider_id,
+            provider_type,
+            operation,
+            phase="started",
+        )
+        result = self._execute(
             request,
             decision,
             component_kind="PROVIDER",
@@ -166,6 +178,102 @@ class SideEffectGateway:
                 )
             ),
         )
+        self._observe_provider(
+            request,
+            provider.descriptor.provider_id,
+            provider_type,
+            operation,
+            phase="completed" if result.status == SideEffectExecutionStatus.SUCCEEDED else "failed",
+            result=result,
+        )
+        return result
+
+    def _observe_policy(self, request: AgentRunRequest, decision: PolicyDecision, operation: str) -> None:
+        if self.observability is None:
+            return
+        try:
+            self.observability.emit(
+                project_id=request.project_id,
+                event_name="policy.decision",
+                component="side_effect_gateway",
+                correlation_id=request.request_id,
+                request_id=request.request_id,
+                status=decision.effect.value,
+                operation=operation,
+                attributes={"decision": decision.effect.value, "operation": operation},
+            )
+        except Exception:
+            pass
+
+    def _observe_provider(
+        self,
+        request: AgentRunRequest,
+        provider_id: str,
+        provider_type: str,
+        operation: str,
+        *,
+        phase: str,
+        result: SideEffectResult | None = None,
+    ) -> None:
+        if self.observability is None:
+            return
+        event_name = f"provider.call.{phase}"
+        status = "STARTED" if result is None else result.status.value
+        attributes = {"provider_type": provider_type, "operation": operation}
+        if result is not None:
+            normalized = (
+                "success"
+                if result.status == SideEffectExecutionStatus.SUCCEEDED
+                else "blocked"
+                if result.status == SideEffectExecutionStatus.BLOCKED
+                else "failed"
+            )
+            attributes["result"] = normalized
+            if result.error_code is not None:
+                attributes["error_code"] = result.error_code
+        try:
+            self.observability.emit(
+                project_id=request.project_id,
+                event_name=event_name,
+                component="side_effect_gateway",
+                correlation_id=request.request_id,
+                request_id=request.request_id,
+                status=status,
+                operation=operation,
+                error_code=None if result is None else result.error_code,
+                attributes=attributes,
+            )
+            if provider_type == "REPOSITORY":
+                repository_event = (
+                    "repository.operation.started"
+                    if result is None
+                    else "repository.operation.completed"
+                    if result.status == SideEffectExecutionStatus.SUCCEEDED
+                    else "repository.operation.blocked"
+                    if result.status == SideEffectExecutionStatus.BLOCKED
+                    else "repository.operation.failed"
+                )
+                repository_attributes = {
+                    "provider": "GITHUB" if provider_id == "github.repository" else "UNKNOWN",
+                    "operation": operation,
+                }
+                if result is not None:
+                    repository_attributes["result"] = attributes["result"]
+                    if result.error_code is not None:
+                        repository_attributes["error_code"] = result.error_code
+                self.observability.emit(
+                    project_id=request.project_id,
+                    event_name=repository_event,
+                    component="repository_gateway",
+                    correlation_id=request.request_id,
+                    request_id=request.request_id,
+                    status=status,
+                    operation=operation,
+                    error_code=None if result is None else result.error_code,
+                    attributes=repository_attributes,
+                )
+        except Exception:
+            pass
 
     def _authorize(
         self,

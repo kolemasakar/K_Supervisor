@@ -6,7 +6,13 @@ from pathlib import Path
 from access import EnvironmentSecretBackend, SecretBackend
 from factory import FilesystemRepositoryAdapter, ProjectFactory
 from factory.governed_github import build_governed_github_repository_adapter
-from observability import DeploymentQualifier, ServiceHealthEvaluator, TelemetryRecorder
+from observability import (
+    DeploymentQualifier,
+    ProductionMetricRegistry,
+    ProductionObservability,
+    ServiceHealthEvaluator,
+    TelemetryRecorder,
+)
 from persistence import SQLitePersistenceStore
 from policy.approval import PolicyApprovalBroker
 from registry import AgentRegistry, CapabilityRegistry, ProjectRegistry
@@ -36,6 +42,8 @@ class ServiceRuntime:
     approvals: PolicyApprovalBroker
     workflows: WorkflowEngine
     telemetry: TelemetryRecorder
+    production_metrics: ProductionMetricRegistry
+    production_observability: ProductionObservability
     health: ServiceHealthEvaluator
     qualifier: DeploymentQualifier
     authenticator: StaticBearerAuthenticator
@@ -74,6 +82,11 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             HumanInterventionApprovalRequester(human),
         )
         telemetry = TelemetryRecorder(store)
+        production_metrics = ProductionMetricRegistry()
+        production_observability = ProductionObservability(
+            telemetry=telemetry,
+            metrics=production_metrics,
+        )
         health = ServiceHealthEvaluator(
             {
                 "persistence": (
@@ -103,6 +116,8 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
                 "approvals": approvals,
                 "workflows": workflows,
                 "telemetry": telemetry,
+                "production_metrics": production_metrics,
+                "production_observability": production_observability,
             })
             governance = ExtensionGovernance(store)
             for extension in host.extensions:
@@ -124,6 +139,7 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             projects,
             human,
             backend,
+            observability=production_observability,
         )
         project_factory = ProjectFactory(
             projects,
@@ -155,13 +171,14 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             projects,
             store,
             telemetry,
+            observability=production_observability,
             kernel=kernel,
             workflows=workflows,
             human=human,
             approvals=approvals,
             project_factory=project_factory,
         )
-        app = WsgiServiceAppV1(api, authenticator)
+        app = WsgiServiceAppV1(api, authenticator, production_observability)
         return ServiceRuntime(
             config=config,
             store=store,
@@ -174,6 +191,8 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             approvals=approvals,
             workflows=workflows,
             telemetry=telemetry,
+            production_metrics=production_metrics,
+            production_observability=production_observability,
             health=health,
             qualifier=qualifier,
             authenticator=authenticator,

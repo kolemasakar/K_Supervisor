@@ -106,7 +106,12 @@ def test_service_api_emits_scoped_telemetry_without_changing_api_contract(tmp_pa
         records = store.list_telemetry_records("P6")
         assert len(records) == 1
         assert records[0].event_name == "service.request.completed"
-        assert records[0].service_operation.startswith("POST /api/v1/projects/P6")
+        assert records[0].service_operation == "POST /api/v1/projects/{project_id}/lifecycle-transitions"
+        assert records[0].attributes == {
+            "method": "POST",
+            "route": "/api/v1/projects/{project_id}/lifecycle-transitions",
+            "status_class": "2xx",
+        }
         assert records[0].status == "200"
 
 
