@@ -623,7 +623,19 @@ After activation, deterministic Phase 5 verification must prove:
 - no external plugin installation/share/publication call occurs in protected CI;
 - cumulative regression, branch-aware coverage >=80%, packaging, installed-wheel and protected `Core Validation` remain green.
 
-## 21. Audit Outcome
+## 21. Protected Governance Evidence
+
+```text
+Audit PR: #42
+Initial audit head: 69bfd4be2e27c03915ec6bf366422b38b53e0410
+Initial Core Validation: 35758209430 — PASS
+Validation runner: kgm-e4-owner-pilot
+Runtime/source/test paths changed: NONE
+```
+
+The exact final audit head, including this recorded evidence, must pass required `Core Validation` before merge. The merged audit remains documentation-only and does not activate Phase 5.
+
+## 22. Audit Outcome
 
 ```text
 PHASE_5_PREIMPLEMENTATION_AUDIT=COMPLETE
