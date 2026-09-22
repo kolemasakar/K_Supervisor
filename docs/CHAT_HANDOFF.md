@@ -1,23 +1,23 @@
 # CHAT_HANDOFF
-Canonical compact continuation context after ROADMAP v0.4 Phase 3 pre-implementation audit.
+Canonical compact continuation context after ROADMAP v0.4 Phase 3 completion and approval of the self-hosted CI migration.
 
-Version: 5.1
+Version: 5.3
 Status: ACTIVE
-Date: 2026-09-19
+Date: 2026-09-20
 
 ## Start Here
 
 ```text
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_ACTIVATED.md
-docs/PROJECT_HANDOFF_2026_09_19_V0_4_PHASE3_ACTIVATION.md
+docs/PROJECT_CHECKPOINT_SELF_HOSTED_CI_PREFLIGHT_2026_09_20.md
+docs/PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md
 docs/PROJECT_STATE.md
+docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md
 docs/ROADMAP.md
 docs/TEST_MATRIX.md
-docs/V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md
-docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_2_COMPLETE.md
-docs/SERVICE_API.md
-docs/HARDENING_BASELINE_V0_4.md
 docs/DEVELOPMENT_RESOURCE_POLICY.md
+docs/HARDENING_BASELINE_V0_4.md
+docs/V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md
+docs/SERVICE_API.md
 ```
 
 ## Current Roadmap State
@@ -29,80 +29,91 @@ ROADMAP v0.4: ACTIVE
 v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
-v0.4 Phase 3: ACTIVE
+v0.4 Phase 3: COMPLETE
 v0.4 Phase 4-7: PLANNED / INACTIVE
-Current approved implementation phase: Phase 3
-Runtime implementation phase: Phase 3 — audited scope only
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
+Next roadmap work: Phase 4 pre-implementation audit only
 ```
 
-## Phase 2 Runtime Baseline
+## Current Validated Runtime Baseline
 
 ```text
-Implementation PR: #24
-Validated code/test head: f9f7284c407734fc2a3286f755c6827229142514
-Validated code/test tree: abf48bbbfc2fe5e69c08fb7f6c8f3e9faee1b7ea
-Code/test Core Validation: 35443690831 — PASS
-Full regression: 214 passed
-Branch-aware coverage: 83.21%
-Final PR head: 067828dfb6618ab412dfdfc64045cff9e8ea9cef
-Final exact-head Core Validation: 35443735846 — PASS
-Runtime merged main: 9b532e4dd7c3aaaaaab2beaea97a3b017b7fff56
-Runtime merged tree: dbf8eb357a1cc0bd133b58a55603e2bcc26d341c
-Merged-main Core Validation: 35443778180 — PASS
+Phase 3 implementation PR: #29
+Final PR head: c73e4c5f24f958ebb1473d4c8d23f28244c9f799
+Final PR tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
+Final exact-head Core Validation: 35453258878 — PASS
+Merged main: a1791b607496edfaf84593d753f7d1d7662eede1
+Merged-main Core Validation: 35453297160 — PASS
+Full regression: 229 passed
+Branch-aware coverage: 82.06%
+Installed-wheel Phase 3 service/CLI smoke: PASS
 ```
 
-Current main at Phase 3 activation approval:
+Phase 3 completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
+
+## Current Repository / Governance Baseline
+
+At CI migration approval:
 
 ```text
-main: 3f1f386434f73d4cbd85ddd6dfad6135ae21f520
-tree: 66d92d290be42e503ea0df3f923a8af212b4eb38
-main vs Phase 2 runtime baseline: ahead-only / README+docs only
-runtime/source/test changes after Phase 2 runtime merge: NONE
+canonical main: db37da2a1a8210fd45d3bf8dcb716d6fbfba7624
+ruleset: main-core-validation
+ruleset id: 23556478
+required status context: Core Validation
+bypass actors: NONE
+core workflow: .github/workflows/core-validation.yml
+current runs-on: ubuntu-latest
 ```
 
-## Phase 3 Audit Decisions
+The required check name `Core Validation` must not change.
 
-Canonical authority: `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`.
+## Self-Hosted CI Migration
 
-The audit requires an additive production composition/hosting/client layer around the existing Phase 2 Service/API. It does not authorize a second control plane.
-
-Key implementation guards after activation:
-
-- production composition root owns SQLite/control-plane lifecycle; no test-fixture imports;
-- bounded production-capable WSGI host; stdlib reference server alone is insufficient;
-- protected-reference/environment-injected bearer authentication;
-- minimal `/healthz` and `/readyz` using existing health/deployment qualification boundaries;
-- trusted-proxy allowlist; forwarded headers ignored by default; TLS certificate lifecycle remains external;
-- operator CLI calls an HTTP ServiceClient only, never direct persistence/registry/kernel mutation authorities;
-- transport timeout/disconnect does not redefine material mutation outcome; same idempotency key is used for reconciliation/retry;
-- installed-wheel service+CLI smoke remains zero-cost.
-
-## Phase 3 Audit Governance
+Owner approval checkpoint: `PROJECT_CHECKPOINT_SELF_HOSTED_CI_MIGRATION_APPROVED_2026_09_19.md`.
 
 ```text
-Phase 3 audit PR: #26
-Initial audit head: 4499c98a47710d6c3c1ac2a71d0cd2264fbe8e86
-Initial audit Core Validation: 35445444720 — PASS
-Final audit head: 31eff0be47afdbc5837aa08595f3553d9bf022ca
-Final audit tree: 241b9588ecbaf8f9ec02c31f71562d0a0867cf96
-Final exact-head Core Validation: 35445489807 — PASS
-Audit merged main: 31e39bf44e43ca241fb2536aa30bdfc519e0f020
-Runtime/source/test paths changed: NONE
+SELF_HOSTED_RUNNER_PLAN=APPROVED
+MIGRATION_EXECUTION=PREFLIGHT_COMPLETE_BOOTSTRAP_PENDING
+VM=kgm-e4-owner-pilot
+OS=Ubuntu 24.04 ARM64
+RUNNER_USER=ghrunner
+RUNNER_SCOPE=repository
+TARGET_LABELS=self-hosted,linux,arm64,k-supervisor-ci
+MANAGEMENT_PATH=existing KGM owner / OCI OIDC / ephemeral Tailscale / Tailscale SSH
+SENTINELX_REENROLLMENT=NO
+KGMOPS_PRIVILEGE_EXPANSION=NO
+WORKFLOW_MUTATION=NO
+READ_ONLY_INSPECTION=PASS
+VM_PREFLIGHT=PASS
+RESOURCE_GUARDRAILS=CPUQuota_70%,MemoryHigh_1G,MemoryMax_1536M,TasksMax_128
+PRIVILEGED_BOOTSTRAP=PENDING_OWNER_INTERACTIVE_SESSION
+PHASE4_ACTIVATION=NO
 ```
 
-## Handoff Synchronization
+Owner-observed hosted Actions quota is exhausted (`2000/2000`) until the stated reset date `2026-10-01`; paid Actions usage is denied by owner policy. Do not weaken protected-main governance to bypass the quota.
 
-```text
-Canonical dated handoff: PROJECT_HANDOFF_2026_09_19_V0_4_PHASE3_ACTIVATION.md
-Handoff synchronization PR: #27
-Initial sync Core Validation: 35448399360 — PASS
-Runtime/source/test paths changed: NONE
-```
+## Security Boundaries
 
-## Next Gate
+Normal CI runtime must execute only as `ghrunner`:
 
-Phase 3 audit is COMPLETE and merged. Owner activation approval was granted on 2026-09-19 through protected checkpoint #28.
+- no sudo;
+- no docker group;
+- no KGM production secret access;
+- no OCI credentials;
+- no SSH private keys;
+- no access to privileged sockets or KGM production-service administration;
+- no unrelated repository credentials.
 
-After the activation checkpoint merges, continue Phase 3 runtime implementation strictly in the audited order from `V0_4_PHASE3_PREIMPLEMENTATION_AUDIT.md`; preserve the Phase 2 runtime predecessor and all permanent quality/resource gates.
+Privileged owner access is bootstrap/systemd administration only.
 
-Do not activate Phase 4.
+## Immediate Continuation
+
+1. From the approved interactive owner/bootstrap session, run `sudo /home/kgmops/runner-bootstrap/bootstrap-self-hosted-runner.sh` and enter a fresh short-lived K_Supervisor repository registration token only at the runner prompt.
+2. Read-only verify runner registration, `online / idle`, labels, ghrunner isolation, swap, systemd guardrails and KGM service health.
+3. Only after runner registration and `online / idle` confirmation may `.github/workflows/core-validation.yml` move to:
+   `runs-on: [self-hosted, linux, arm64, k-supervisor-ci]`.
+4. Run one controlled `Core Validation` and confirm the existing ruleset accepts the unchanged status context.
+5. Record completion evidence in a final migration checkpoint.
+
+Do not activate ROADMAP v0.4 Phase 4 as part of the CI migration.
