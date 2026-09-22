@@ -1,5 +1,5 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 4 completion.
 
 Version: 6.0
 Status: ACTIVE
