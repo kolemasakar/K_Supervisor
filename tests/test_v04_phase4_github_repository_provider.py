@@ -297,6 +297,43 @@ def test_gateway_allow_persists_safe_idempotent_create_and_replay(tmp_path):
     store.close()
 
 
+def test_gateway_same_idempotency_key_different_payload_is_blocked(tmp_path):
+    store, _, _, _, _, engine, _, _ = allowed_stack(tmp_path)
+    transport = FakeTransport(
+        response(404, body={"message": "not found"}),
+        response(body={"login": "ExampleOrg", "type": "Organization"}),
+        response(201, body=repo_body()),
+        response(body=repo_body()),
+    )
+    gateway = SideEffectGateway(store, engine, providers=registry(provider(transport)))
+    policy = {"access_refs": [CREDENTIAL.uri]}
+
+    first = gateway.execute_provider(
+        agent_request(policy=policy, request_id="REQ_FIRST_DIFFERENT"),
+        "github.repository",
+        "create_repository",
+        payload(),
+        access_refs=(CREDENTIAL,),
+        idempotency_key="same-key-different-payload",
+    )
+    before = len(transport.calls)
+    changed = {**payload(), "visibility": "PUBLIC"}
+    conflict = gateway.execute_provider(
+        agent_request(policy=policy, request_id="REQ_SECOND_DIFFERENT"),
+        "github.repository",
+        "create_repository",
+        changed,
+        access_refs=(CREDENTIAL,),
+        idempotency_key="same-key-different-payload",
+    )
+
+    assert first.status == SideEffectExecutionStatus.SUCCEEDED
+    assert conflict.status == SideEffectExecutionStatus.BLOCKED
+    assert conflict.error_code == "SIDE_EFFECT_IDEMPOTENCY_CONFLICT"
+    assert len(transport.calls) == before
+    store.close()
+
+
 def test_gateway_deny_blocks_before_any_github_transport_call(tmp_path):
     stack = build_policy_stack(
         tmp_path,

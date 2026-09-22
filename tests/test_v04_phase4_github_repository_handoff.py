@@ -6,7 +6,7 @@ import json
 import pytest
 
 from access import AccessReference, EnvironmentSecretBackend, environment_key
-from factory import GitHubHttpResponse, GitHubRestClient
+from factory import GitHubHttpResponse, GitHubRestClient, GitHubTransportError
 from providers import GitHubRepositoryProvider, ProviderExecutionError, ProviderRequest
 
 
@@ -220,6 +220,51 @@ def test_handoff_creates_deterministic_branch_commit_and_pull_request():
     assert json.loads(transport.calls[10]["body"]) == {"force": False, "sha": "commit1"}
     assert transport.calls[-1]["method"] == "POST"
     assert transport.calls[-1]["url"].endswith("/pulls")
+
+
+def test_pull_request_response_loss_recovers_existing_open_pull_request():
+    transport = FakeTransport(
+        response(body=repo_body()),
+        response(body=ref_body("base0")),
+        response(404, body={"message": "missing work ref"}),
+        response(201, body=ref_body("base0")),
+        response(body=ref_body("base0")),
+        response(404, body={"message": "missing file"}),
+        response(body={"tree": {"sha": "tree0"}}),
+        response(201, body={"sha": "blob1"}),
+        response(201, body={"sha": "tree1"}),
+        response(201, body={"sha": "commit1"}),
+        response(body=ref_body("commit1")),
+        response(body=[]),
+        GitHubTransportError("response lost after pull request create"),
+        response(
+            body=[{
+                "number": 21,
+                "html_url": "https://github.com/ExampleOrg/demo-repo/pull/21",
+                "state": "open",
+                "head": {"ref": "k-supervisor/recovered"},
+                "base": {"ref": "main"},
+            }]
+        ),
+    )
+
+    result = provider(transport).execute(
+        request(
+            "handoff_pull_request",
+            {
+                "files": [{"path": "docs/RECOVER.md", "content": "recover\n"}],
+                "commit_message": "Recover governed handoff",
+                "pull_request_title": "Recover governed handoff",
+            },
+            key="response-loss-pr",
+        )
+    )
+
+    assert result.payload["pull_request_number"] == 21
+    assert result.payload["commit_sha"] == "commit1"
+    assert result.metadata["recovered"] is True
+    pull_calls = [item for item in transport.calls if "/pulls" in item["url"]]
+    assert [item["method"] for item in pull_calls] == ["GET", "POST", "GET"]
 
 
 def test_existing_divergent_handoff_branch_is_conflict_not_overwrite():

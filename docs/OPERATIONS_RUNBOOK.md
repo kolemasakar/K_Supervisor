@@ -179,3 +179,42 @@ The workflow has no `push`, `tag`, `release` or scheduled trigger. A normal merg
 ## Verification evidence
 
 Phase 8 qualification is complete only when phase-specific tests, cumulative regressions, protected `Core Validation`, wheel build/install, public smoke, backup/restore/upgrade tests, lifecycle/recovery/concurrency tests and publication-workflow contract tests all pass on the committed implementation baseline.
+
+## Phase 4 Governed Repository Operations
+
+The production operator path for repository work is Service/API and the matching CLI. Operators must not call the raw GitHub adapter or transport directly.
+
+Repository credentials are supplied only through protected references in the active approved ProjectSpec, for example:
+
+```text
+repository_credential_ref=secret://project/<project-id>/github
+```
+
+Do not place a GitHub token in ProjectSpec JSON, CLI arguments, repository files, logs or durable audit data.
+
+Read the safe configured repository status with:
+
+```text
+k-supervisor repository status <project-id> --config <client-config>
+```
+
+Start or resume repository bootstrap with a stable idempotency key:
+
+```text
+k-supervisor repository bootstrap <project-id> --config <client-config> --idempotency-key <stable-key>
+```
+
+On an uncertain client outcome, retry with the same idempotency key. Do not generate a replacement key merely because the client timed out.
+
+If the response reports `OWNER_ACTION_REQUIRED`:
+
+- inspect the project's Human Actions and Policy Approvals through the supported Service/API or CLI surfaces;
+- perform only the explicitly requested owner action;
+- verify/approve through the existing owner controls;
+- retry repository bootstrap with the same idempotency key.
+
+Repository rulesets and protected branches remain authoritative. K_Supervisor must not force-update refs, bypass branch protection, automatically merge a protected pull request or treat VCS handoff as publication.
+
+A GitHub repository operation that is blocked by credentials, repository policy, organization policy or conflicting owner-authored content remains owner-intervention state until the safe resume condition is satisfied.
+
+
