@@ -3,6 +3,10 @@ name: Core Validation
 permissions:
   contents: read
 
+concurrency:
+  group: core-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
   pull_request:
