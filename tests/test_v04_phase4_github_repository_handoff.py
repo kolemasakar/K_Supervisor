@@ -263,7 +263,7 @@ def test_pull_request_response_loss_recovers_existing_open_pull_request():
     assert result.payload["pull_request_number"] == 21
     assert result.payload["commit_sha"] == "commit1"
     assert result.metadata["recovered"] is True
-    pull_calls = [item for item in transport.calls if item["url"].endswith("/pulls")]
+    pull_calls = [item for item in transport.calls if "/pulls" in item["url"]]
     assert [item["method"] for item in pull_calls] == ["GET", "POST", "GET"]
 
 
