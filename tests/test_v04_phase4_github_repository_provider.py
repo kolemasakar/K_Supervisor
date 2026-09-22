@@ -142,7 +142,13 @@ def test_provider_descriptor_and_resolve_are_read_only_and_safe():
 
     assert item.descriptor.provider_id == "github.repository"
     assert item.descriptor.provider_type == "REPOSITORY"
-    assert set(item.descriptor.operations) == {"resolve_repository", "create_repository"}
+    assert set(item.descriptor.operations) == {
+        "resolve_repository",
+        "create_repository",
+        "bootstrap_files",
+        "handoff_pull_request",
+        "create_tag",
+    }
 
     result = item.execute(direct_request("resolve_repository"))
 
