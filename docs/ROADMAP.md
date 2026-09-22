@@ -7,12 +7,12 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 4 — ACTIVATED / IMPLEMENTATION AUTHORIZED
+Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
 Phase 3: COMPLETE
-Runtime implementation authorized: YES — v0.4 Phase 4 audited scope only
+Runtime implementation authorized: NO
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -142,7 +142,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 4 — GitHub Repository Provider & Governed VCS Handoff
 
-**Phase 4 status:** ACTIVATED — IMPLEMENTATION AUTHORIZED. Canonical audit: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`. Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_ACTIVATED.md`. Runtime/source/test implementation is authorized only within the audited scope after the protected activation checkpoint merges.
+**Phase 4 status:** COMPLETE. Canonical audit: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`; activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_ACTIVATED.md`; completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_COMPLETE.md`. The governed GitHub provider, VCS handoff, ProjectFactory/ServiceRuntime integration, explicit Service/API + CLI repository operator surface, deterministic recovery coverage and installed-wheel qualification are merged and green.
 
 **Goal:** let K_Supervisor bootstrap and update a real GitHub repository through existing Project Factory/provisioning/policy boundaries.
 
