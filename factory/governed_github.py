@@ -241,7 +241,7 @@ def build_governed_github_repository_adapter(
             SideEffect.CREATE_RESOURCE.value,
             SideEffect.MODIFY_RESOURCE.value,
         ),
-        risk_class="HIGH",
+        risk_class="MEDIUM",
     )
     capabilities.register(capability)
 
