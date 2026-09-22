@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from access import EnvironmentSecretBackend, SecretBackend
+from factory import (
+    FilesystemRepositoryAdapter,
+    ProjectFactory,
+    build_governed_github_repository_adapter,
+)
 from observability import DeploymentQualifier, ServiceHealthEvaluator, TelemetryRecorder
 from persistence import SQLitePersistenceStore
 from policy.approval import PolicyApprovalBroker
@@ -38,6 +44,7 @@ class ServiceRuntime:
     authenticator: StaticBearerAuthenticator
     api: ServiceApiV1
     app: WsgiServiceAppV1
+    project_factory: ProjectFactory | None = None
     _closed: bool = field(default=False, init=False, repr=False)
 
     def close(self) -> None:
@@ -114,6 +121,22 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
                         raise
 
         backend = secret_backend or EnvironmentSecretBackend()
+        repository_root = Path(config.state_db_path).resolve().parent / "repositories"
+        github_repository = build_governed_github_repository_adapter(
+            store,
+            projects,
+            human,
+            backend,
+        )
+        project_factory = ProjectFactory(
+            projects,
+            (
+                FilesystemRepositoryAdapter(repository_root),
+                github_repository,
+            ),
+            human,
+        )
+
         tokens: dict[str, ServicePrincipal] = {}
         principal_ids: set[str] = set()
         for item in host.principals:
@@ -158,6 +181,7 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             authenticator=authenticator,
             api=api,
             app=app,
+            project_factory=project_factory,
         )
     except BaseException:
         store.close()
