@@ -54,7 +54,6 @@ class SideEffectGateway:
         access_refs: tuple[AccessReference, ...] = (),
         idempotency_key: str | None = None,
         version_constraint: str = "*",
-        resume_pending: bool = False,
     ) -> SideEffectResult:
         decision = self.policy.evaluate(request)
         blocked = self._authorize(
@@ -117,6 +116,7 @@ class SideEffectGateway:
         access_refs: tuple[AccessReference, ...] = (),
         idempotency_key: str | None = None,
         version_constraint: str = "*",
+        resume_pending: bool = False,
     ) -> SideEffectResult:
         decision = self.policy.evaluate(request)
         blocked = self._authorize(
