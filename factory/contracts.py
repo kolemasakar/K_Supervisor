@@ -33,6 +33,8 @@ class RepositoryTarget:
     ci_required: bool
     provisioning: str
     credential_ref: AccessReference | None = None
+    project_id: str | None = None
+    project_spec_id: str | None = None
 
     @classmethod
     def from_spec(cls, spec: ProjectSpec) -> "RepositoryTarget":
@@ -71,6 +73,8 @@ class RepositoryTarget:
             ci_required=bool(data.get("ci_required", True)),
             provisioning=provisioning,
             credential_ref=credential_ref,
+            project_id=spec.project_id,
+            project_spec_id=spec.project_spec_id,
         )
 
 
