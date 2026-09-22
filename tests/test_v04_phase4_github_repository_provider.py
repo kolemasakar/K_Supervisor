@@ -10,7 +10,8 @@ from integrations.gateway import SideEffectGateway
 from models.agent import AgentRunRequest
 from models.side_effect import SideEffectExecutionStatus
 from policy.contracts import ApprovalStatus
-from providers import GitHubRepositoryProvider, ProviderExecutionError, ProviderRegistry
+from providers import GitHubRepositoryProvider, ProviderExecutionError
+from registry import ProviderRegistry
 from tests.phase11_support import LATER, NOW, build_policy_stack
 
 
