@@ -7,7 +7,7 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
@@ -169,6 +169,8 @@ The v0.4 program will make the existing control plane practically operable throu
 **Deferred:** broad cloud/server/database provisioning, GitLab/Bitbucket production adapters, automatic protected-branch merge and distributed repository transactions.
 
 ## v0.4 Phase 5 — Plugin-Native ChatGPT/Codex Release Packaging
+
+**Phase 5 status:** PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING. Canonical audit: `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`. Runtime/source/test implementation remains unauthorized until a separate owner-approved activation checkpoint passes protected governance and merges.
 
 **Goal:** evolve `CHATGPT_PLUGIN` from portable migration evidence into a versioned, currently importable Plugin package while preserving owner/workspace control.
 
