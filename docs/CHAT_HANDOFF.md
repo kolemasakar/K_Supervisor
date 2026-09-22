@@ -1,12 +1,13 @@
 # CHAT_HANDOFF
-Canonical continuation context after ROADMAP v0.4 Phase 5 implementation and qualification.
+Canonical continuation context after ROADMAP v0.4 Phase 5 completion and Phase 6 pre-implementation audit.
 
-Version: 6.0
+Version: 6.1
 Status: ACTIVE
 Date: 2026-09-22
 
 ## Start Here
 
+- docs/V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md
 - docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md
 - docs/PROJECT_STATE.md
 - docs/ROADMAP.md
@@ -29,7 +30,8 @@ v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
 v0.4 Phase 5: COMPLETE — effective on protected completion merge
-v0.4 Phase 6: PRE-IMPLEMENTATION AUDIT PENDING
+v0.4 Phase 6 pre-implementation audit: COMPLETE
+v0.4 Phase 6 activation: NO / PENDING OWNER APPROVAL
 v0.4 Phase 7: PLANNED / INACTIVE
 Current runtime implementation authorization: NONE
 ```
@@ -88,15 +90,32 @@ Public external contributor workflow approval: REQUIRED
 Zero-cost development policy: REQUIRED
 ```
 
-## Immediate Continuation
+## Phase 6 Audit Conclusion
 
-Do not continue Phase 5 runtime work after completion merge.
+The existing telemetry persistence, correlation, metrics snapshots, health/reliability primitives and projection exporters remain the compatibility floor.
 
-Next permitted activity:
+The audited Phase 6 target adds:
 
 ```text
-ROADMAP v0.4 Phase 6 pre-implementation audit only
-Phase 6 runtime implementation authorization: NO
+safe structured logs
++ frozen low-cardinality metric/event taxonomy
++ bounded optional OTLP/Prometheus export
++ service/auth/provider/repository/release instrumentation
++ pinned Python 3.13/3.14 CI compatibility
++ deterministic dependency inventory + SPDX SBOM
++ current vulnerability evidence
++ immutable GitHub Action pinning
++ trusted-main wheel/SBOM attestations
 ```
 
-Phase 6 runtime/source/test implementation requires its own completed audit, explicit owner activation and protected merge checkpoint.
+Remote collectors remain optional. Exporter failure remains non-authoritative. Package publication remains owner-controlled.
+
+Audit authority: `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`.
+
+## Immediate Continuation
+
+No Phase 6 runtime/source/test/workflow implementation may begin yet.
+
+Next action is the owner Phase 6 activation decision. If approved, create a separate protected activation checkpoint authorizing only the scope frozen in `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`.
+
+Runtime implementation begins only after that checkpoint passes protected `Core Validation` and merges to `main`.
