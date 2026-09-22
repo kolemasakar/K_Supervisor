@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from pathlib import PurePosixPath
 from typing import Mapping, Any
 
 from .errors import ReleaseProfileValidationError
@@ -41,6 +42,7 @@ class NativePluginPackage:
     migration_inventory_content: str = ""
     regression_cases_path: str = REGRESSION_CASES_PATH
     regression_cases_content: str = ""
+    reference_files: tuple[tuple[str, str], ...] = ()
     marketplace_files: tuple[tuple[str, str], ...] = ()
 
 
@@ -199,6 +201,134 @@ def _app_document(apps: tuple[dict[str, Any], ...]) -> dict[str, Any] | None:
     }
 
 
+def _safe_reference_path(value: str, *, field: str) -> str:
+    path = str(value).strip()
+    pure = PurePosixPath(path)
+    if pure.is_absolute() or ".." in pure.parts or path in {"", "."} or "\\" in path:
+        raise ReleaseProfileValidationError(
+            f"PLUGIN_REFERENCE_UNSAFE: {field} must be a safe relative path"
+        )
+    try:
+        path.encode("ascii")
+    except UnicodeEncodeError as exc:
+        raise ReleaseProfileValidationError(
+            f"PLUGIN_REFERENCE_UNSAFE: {field} must use ASCII path segments"
+        ) from exc
+
+    lowered = tuple(part.lower() for part in pure.parts)
+    basename = lowered[-1]
+    sensitive_suffixes = (".pem", ".key", ".p12", ".pfx", ".kdbx")
+    if (
+        any(part in {".git", ".ssh"} for part in lowered)
+        or basename == ".env"
+        or basename.startswith(".env.")
+        or basename.endswith(sensitive_suffixes)
+        or any(token in basename for token in ("credential", "secret", "private-key"))
+    ):
+        raise ReleaseProfileValidationError(
+            f"PLUGIN_REFERENCE_UNSAFE: {field} may expose credential material"
+        )
+    return pure.as_posix()
+
+
+def _package_reference_specs(config: Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
+    raw = config.get("package_references")
+    if raw is None:
+        return ()
+    if isinstance(raw, (str, Mapping)):
+        raw = (raw,)
+
+    result: list[dict[str, Any]] = []
+    seen_destinations: set[str] = set()
+    for item in raw:
+        if isinstance(item, str):
+            source = _safe_reference_path(item, field="reference source")
+            required = True
+            destination = source
+        elif isinstance(item, Mapping):
+            source = _safe_reference_path(
+                str(item.get("source") or item.get("path") or ""),
+                field="reference source",
+            )
+            required = item.get("required", True)
+            if not isinstance(required, bool):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REFERENCE_UNSAFE: reference required flag must be boolean"
+                )
+            destination = _safe_reference_path(
+                str(item.get("destination") or source),
+                field="reference destination",
+            )
+        else:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REFERENCE_UNSAFE: package reference entry must be text or an object"
+            )
+
+        if destination in seen_destinations:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REFERENCE_UNSAFE: reference destinations must be unique"
+            )
+        seen_destinations.add(destination)
+        result.append(
+            {
+                "source": source,
+                "destination": destination,
+                "required": required,
+            }
+        )
+    return tuple(result)
+
+
+def package_reference_requests(config: Mapping[str, Any]) -> tuple[str, ...]:
+    return tuple(item["source"] for item in _package_reference_specs(config))
+
+
+def _package_reference_files(
+    config: Mapping[str, Any],
+    *,
+    skill_name: str,
+    reference_contents: Mapping[str, str | None] | None,
+) -> tuple[tuple[tuple[str, str], ...], tuple[dict[str, Any], ...]]:
+    specs = _package_reference_specs(config)
+    if not specs:
+        return (), ()
+
+    contents = reference_contents or {}
+    files: list[tuple[str, str]] = []
+    inventory: list[dict[str, Any]] = []
+    for item in specs:
+        source = item["source"]
+        destination = item["destination"]
+        content = contents.get(source)
+        target = f"{PLUGIN_PACKAGE_ROOT}/skills/{skill_name}/references/{destination}"
+        if content is None:
+            if item["required"]:
+                raise ReleaseProfileValidationError(
+                    f"PLUGIN_REFERENCE_MISSING: required reference is unavailable: {source}"
+                )
+            inventory.append(
+                {
+                    **item,
+                    "target": target,
+                    "status": "MISSING_OPTIONAL",
+                }
+            )
+            continue
+        if not isinstance(content, str):
+            raise ReleaseProfileValidationError(
+                f"PLUGIN_REFERENCE_UNSAFE: reference content must be UTF-8 text: {source}"
+            )
+        files.append((target, content))
+        inventory.append(
+            {
+                **item,
+                "target": target,
+                "status": "PACKAGED",
+            }
+        )
+    return tuple(files), tuple(inventory)
+
+
 def _regression_cases(
     config: Mapping[str, Any],
     *,
@@ -300,6 +430,7 @@ def _migration_inventory(
     *,
     skill_path: str,
     registered_apps: tuple[dict[str, Any], ...],
+    packaged_references: tuple[dict[str, Any], ...],
 ) -> dict[str, Any]:
     references = _items(config.get("reference_files", config.get("knowledge_files", ())))
     required_apps = _items(config.get("required_apps", ()))
@@ -318,6 +449,7 @@ def _migration_inventory(
             {"source": str(item), "status": "PENDING_PACKAGE"}
             for item in references
         ],
+        "packaged_references": list(packaged_references),
         "registered_apps": [
             {
                 "alias": item["alias"],
@@ -362,6 +494,7 @@ def _marketplace_files(
     skill_path: str,
     skill_content: str,
     app_content: str | None,
+    reference_files: tuple[tuple[str, str], ...],
 ) -> tuple[tuple[str, str], ...]:
     raw = config.get("github_marketplace")
     if raw is None:
@@ -421,10 +554,19 @@ def _marketplace_files(
     ]
     if app_content is not None:
         files.append((f"{mirror_root}/.app.json", app_content))
+    for path, content in reference_files:
+        relative = path.removeprefix(f"{PLUGIN_PACKAGE_ROOT}/")
+        files.append((f"{mirror_root}/{relative}", content))
     return tuple(files)
 
 
-def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> NativePluginPackage:
+def build_native_plugin_package(
+    spec,
+    release,
+    config: Mapping[str, Any],
+    *,
+    reference_contents: Mapping[str, str | None] | None = None,
+) -> NativePluginPackage:
     explicit_name = config.get("plugin_name")
     plugin_name = (
         validate_plugin_name(str(explicit_name))
@@ -530,6 +672,12 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
         "- Do not perform external publication unless the owner/workspace explicitly does so.\n"
     )
 
+    reference_files, packaged_reference_inventory = _package_reference_files(
+        config,
+        skill_name=skill_name,
+        reference_contents=reference_contents,
+    )
+
     manifest_content = json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
     app_content = (
         None
@@ -540,6 +688,7 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
         config,
         skill_path=skill_path,
         registered_apps=registered_apps,
+        packaged_references=packaged_reference_inventory,
     )
     regression_cases = _regression_cases(
         config,
@@ -582,6 +731,7 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
         skill_path=skill_path,
         skill_content=skill_body,
         app_content=app_content,
+        reference_files=reference_files,
     )
     if marketplace_files:
         catalog = json.loads(
@@ -600,6 +750,7 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
         app_content=app_content,
         migration_inventory_content=migration_inventory_content,
         regression_cases_content=regression_cases_content,
+        reference_files=reference_files,
         marketplace_files=marketplace_files,
     )
 
