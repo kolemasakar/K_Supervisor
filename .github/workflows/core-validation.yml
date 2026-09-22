@@ -128,3 +128,135 @@ jobs:
               finally:
                   connection.close()
           PY
+
+      - name: Installed wheel Phase 4 repository Service/API and CLI smoke
+        run: |
+          cd /tmp
+          python - <<'PY'
+          import json
+          import os
+          import sqlite3
+          import subprocess
+          import tempfile
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          from ksupervisor.config import PlatformConfig
+          from ksupervisor.service import build_service_runtime, create_service_host
+          from models.enums import ProjectLifecycleState, ProjectOperationalState, ProjectSpecStatus
+          from models.project import Project, ProjectSpec
+
+          token = "phase4-wheel-smoke-token"
+          os.environ["KSUP_SECRET__SERVICE_OWNER"] = token
+          now = datetime.now(timezone.utc)
+
+          with tempfile.TemporaryDirectory() as raw:
+              root = Path(raw)
+              db = root / "state.db"
+              config = PlatformConfig(
+                  state_db_path=str(db),
+                  service_host={
+                      "bind_host": "127.0.0.1",
+                      "port": 0,
+                      "workers": 2,
+                      "principals": [{
+                          "principal_id": "phase4-wheel-smoke",
+                          "scopes": ["repository:read", "repository:bootstrap"],
+                          "token_ref": {"uri": "secret://service/owner"},
+                      }],
+                  },
+              )
+              runtime = build_service_runtime(config)
+              spec = ProjectSpec(
+                  project_spec_id="PS_PHASE4_WHEEL",
+                  project_id="P_PHASE4_WHEEL",
+                  spec_version="1.0",
+                  status=ProjectSpecStatus.APPROVED,
+                  created_at=now,
+                  updated_at=now,
+                  approved_at=now,
+                  name="Phase 4 Wheel Smoke",
+                  short_name="phase4-wheel-smoke",
+                  purpose="Validate installed-wheel repository operator surface.",
+                  problem_statement="Repository bootstrap must run only through Service/API.",
+                  project_type="AI",
+                  success_criteria=("repository bootstrap succeeds",),
+                  first_working_criteria=("repository is bootstrapped",),
+                  documentation={"roadmap_required": True},
+                  repository={
+                      "repository_provider": "FILESYSTEM",
+                      "repository_name": "phase4-wheel-smoke",
+                      "repository_visibility": "PRIVATE",
+                      "ci_required": False,
+                      "provisioning": "AUTOMATABLE",
+                  },
+                  architecture={"architecture_style": "MODULAR"},
+                  notifications={"primary_channel": "EMAIL"},
+              )
+              project = Project(
+                  project_id=spec.project_id,
+                  name=spec.name,
+                  active_project_spec_id=spec.project_spec_id,
+                  lifecycle_state=ProjectLifecycleState.APPROVED,
+                  operational_state=ProjectOperationalState.ACTIVE,
+                  created_at=now,
+                  updated_at=now,
+              )
+              runtime.projects.register(project, spec)
+
+              host = create_service_host(runtime)
+              host.start()
+              address, port = host.address
+              base = f"http://{address}:{port}"
+              client_config = root / "client.json"
+              client_config.write_text(json.dumps({
+                  "service_client": {
+                      "base_url": base,
+                      "token_ref": {"uri": "secret://service/owner"},
+                      "timeout_seconds": 3,
+                  }
+              }), encoding="utf-8")
+
+              status = subprocess.run(
+                  ["k-supervisor", "repository", "status", spec.project_id, "--config", str(client_config)],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              status_body = json.loads(status.stdout)
+              assert status_body["data"]["repository"]["provider"] == "FILESYSTEM"
+
+              first = subprocess.run(
+                  [
+                      "k-supervisor", "repository", "bootstrap", spec.project_id,
+                      "--config", str(client_config),
+                      "--idempotency-key", "phase4-wheel-bootstrap",
+                  ],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              first_body = json.loads(first.stdout)
+              assert first_body["response"]["data"]["repository_bootstrap"]["status"] == "BOOTSTRAPPED"
+              assert first_body["response"]["meta"]["idempotent_replay"] is False
+
+              replay = subprocess.run(
+                  [
+                      "k-supervisor", "repository", "bootstrap", spec.project_id,
+                      "--config", str(client_config),
+                      "--idempotency-key", "phase4-wheel-bootstrap",
+                  ],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              replay_body = json.loads(replay.stdout)
+              assert replay_body["response"]["meta"]["idempotent_replay"] is True
+              assert host.stop()
+
+              connection = sqlite3.connect(db)
+              try:
+                  assert connection.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+              finally:
+                  connection.close()
+          PY
