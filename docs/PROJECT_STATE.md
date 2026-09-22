@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 4 completion and Phase 5 pre-implementation audit.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 5 implementation and qualification.
 
-Version: 6.2
+Version: 6.3
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -20,37 +20,35 @@ v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
-v0.4 Phase 5: ACTIVATED — IMPLEMENTATION AUTHORIZED
+v0.4 Phase 5: COMPLETE
 v0.4 Phase 6-7: PLANNED / INACTIVE
-Current approved implementation phase: v0.4 Phase 5
-Runtime implementation phase: v0.4 Phase 5 — audited scope only
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Phase 3 implementation PR: #29
-Initial implementation head: 46bca5223d5e42d9051f886832a7d12a87a5d812
-Initial protected Core Validation: 35452558739 — PASS
-Final PR head: c73e4c5f24f958ebb1473d4c8d23f28244c9f799
-Final PR tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
-Final exact-head Core Validation: 35453258878 — PASS
-Merged main: a1791b607496edfaf84593d753f7d1d7662eede1
-Merged-main Core Validation: 35453297160 — PASS
+Phase 5 qualification PR: #46
+Qualification code/test head: 4dc6308663ff51e86a69aaf8c9671311be17a630
+Protected Core Validation: 35772935562 — PASS
+Implementation predecessor main: f3cf85fce9a88eceab1a5636baf78b109f80d1d4
 Python workflow: 3.13
-Full regression: 229 passed
-Branch-aware coverage: 82.06%
+Full regression: 322 passed
+Branch-aware coverage: 81.20%
 coverage gate >=80%: PASS
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
 public CLI/import smoke: PASS
 installed-wheel Phase 3 service/CLI smoke: PASS
+installed-wheel Phase 4 repository Service/API/CLI smoke: PASS
+installed-wheel Phase 5 plugin package smoke: PASS
 Zero-cost development policy: PASS
 ```
 
-PR #29 is merged and its final exact head plus merged `main` passed protected `Core Validation`. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
+Phase 5 completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md`. Final completion becomes effective when the protected completion PR merges.
 
 ## v0.4 Approval State
 
@@ -68,12 +66,12 @@ Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          COMPLETE
-Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              ACTIVATED — IMPLEMENTATION AUTHORIZED
+Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              COMPLETE
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 is COMPLETE. The governed GitHub repository/VCS provider, ProjectFactory integration, explicit Service/API + CLI operator surface, deterministic recovery tests and installed-wheel qualification are merged and green. Phase 5 pre-implementation audit is COMPLETE and owner activation is approved. Runtime implementation is authorized only within the frozen Phase 5 audit scope after the protected activation checkpoint merges.
+Phases 0 through 5 are complete subject to protected merge of the Phase 5 completion checkpoint. Phase 5 delivers native Plugin packaging, app/reference/marketplace migration evidence, governed reference reads, deterministic qualification and installed-wheel package generation. No runtime implementation phase remains active; the next permitted work is Phase 6 pre-implementation audit only.
 
 ## Phase 0 Completion Evidence
 
@@ -269,6 +267,27 @@ Phase 5 runtime implementation authorization: YES — audited scope only
 
 The audit freezes a portable Agent Plugins 1.0 package as the preferred new native format, preserves `GPT_STORE` as a legacy compatibility target, requires valid skill/app/marketplace artifacts with local deterministic validation, and keeps installation/sharing/workspace availability/public submission under explicit owner or workspace-admin control.
 
+## Phase 5 Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md`.
+
+```text
+Activation merge: 696c9b2a5873506f6164c03d71d21b557c66c8b4
+Native package PR: #44 / Core Validation 35762060534 PASS
+Native package merged main: 57bb901a50fa5217727fa7335550f9794050b604
+Metadata/reference/marketplace PR: #45 / Core Validation 35766681043 PASS
+Implementation merged main: f3cf85fce9a88eceab1a5636baf78b109f80d1d4
+Implementation merged-main Core Validation: 35772305722 PASS
+Qualification PR: #46
+Qualification code/test head: 4dc6308663ff51e86a69aaf8c9671311be17a630
+Qualification Core Validation: 35772935562 PASS
+Full regression: 322 passed
+Branch-aware coverage: 81.20%
+Installed-wheel Phase 5 plugin package smoke: PASS
+External install/share/publication: NOT PERFORMED / OWNER CONTROLLED
+Phase 6 activation: NO
+```
+
 ## Development Resource Policy
 
 `DEVELOPMENT_RESOURCE_POLICY.md` is a permanent owner-approved invariant: development, testing, CI, validation, smoke testing and qualification must not require a new project-attributable payment. Paid-only provider access may remain a supported production/operator deployment option, but it cannot be a development or phase-completion dependency.
@@ -323,7 +342,7 @@ Selected ChatGPT model pinning: NO
 External availability/publication: owner/workspace-admin controlled
 ```
 
-v0.4 Phase 5 may evolve `CHATGPT_PLUGIN` packaging to the approved current native Plugin/marketplace format, but installation, sharing, authorization and publication remain owner/workspace-admin actions.
+v0.4 Phase 5 now generates the approved native Plugin/marketplace package surface. Installation, sharing, authorization, workspace import and publication remain owner/workspace-admin actions.
 
 ## Public Compatibility Baseline
 
