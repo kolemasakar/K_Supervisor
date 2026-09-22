@@ -535,7 +535,19 @@ Phase 4 must preserve:
 - zero-cost development validation;
 - protected `Core Validation` merge governance.
 
-## 23. Audit Outcome
+## 23. Protected Governance Evidence
+
+```text
+Audit PR: #34
+Initial audit head: 5ef85465f43a3d4559ab520c01c3439e27bc87db
+Initial Core Validation: 35738028666 — PASS
+Initial validation runner: kgm-e4-owner-pilot
+Runtime/source/test paths changed: NONE
+```
+
+The exact final audit head, including this recorded evidence, must pass required `Core Validation` before merge. The merged audit remains documentation-only and does not activate Phase 4.
+
+## 24. Audit Outcome
 
 The existing architecture is suitable for Phase 4 but requires a new governed external-repository layer rather than simply replacing the filesystem adapter with a network client.
 
