@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 4.1
+Version: 4.2
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 6 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 6 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Date: 2026-09-22
 
 ## Preserved Regression Floor
@@ -33,7 +33,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
 | 4 | GitHub repository/VCS provider and governed handoff | COMPLETE |
 | 5 | Plugin-native package/manifest/marketplace validation | COMPLETE |
-| 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | AUDIT PENDING |
+| 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | AUDIT COMPLETE / ACTIVATION PENDING |
 | 7 | end-to-end single-node product qualification | PLANNED |
 
 ## Phase 0 Evidence
@@ -326,6 +326,41 @@ Zero-cost development policy: PASS
 
 The audited deterministic Phase 5 verification contract is satisfied. Live account/workspace plugin installation remains supplemental owner-controlled evidence and is not a protected merge dependency.
 
+## v0.4 Phase 6 — Audited Verification Contract
+
+Audit authority: `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`.
+
+After a separate owner-approved activation checkpoint merges, Phase 6 verification must prove:
+
+- structured log output is machine-readable, bounded and redacted;
+- request bodies, authorization/cookie values, resolved secrets, provider private payloads, model prompt/response content and repository/reference file contents do not leak into logs/telemetry/export output;
+- arbitrary unsafe telemetry attributes fail closed;
+- production telemetry uses a frozen event taxonomy and preserves correlation across service/provider/repository/release boundaries;
+- production metrics use a fixed low-cardinality vocabulary and never use request/project/task/repository/user-controlled IDs as Prometheus labels;
+- duration uses seconds and byte quantities use bytes;
+- exporter queues, timeouts, retries and shutdown flush are bounded;
+- exporter failure/drop does not change authoritative business/control outcomes;
+- optional exporter failure does not make default service readiness false;
+- OTLP export is optional and disabled safely when not configured;
+- Prometheus-compatible output contains only approved metric families;
+- exact stable Python support is 3.13 + 3.14 for the Phase 6 compatibility snapshot;
+- protected CI gates both Python 3.13 and 3.14 while preserving the required `Core Validation` context;
+- package metadata excludes unqualified future stable Python minors until separately approved;
+- active external GitHub Actions are pinned to verified full commit SHAs;
+- pull-request jobs retain read-only/minimal permissions and receive no attestation/OIDC write authority;
+- exact CI dependency resolution is pinned/reviewable;
+- built-wheel SHA-256 is recorded;
+- deterministic SPDX 2.3 SBOM is generated from the pinned/resolved build environment;
+- vulnerability review/scan emits machine-readable current-security evidence and distinguishes scanner/data unavailability from a clean result;
+- trusted-main build provenance attestation is generated for the wheel;
+- trusted-main SBOM attestation links the wheel and generated SBOM;
+- attestation evidence remains verifiable through the supported GitHub attestation path;
+- package publication remains manual owner-controlled;
+- no external collector/SaaS or paid service is required;
+- full cumulative regression, branch-aware coverage >=80%, compile, wheel/install and installed-wheel smokes remain green.
+
+Vulnerability advisory status is intentionally time-sensitive as databases evolve; dependency resolution, scanner/tool configuration and evidence schema remain deterministic and reviewable.
+
 ## Permanent Quality Gates
 
 ```text
@@ -353,4 +388,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 through Phase 5 are COMPLETE after protected merge of the Phase 5 completion checkpoint. No runtime implementation phase is active. The next permitted work is Phase 6 pre-implementation audit only.
+Phase 0 through Phase 5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE. No runtime implementation phase is active; the next permitted action is a separate owner Phase 6 activation decision.
