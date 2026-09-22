@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
 Canonical continuation context after ROADMAP v0.4 Phase 3 completion, self-hosted CI migration completion, and Phase 4 pre-implementation audit.
 
-Version: 5.5
+Version: 5.6
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -26,8 +26,8 @@ v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4 pre-implementation audit: COMPLETE
-v0.4 Phase 4 activation: NO / PENDING OWNER APPROVAL
-v0.4 Phase 4 runtime implementation authorization: NO
+v0.4 Phase 4 activation: YES
+v0.4 Phase 4 runtime implementation authorization: YES — audited scope only
 v0.4 Phase 5-7: PLANNED / INACTIVE
 ```
 
@@ -89,6 +89,4 @@ Public external contributor workflow approval: REQUIRED
 
 ## Immediate Continuation
 
-No Phase 4 runtime/source/test implementation may begin yet.
-
-Next action is the owner Phase 4 activation decision. If approved, create a separate protected activation checkpoint that authorizes only the scope frozen in `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`. Runtime implementation begins only after that checkpoint passes Core Validation and merges to main.
+Phase 4 activation checkpoint is owner-approved and must pass protected `Core Validation` and merge before runtime implementation begins. After merge, proceed only within `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`.
