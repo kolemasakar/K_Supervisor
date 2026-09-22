@@ -1,17 +1,11 @@
 from __future__ import annotations
 
 import json
-from datetime import timedelta
-
 import pytest
 
-from access import EnvironmentSecretBackend, environment_key
-from factory import (
-    BootstrapBlockedError,
-    GitHubHttpResponse,
-    ProjectFactory,
-    build_governed_github_repository_adapter,
-)
+from access import AccessReference, EnvironmentSecretBackend, environment_key
+from factory import BootstrapBlockedError, GitHubHttpResponse, ProjectFactory
+from factory.governed_github import build_governed_github_repository_adapter
 from ksupervisor.config import PlatformConfig
 from models.project import ProjectSpec
 from service_api.runtime import build_service_runtime
@@ -107,9 +101,8 @@ def test_project_factory_policy_approval_blocks_before_github_transport(tmp_path
     spec = github_spec(approval=True)
     registry.register(make_project(spec), spec)
     human = HumanInterventionBroker(store, registry)
-    backend = EnvironmentSecretBackend(
-        {environment_key(spec.repository and __import__("access").AccessReference(uri="secret://project/P6/github")): GITHUB_TOKEN}
-    )
+    credential = AccessReference(uri="secret://project/P6/github")
+    backend = EnvironmentSecretBackend({environment_key(credential): GITHUB_TOKEN})
     transport = FakeTransport()
     adapter = build_governed_github_repository_adapter(
         store,
@@ -142,8 +135,6 @@ def test_governed_prepare_uses_gateway_and_never_persists_token(tmp_path):
     spec = ProjectSpec.model_validate(data)
     registry.register(make_project(spec), spec)
     human = HumanInterventionBroker(store, registry)
-    from access import AccessReference
-
     credential = AccessReference(uri="secret://project/P6/github")
     backend = EnvironmentSecretBackend({environment_key(credential): GITHUB_TOKEN})
     transport = FakeTransport(

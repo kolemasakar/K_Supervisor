@@ -4,11 +4,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from access import EnvironmentSecretBackend, SecretBackend
-from factory import (
-    FilesystemRepositoryAdapter,
-    ProjectFactory,
-    build_governed_github_repository_adapter,
-)
+from factory import FilesystemRepositoryAdapter, ProjectFactory
+from factory.governed_github import build_governed_github_repository_adapter
 from observability import DeploymentQualifier, ServiceHealthEvaluator, TelemetryRecorder
 from persistence import SQLitePersistenceStore
 from policy.approval import PolicyApprovalBroker

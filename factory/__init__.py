@@ -10,10 +10,6 @@ from .errors import (
 )
 from .onboarding import build_draft_project_spec
 from .project_factory import ProjectFactory
-from .governed_github import (
-    GovernedGitHubRepositoryAdapter,
-    build_governed_github_repository_adapter,
-)
 from .github import (
     GITHUB_API_VERSION,
     GitHubHttpResponse,
@@ -48,8 +44,6 @@ __all__ = [
     "RepositoryAdapter",
     "RepositoryConflictError",
     "RepositoryGovernanceBlockedError",
-    "GovernedGitHubRepositoryAdapter",
-    "build_governed_github_repository_adapter",
     "RepositoryTarget",
     "RepositoryUnavailableError",
     "build_draft_project_spec",
