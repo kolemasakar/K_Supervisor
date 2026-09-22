@@ -9,6 +9,13 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from factory.contracts import RepositoryTarget
+from factory.errors import (
+    BootstrapBlockedError,
+    BootstrapValidationError,
+    RepositoryConflictError,
+    RepositoryUnavailableError,
+)
 from factory.onboarding import build_draft_project_spec
 from models.control import ServiceCommandRecord, ServiceCommandStatus
 from models.enums import ProjectLifecycleState, ProjectOperationalState
@@ -34,6 +41,8 @@ from .contracts import (
     PROJECT_SPECS_READ_SCOPE,
     PROJECT_SPECS_SUBMIT_SCOPE,
     RECOVERY_READ_SCOPE,
+    REPOSITORY_BOOTSTRAP_SCOPE,
+    REPOSITORY_READ_SCOPE,
     RELEASES_CONFIRM_SCOPE,
     RELEASES_READ_SCOPE,
     ApiResponse,
@@ -47,12 +56,21 @@ from .contracts import (
 
 
 class OperatorApiError(RuntimeError):
-    def __init__(self, code: str, status_code: int, message: str, category: str | None = None):
+    def __init__(
+        self,
+        code: str,
+        status_code: int,
+        message: str,
+        category: str | None = None,
+        *,
+        details: dict[str, Any] | None = None,
+    ):
         super().__init__(message)
         self.code = code
         self.status_code = status_code
         self.message = message
         self.category = category or code
+        self.details = details or {}
 
 
 class OperatorControlApi:
@@ -71,6 +89,7 @@ class OperatorControlApi:
         human=None,
         approvals=None,
         releases=None,
+        project_factory=None,
     ):
         self.projects = projects
         self.store = store
@@ -79,6 +98,7 @@ class OperatorControlApi:
         self.human = human
         self.approvals = approvals
         self.releases = releases
+        self.project_factory = project_factory
         self._active_commands: set[str] = set()
         self._active_lock = RLock()
 
@@ -190,6 +210,18 @@ class OperatorControlApi:
                 principal,
                 idempotency_key,
             )
+
+        if len(parts) == 2 and parts[1] == "repository":
+            if method == "GET":
+                return self._repository_status(project_id, principal)
+            return None
+        if (
+            len(parts) == 3
+            and parts[1] == "repository"
+            and parts[2] == "bootstrap"
+            and method == "POST"
+        ):
+            return self._bootstrap_repository(project_id, principal, idempotency_key)
 
         if len(parts) == 2 and parts[1] == "recovery-status" and method == "GET":
             return self._recovery_status(project_id, principal)
@@ -714,6 +746,158 @@ class OperatorControlApi:
                 {"release": self._release_payload(release)},
                 meta={"idempotent_replay": replay},
             ),
+        )
+
+    # Repository bootstrap ---------------------------------------------------
+
+    def _repository_status(self, project_id, principal):
+        self._require_scope(principal, REPOSITORY_READ_SCOPE)
+        project = self._require_project(project_id)
+        snapshot = self.projects.recover(project_id)
+        spec = snapshot.active_spec
+        target = None if spec is None else RepositoryTarget.from_spec(spec)
+        return self._success(
+            {
+                "repository": {
+                    "configured": target is not None,
+                    "provider": None if target is None else target.provider,
+                    "owner": None if target is None else target.owner,
+                    "name": None if target is None else target.name,
+                    "visibility": None if target is None else target.visibility,
+                    "default_branch": None if target is None else target.default_branch,
+                    "provisioning": None if target is None else target.provisioning,
+                    "lifecycle_state": project.lifecycle_state.value,
+                    "operational_state": project.operational_state.value,
+                }
+            }
+        )
+
+    def _bootstrap_repository(self, project_id, principal, idempotency_key):
+        self._require_scope(principal, REPOSITORY_BOOTSTRAP_SCOPE)
+        self._require_dependency(self.project_factory, "project factory")
+        project = self._require_project(project_id)
+        key = self._require_key(idempotency_key)
+        payload = {
+            "project_id": project_id,
+            "active_project_spec_id": project.active_project_spec_id,
+        }
+        command_id = self._command_id(project_id, "repository-bootstrap", key)
+        existing, _ = self._begin_long_command(
+            project_id,
+            "repository-bootstrap",
+            key,
+            payload,
+            {"project_id": project_id},
+        )
+        if existing is not None:
+            if existing.status == ServiceCommandStatus.SUCCEEDED:
+                return self._repository_command_response(existing, replay=True)
+            if self._is_active(command_id):
+                raise OperatorApiError(
+                    "COMMAND_IN_PROGRESS",
+                    409,
+                    "repository bootstrap command is in progress",
+                )
+            self._mark_active(command_id)
+
+        try:
+            try:
+                result = self.project_factory.bootstrap(
+                    project_id,
+                    datetime.now(timezone.utc),
+                )
+            except BootstrapBlockedError as exc:
+                details = {}
+                if exc.human_action_id is not None:
+                    details["human_action_id"] = exc.human_action_id
+                raise OperatorApiError(
+                    "OWNER_ACTION_REQUIRED",
+                    409,
+                    "repository bootstrap requires owner action",
+                    "OWNER_ACTION",
+                    details=details,
+                ) from exc
+            except RepositoryConflictError as exc:
+                self._fail_command(command_id, "REPOSITORY_CONFLICT", 409, "CONFLICT")
+                raise OperatorApiError(
+                    "REPOSITORY_CONFLICT",
+                    409,
+                    "repository content conflicts with the governed bootstrap",
+                    "CONFLICT",
+                ) from exc
+            except BootstrapValidationError as exc:
+                self._fail_command(command_id, "BOOTSTRAP_INVALID", 409, "VALIDATION")
+                raise OperatorApiError(
+                    "BOOTSTRAP_INVALID",
+                    409,
+                    "repository bootstrap validation failed",
+                    "VALIDATION",
+                ) from exc
+            except RepositoryUnavailableError as exc:
+                raise OperatorApiError(
+                    "REPOSITORY_UNAVAILABLE",
+                    503,
+                    "repository provider is temporarily unavailable",
+                    "DEPENDENCY",
+                ) from exc
+
+            record = self.store.get_service_command(command_id)
+            if record is None:
+                raise RuntimeError("repository bootstrap service command disappeared")
+            now = datetime.now(timezone.utc)
+            completed = record.model_copy(
+                update={
+                    "status": ServiceCommandStatus.SUCCEEDED,
+                    "result_kind": "BootstrapResult",
+                    "result_refs": {
+                        "project_id": result.project_id,
+                        "project_spec_id": result.project_spec_id,
+                        "repository_id": result.repository.repository_id,
+                        "provider": result.repository.provider,
+                        "locator": result.repository.locator,
+                        "default_branch": result.repository.default_branch,
+                        "created": result.repository.created,
+                        "files": list(result.files),
+                        "status": result.status,
+                    },
+                    "updated_at": now,
+                    "completed_at": now,
+                }
+            )
+            self.store.save_service_command(completed)
+            return self._repository_command_response(completed, replay=False)
+        except OperatorApiError:
+            raise
+        except Exception as exc:
+            self._fail_command(command_id, "INTERNAL_ERROR", 500, "INTERNAL")
+            raise OperatorApiError(
+                "INTERNAL_ERROR",
+                500,
+                "internal service error",
+                "INTERNAL",
+            ) from exc
+        finally:
+            self._clear_active(command_id)
+
+    def _repository_command_response(self, command, *, replay):
+        refs = command.result_refs
+        return self._success(
+            {
+                "repository_bootstrap": {
+                    "project_id": refs.get("project_id"),
+                    "project_spec_id": refs.get("project_spec_id"),
+                    "repository": {
+                        "repository_id": refs.get("repository_id"),
+                        "provider": refs.get("provider"),
+                        "locator": refs.get("locator"),
+                        "default_branch": refs.get("default_branch"),
+                        "created": refs.get("created"),
+                    },
+                    "files": refs.get("files", []),
+                    "status": refs.get("status", "BOOTSTRAPPED"),
+                }
+            },
+            meta={"idempotent_replay": replay},
         )
 
     def _recovery_status(self, project_id, principal):

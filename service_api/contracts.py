@@ -33,6 +33,8 @@ EXECUTIONS_CANCEL_SCOPE = "executions:cancel"
 RELEASES_READ_SCOPE = "releases:read"
 RELEASES_CONFIRM_SCOPE = "releases:publication:confirm"
 RECOVERY_READ_SCOPE = "recovery:read"
+REPOSITORY_READ_SCOPE = "repository:read"
+REPOSITORY_BOOTSTRAP_SCOPE = "repository:bootstrap"
 
 
 class ServicePrincipal(ContractModel):

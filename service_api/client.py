@@ -25,11 +25,13 @@ class ServiceClientError(RuntimeError):
         *,
         status_code: int | None = None,
         retryable: bool = False,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message)
         self.code = code
         self.status_code = status_code
         self.retryable = retryable
+        self.details = details or {}
 
 
 class ServiceClientV1:
@@ -108,11 +110,13 @@ class ServiceClientV1:
                 error = body_value.get("error") if isinstance(body_value, dict) else None
                 code = error.get("code") if isinstance(error, dict) else "HTTP_ERROR"
                 message = error.get("message") if isinstance(error, dict) else "service request failed"
+                details = error.get("details") if isinstance(error, dict) else None
                 raise ServiceClientError(
                     str(code),
                     str(message),
                     status_code=exc.code,
                     retryable=exc.code >= 500,
+                    details=details if isinstance(details, dict) else None,
                 ) from None
             finally:
                 exc.close()

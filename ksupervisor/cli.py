@@ -89,6 +89,10 @@ def build_parser() -> argparse.ArgumentParser:
     leaf = releases.add_parser("confirm-publication")
     leaf.add_argument("project_id"); leaf.add_argument("release_id"); leaf.add_argument("target_type"); _add_mutation(leaf)
 
+    repository = _resource_group(sub, "repository", "operate the governed project repository through Service/API")
+    leaf = repository.add_parser("status"); leaf.add_argument("project_id"); _add_config(leaf)
+    leaf = repository.add_parser("bootstrap"); leaf.add_argument("project_id"); _add_mutation(leaf)
+
     recovery = sub.add_parser("recovery-status", help="read durable command recovery status")
     recovery.add_argument("project_id"); _add_config(recovery)
     return parser
@@ -163,6 +167,9 @@ def _emit_error(exc: Exception, *, idempotency_key: str | None = None) -> None:
     status = getattr(exc, "status_code", None)
     if status is not None:
         payload["error"]["status_code"] = status
+    details = getattr(exc, "details", None)
+    if details:
+        payload["error"]["details"] = details
     if idempotency_key is not None:
         payload["idempotency_key"] = idempotency_key
     print(json.dumps(payload, sort_keys=True, separators=(",", ":")), file=sys.stderr)
@@ -272,6 +279,12 @@ def _dispatch_operator(args) -> int:
             args,
             f"{base}/{args.release_id}/targets/{args.target_type}/confirm-publication",
         )
+
+    if command == "repository":
+        base = f"/api/v1/projects/{args.project_id}/repository"
+        if action == "status":
+            return _call_read(args, base)
+        return _call_mutation(args, f"{base}/bootstrap")
 
     if command == "recovery-status":
         return _call_read(args, f"/api/v1/projects/{args.project_id}/recovery-status")
