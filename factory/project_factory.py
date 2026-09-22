@@ -62,7 +62,7 @@ class ProjectFactory:
         try:
             repository = adapter.prepare(target)
         except RepositoryUnavailableError as exc:
-            if target.provisioning != "AUTOMATABLE":
+            if target.provider == "GITHUB" or target.provisioning != "AUTOMATABLE":
                 self._block_for_repository(project_id, target, at, str(exc))
             raise
 
