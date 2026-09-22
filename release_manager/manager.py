@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from factory.contracts import RepositoryOperationContext
 from models.base import ensure_tz
 from models.enums import ProjectLifecycleState, ProjectSpecStatus, ReleaseStatus
 from models.release import Release
@@ -170,8 +171,17 @@ class ReleaseManager:
         return tuple(dict.fromkeys((*tuple(explicit), *operational)))
 
     def _reports(self, project, spec, release, targets, repository, criteria):
+        context = RepositoryOperationContext(
+            project_id=project.project_id,
+            project_spec_id=spec.project_spec_id,
+            idempotency_key=f"release-manager:{release.release_id}:report",
+        )
+        if getattr(self.repository_adapter, "supports_operation_context", False):
+            files = self.repository_adapter.list_files(repository, context=context)
+        else:
+            files = self.repository_adapter.list_files(repository)
         evidence = ReleaseEvidence(
-            available_files=self.repository_adapter.list_files(repository),
+            available_files=files,
             satisfied_criteria=tuple(criteria),
         )
         return tuple(
