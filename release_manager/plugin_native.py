@@ -709,3 +709,148 @@ class NativePluginPackageValidator:
             raise ReleaseProfileValidationError(
                 "PLUGIN_SKILL_INVALID: skill instructions are required"
             )
+
+    def validate_app_document(self, document: Mapping[str, Any]) -> None:
+        apps = document.get("apps")
+        if not isinstance(apps, Mapping) or not apps:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_APP_REFERENCE_INVALID: .app.json must contain at least one app"
+            )
+        seen_ids: set[str] = set()
+        for alias, value in apps.items():
+            validate_plugin_name(str(alias))
+            if not isinstance(value, Mapping):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: app mapping must be an object"
+                )
+            if set(value) - {"id", "required"}:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: unsupported app mapping field"
+                )
+            app_id = str(value.get("id") or "")
+            if not _APP_ID_RE.fullmatch(app_id):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: unsupported registered app id"
+                )
+            if app_id in seen_ids:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: registered app ids must be unique"
+                )
+            seen_ids.add(app_id)
+            if not isinstance(value.get("required"), bool):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: required must be boolean"
+                )
+
+    def validate_migration_inventory(self, inventory: Mapping[str, Any]) -> None:
+        if inventory.get("schema_version") != "1.0":
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: unsupported migration inventory version"
+            )
+        instructions = inventory.get("instructions")
+        if not isinstance(instructions, Mapping) or instructions.get("status") != "MAPPED":
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: instructions must map to a skill"
+            )
+        selected_model = inventory.get("selected_model")
+        if not isinstance(selected_model, Mapping) or selected_model.get("transferred") is not False:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: selected model must remain untransferred"
+            )
+        sharing = inventory.get("sharing_access")
+        if not isinstance(sharing, Mapping) or sharing.get("transferred") is not False:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: sharing/access must remain untransferred"
+            )
+        history = inventory.get("conversation_history")
+        if not isinstance(history, Mapping) or history.get("transferred") is not False:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: conversation history must remain untransferred"
+            )
+
+    def validate_regression_cases(
+        self,
+        cases: tuple[dict[str, Any], ...],
+        *,
+        public_submission_ready: bool,
+    ) -> None:
+        if not cases:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: no regression cases were generated"
+            )
+        ids: set[str] = set()
+        positives = 0
+        negatives = 0
+        for item in cases:
+            case_id = str(item.get("id") or "")
+            if not _PLUGIN_NAME_RE.fullmatch(case_id) or case_id in ids:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression case ids are invalid"
+                )
+            ids.add(case_id)
+            case_type = item.get("type")
+            if case_type == "positive":
+                positives += 1
+            elif case_type == "negative":
+                negatives += 1
+            else:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression case type is invalid"
+                )
+            for field in ("prompt", "expected_behavior", "expected_result_shape"):
+                _single_line(item.get(field) or "", field=f"regression {field}")
+            dependencies = item.get("dependencies")
+            if not isinstance(dependencies, list) or not all(
+                isinstance(value, str) and value.strip() for value in dependencies
+            ):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression dependencies are invalid"
+                )
+        if public_submission_ready and (positives < 5 or negatives < 3):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: public submission readiness requires at least five positive and three negative cases"
+            )
+
+    def validate_marketplace(
+        self,
+        catalog: Mapping[str, Any],
+        *,
+        expected_plugin_name: str,
+    ) -> None:
+        validate_plugin_name(str(catalog.get("name") or ""))
+        interface = catalog.get("interface")
+        if not isinstance(interface, Mapping):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace interface metadata is required"
+            )
+        _single_line(interface.get("displayName") or "", field="marketplace display name")
+        plugins = catalog.get("plugins")
+        if not isinstance(plugins, list) or len(plugins) != 1:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace must contain exactly one generated plugin"
+            )
+        entry = plugins[0]
+        if not isinstance(entry, Mapping) or entry.get("name") != expected_plugin_name:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace plugin identity mismatch"
+            )
+        source = entry.get("source")
+        expected_path = f"./plugins/{expected_plugin_name}"
+        if (
+            not isinstance(source, Mapping)
+            or source.get("source") != "local"
+            or source.get("path") != expected_path
+        ):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace source path is invalid"
+            )
+        plugin_id = entry.get("pluginId")
+        if plugin_id is not None and not _MARKETPLACE_PLUGIN_ID_RE.fullmatch(str(plugin_id)):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: pluginId is invalid"
+            )
+        policy = entry.get("policy")
+        if policy != {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace policy must use the audited defaults"
+            )
