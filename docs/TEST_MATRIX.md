@@ -267,6 +267,37 @@ Zero-cost validation: PASS
 
 The audited Phase 4 deterministic verification contract is satisfied. Live GitHub evidence remains supplemental and is not a protected merge dependency.
 
+## v0.4 Phase 5 — Audited Verification Contract
+
+Audit authority: `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`.
+
+After a separate owner-approved activation checkpoint merges, required deterministic Phase 5 verification includes:
+
+- canonical portable Agent Plugins root `plugin.json` with the pinned Agent Plugins 1.0 schema;
+- deterministic plugin name/version/description plus safe OpenAI-specific `extensions.com.openai` metadata;
+- current skill packaging at `skills/<slug>/SKILL.md` with valid name/description metadata and explicit workflow boundaries;
+- required reference resources are actually packaged or readiness fails;
+- source/destination path traversal and credential-file inclusion fail closed;
+- structured registered-app mappings generate valid `.app.json` references only for supported app IDs;
+- required/optional app semantics are preserved; app templates remain distinct from registered app IDs;
+- Custom Action dependencies remain rebuild-required unless an explicit supported replacement mapping exists;
+- selected GPT model and prior sharing/access state are never claimed to migrate;
+- optional compatibility manifest cannot conflict with canonical portable/OpenAI settings;
+- generated `.agents/plugins/marketplace.json` resolves exactly to the generated plugin package;
+- optional existing `pluginId` is marketplace metadata only and never enters `plugin.json`;
+- bundled MCP configuration is never generated implicitly and web/desktop compatibility implications are recorded when explicitly requested;
+- machine-readable migration inventory preserves instructions/reference/apps/actions/MCP/access transfer status;
+- structured regression cases validate positive/negative expected behavior;
+- public-submission readiness, when explicitly requested, requires at least five positive and three negative cases;
+- package validation is network-free and uses a pinned local compatibility/schema snapshot;
+- legacy `GPT_STORE` persisted release behavior remains compatible;
+- Release Manager continues to stop at the owner/workspace publication/availability boundary;
+- no ChatGPT install/share/workspace-import/public-submission operation occurs in protected CI;
+- zero paid external resources are required for authoritative validation;
+- cumulative regression, branch-aware coverage >=80%, wheel/install smoke and protected `Core Validation` remain green.
+
+Local/private plugin installation and account/workspace testing may supplement evidence when available at no project-attributable cost. They are not ordinary protected-PR merge dependencies.
+
 ## Permanent Quality Gates
 
 ```text
