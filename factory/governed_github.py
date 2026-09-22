@@ -111,6 +111,34 @@ class GovernedGitHubRepositoryAdapter:
             raise RepositoryUnavailableError("GitHub repository file listing was invalid")
         return tuple(sorted(files))
 
+
+    def read_text_file(
+        self,
+        repository: ManagedRepository,
+        path: str,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> str | None:
+        context = self._require_context(context)
+        target = self._target_for(repository)
+        credential = self._require_credential(target)
+        payload = self._target_payload(target)
+        payload["path"] = path
+        result = self._execute(
+            context,
+            "read_file",
+            payload,
+            credential,
+            side_effects=(SideEffect.READ_EXTERNAL,),
+            key_suffix=f"read-file:{path}",
+        )
+        if result.output.get("found") is False:
+            return None
+        content = result.output.get("content")
+        if not isinstance(content, str):
+            raise RepositoryUnavailableError("GitHub repository text file response was invalid")
+        return content
+
     def _execute(
         self,
         context: RepositoryOperationContext,

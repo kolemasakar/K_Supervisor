@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from subprocess import CalledProcessError, run
 from typing import Protocol
 
@@ -30,6 +30,13 @@ class RepositoryAdapter(Protocol):
         *,
         context: RepositoryOperationContext | None = None,
     ) -> tuple[str, ...]: ...
+    def read_text_file(
+        self,
+        repository: ManagedRepository,
+        path: str,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> str | None: ...
 
 
 class FilesystemRepositoryAdapter:
@@ -113,3 +120,28 @@ class FilesystemRepositoryAdapter:
                 if path.is_file() and ".git" not in path.relative_to(base).parts
             )
         )
+
+
+    def read_text_file(
+        self,
+        repository: ManagedRepository,
+        path: str,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> str | None:
+        del context
+        pure = PurePosixPath(path)
+        if pure.is_absolute() or ".." in pure.parts or path in {"", "."}:
+            raise RepositoryConflictError("repository read path must be relative and safe")
+        base = Path(repository.locator).resolve()
+        candidate = (base / Path(*pure.parts)).resolve()
+        if candidate != base and base not in candidate.parents:
+            raise RepositoryConflictError("repository read path escapes managed root")
+        if not candidate.exists():
+            return None
+        if not candidate.is_file():
+            raise RepositoryConflictError("repository read path is not a regular file")
+        try:
+            return candidate.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            raise RepositoryConflictError("repository reference file must be UTF-8 text") from exc

@@ -26,6 +26,7 @@ class GitHubRepositoryProvider:
         "create_repository",
         "bootstrap_files",
         "list_files",
+        "read_file",
         "handoff_pull_request",
         "create_tag",
     )
@@ -90,6 +91,8 @@ class GitHubRepositoryProvider:
             return self._bootstrap_files(target, request.payload)
         if request.operation == "list_files":
             return self._list_files(target)
+        if request.operation == "read_file":
+            return self._read_file_operation(target, request.payload)
         if request.operation == "handoff_pull_request":
             return self._handoff_pull_request(target, request)
         return self._create_tag(target, request.payload)
@@ -104,6 +107,8 @@ class GitHubRepositoryProvider:
         allowed = set(self._COMMON_FIELDS)
         if operation == "bootstrap_files":
             allowed.update({"files", "commit_message"})
+        elif operation == "read_file":
+            allowed.update({"path"})
         elif operation == "handoff_pull_request":
             allowed.update({"files", "commit_message", "pull_request_title", "pull_request_body"})
         elif operation == "create_tag":
@@ -368,6 +373,36 @@ class GitHubRepositoryProvider:
         if not isinstance(created, dict):
             raise self._malformed("GitHub pull-request response is invalid")
         return self._pull_response(branch, commit_sha, created, recovered=False)
+
+    def _read_file_operation(
+        self,
+        target: RepositoryTarget,
+        payload: dict,
+    ) -> ProviderResponse:
+        path = payload.get("path")
+        if not isinstance(path, str):
+            raise self._error(
+                "GITHUB_INVALID_REQUEST",
+                "GitHub read-file operation requires a text path",
+                "invalid_request",
+            )
+        pure = PurePosixPath(path)
+        if pure.is_absolute() or ".." in pure.parts or path in {"", "."}:
+            raise self._error(
+                "GITHUB_INVALID_REQUEST",
+                "GitHub read-file path must be relative and safe",
+                "invalid_request",
+            )
+        canonical = pure.as_posix()
+        content = self._read_file(target, target.default_branch, canonical)
+        return ProviderResponse(
+            payload={
+                "path": canonical,
+                "found": content is not None,
+                "content": content,
+            },
+            metadata={},
+        )
 
     def _create_tag(self, target: RepositoryTarget, payload: dict) -> ProviderResponse:
         self._resolve_managed(target)

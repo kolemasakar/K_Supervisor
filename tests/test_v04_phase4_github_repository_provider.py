@@ -147,6 +147,7 @@ def test_provider_descriptor_and_resolve_are_read_only_and_safe():
         "create_repository",
         "bootstrap_files",
         "list_files",
+        "read_file",
         "handoff_pull_request",
         "create_tag",
     }
@@ -403,3 +404,52 @@ def test_gateway_requires_approval_before_github_write(tmp_path):
     assert result.status == SideEffectExecutionStatus.SUCCEEDED
     assert len(transport.calls) == 4
     store.close()
+
+
+def test_read_file_operation_returns_utf8_content_without_material_write():
+    import base64
+
+    content = "# Reference\n"
+    transport = FakeTransport(
+        response(
+            body={
+                "type": "file",
+                "encoding": "base64",
+                "content": base64.b64encode(content.encode("utf-8")).decode("ascii"),
+            }
+        )
+    )
+    result = provider(transport).execute(
+        direct_request("read_file", request_payload={**payload(), "path": "docs/REFERENCE.md"})
+    )
+
+    assert result.payload == {
+        "path": "docs/REFERENCE.md",
+        "found": True,
+        "content": content,
+    }
+    assert [call["method"] for call in transport.calls] == ["GET"]
+
+
+def test_read_file_missing_is_normalized_as_absent():
+    transport = FakeTransport(response(404, body={"message": "not found"}))
+    result = provider(transport).execute(
+        direct_request("read_file", request_payload={**payload(), "path": "docs/MISSING.md"})
+    )
+
+    assert result.payload == {
+        "path": "docs/MISSING.md",
+        "found": False,
+        "content": None,
+    }
+
+
+def test_read_file_rejects_path_escape_before_transport():
+    transport = FakeTransport()
+    with pytest.raises(ProviderExecutionError) as raised:
+        provider(transport).execute(
+            direct_request("read_file", request_payload={**payload(), "path": "../secret.txt"})
+        )
+
+    assert raised.value.code == "GITHUB_INVALID_REQUEST"
+    assert transport.calls == []

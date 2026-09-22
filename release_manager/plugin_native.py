@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from pathlib import PurePosixPath
 from typing import Mapping, Any
 
 from .errors import ReleaseProfileValidationError
@@ -11,8 +12,15 @@ from .errors import ReleaseProfileValidationError
 AGENT_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 PLUGIN_PACKAGE_ROOT = "release/chatgpt_plugin/package"
 PLUGIN_MANIFEST_PATH = f"{PLUGIN_PACKAGE_ROOT}/plugin.json"
+PLUGIN_APP_PATH = f"{PLUGIN_PACKAGE_ROOT}/.app.json"
+MIGRATION_INVENTORY_PATH = "release/chatgpt_plugin/MIGRATION_INVENTORY.json"
+REGRESSION_CASES_PATH = "release/chatgpt_plugin/REGRESSION_CASES.json"
+MARKETPLACE_ROOT = "release/chatgpt_plugin/marketplace"
+MARKETPLACE_CATALOG_PATH = f"{MARKETPLACE_ROOT}/.agents/plugins/marketplace.json"
 
 _PLUGIN_NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+_APP_ID_RE = re.compile(r"^(?:asdk_app_|connector_|templated_apps_)[A-Za-z0-9._:-]+$")
+_MARKETPLACE_PLUGIN_ID_RE = re.compile(r"^plugin_[A-Za-z0-9._:-]+$")
 _SEMVER_RE = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
     r"(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
@@ -28,6 +36,14 @@ class NativePluginPackage:
     skill_path: str
     manifest_content: str
     skill_content: str
+    app_path: str | None = None
+    app_content: str | None = None
+    migration_inventory_path: str = MIGRATION_INVENTORY_PATH
+    migration_inventory_content: str = ""
+    regression_cases_path: str = REGRESSION_CASES_PATH
+    regression_cases_content: str = ""
+    reference_files: tuple[tuple[str, str], ...] = ()
+    marketplace_files: tuple[tuple[str, str], ...] = ()
 
 
 def normalize_plugin_slug(value: str) -> str:
@@ -87,7 +103,470 @@ def _json_yaml_scalar(value: str) -> str:
     return json.dumps(_single_line(value, field="skill metadata"), ensure_ascii=False)
 
 
-def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> NativePluginPackage:
+def _items(value) -> tuple:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        return (value,)
+    if isinstance(value, Mapping):
+        return tuple(value.items())
+    try:
+        return tuple(value)
+    except TypeError as exc:
+        raise ReleaseProfileValidationError(
+            "PLUGIN_CONFIG_INVALID: expected a list-like configuration value"
+        ) from exc
+
+
+def _registered_apps(config: Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
+    raw = config.get("registered_apps")
+    if raw is None:
+        return ()
+
+    entries: list[dict[str, Any]] = []
+    if isinstance(raw, Mapping):
+        source = []
+        for alias, value in raw.items():
+            if isinstance(value, str):
+                source.append({"alias": alias, "app_id": value})
+            elif isinstance(value, Mapping):
+                source.append({"alias": alias, **dict(value)})
+            else:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: registered app mapping is invalid"
+                )
+    else:
+        source = list(_items(raw))
+
+    seen: set[str] = set()
+    for item in source:
+        if not isinstance(item, Mapping):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_APP_REFERENCE_INVALID: registered app entry must be an object"
+            )
+        alias = validate_plugin_name(str(item.get("alias") or ""))
+        if alias in seen:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_APP_REFERENCE_INVALID: registered app aliases must be unique"
+            )
+        seen.add(alias)
+
+        app_id = str(item.get("app_id") or item.get("id") or "").strip()
+        if not _APP_ID_RE.fullmatch(app_id):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_APP_REFERENCE_INVALID: unsupported registered app id"
+            )
+        required = item.get("required", True)
+        if not isinstance(required, bool):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_APP_REFERENCE_INVALID: required must be boolean"
+            )
+
+        kind = item.get("kind")
+        if kind is not None:
+            kind = str(kind).strip().lower()
+            if kind not in {"app", "connector", "template"}:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: app kind is invalid"
+                )
+
+        display_name = item.get("display_name")
+        entries.append(
+            {
+                "alias": alias,
+                "app_id": app_id,
+                "required": required,
+                "kind": kind,
+                "display_name": (
+                    None
+                    if display_name is None
+                    else _single_line(display_name, field="registered app display name")
+                ),
+            }
+        )
+    return tuple(entries)
+
+
+def _app_document(apps: tuple[dict[str, Any], ...]) -> dict[str, Any] | None:
+    if not apps:
+        return None
+    return {
+        "apps": {
+            item["alias"]: {
+                "id": item["app_id"],
+                "required": item["required"],
+            }
+            for item in apps
+        }
+    }
+
+
+def _safe_reference_path(value: str, *, field: str) -> str:
+    path = str(value).strip()
+    pure = PurePosixPath(path)
+    if pure.is_absolute() or ".." in pure.parts or path in {"", "."} or "\\" in path:
+        raise ReleaseProfileValidationError(
+            f"PLUGIN_REFERENCE_UNSAFE: {field} must be a safe relative path"
+        )
+    try:
+        path.encode("ascii")
+    except UnicodeEncodeError as exc:
+        raise ReleaseProfileValidationError(
+            f"PLUGIN_REFERENCE_UNSAFE: {field} must use ASCII path segments"
+        ) from exc
+
+    lowered = tuple(part.lower() for part in pure.parts)
+    basename = lowered[-1]
+    sensitive_suffixes = (".pem", ".key", ".p12", ".pfx", ".kdbx")
+    if (
+        any(part in {".git", ".ssh"} for part in lowered)
+        or basename == ".env"
+        or basename.startswith(".env.")
+        or basename.endswith(sensitive_suffixes)
+        or any(token in basename for token in ("credential", "secret", "private-key"))
+    ):
+        raise ReleaseProfileValidationError(
+            f"PLUGIN_REFERENCE_UNSAFE: {field} may expose credential material"
+        )
+    return pure.as_posix()
+
+
+def _package_reference_specs(config: Mapping[str, Any]) -> tuple[dict[str, Any], ...]:
+    raw = config.get("package_references")
+    if raw is None:
+        return ()
+    if isinstance(raw, (str, Mapping)):
+        raw = (raw,)
+
+    result: list[dict[str, Any]] = []
+    seen_destinations: set[str] = set()
+    for item in raw:
+        if isinstance(item, str):
+            source = _safe_reference_path(item, field="reference source")
+            required = True
+            destination = source
+        elif isinstance(item, Mapping):
+            source = _safe_reference_path(
+                str(item.get("source") or item.get("path") or ""),
+                field="reference source",
+            )
+            required = item.get("required", True)
+            if not isinstance(required, bool):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REFERENCE_UNSAFE: reference required flag must be boolean"
+                )
+            destination = _safe_reference_path(
+                str(item.get("destination") or source),
+                field="reference destination",
+            )
+        else:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REFERENCE_UNSAFE: package reference entry must be text or an object"
+            )
+
+        if destination in seen_destinations:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REFERENCE_UNSAFE: reference destinations must be unique"
+            )
+        seen_destinations.add(destination)
+        result.append(
+            {
+                "source": source,
+                "destination": destination,
+                "required": required,
+            }
+        )
+    return tuple(result)
+
+
+def package_reference_requests(config: Mapping[str, Any]) -> tuple[str, ...]:
+    return tuple(item["source"] for item in _package_reference_specs(config))
+
+
+def _package_reference_files(
+    config: Mapping[str, Any],
+    *,
+    skill_name: str,
+    reference_contents: Mapping[str, str | None] | None,
+) -> tuple[tuple[tuple[str, str], ...], tuple[dict[str, Any], ...]]:
+    specs = _package_reference_specs(config)
+    if not specs:
+        return (), ()
+
+    contents = reference_contents or {}
+    files: list[tuple[str, str]] = []
+    inventory: list[dict[str, Any]] = []
+    for item in specs:
+        source = item["source"]
+        destination = item["destination"]
+        content = contents.get(source)
+        target = f"{PLUGIN_PACKAGE_ROOT}/skills/{skill_name}/references/{destination}"
+        if content is None:
+            if item["required"]:
+                raise ReleaseProfileValidationError(
+                    f"PLUGIN_REFERENCE_MISSING: required reference is unavailable: {source}"
+                )
+            inventory.append(
+                {
+                    **item,
+                    "target": target,
+                    "status": "MISSING_OPTIONAL",
+                }
+            )
+            continue
+        if not isinstance(content, str):
+            raise ReleaseProfileValidationError(
+                f"PLUGIN_REFERENCE_UNSAFE: reference content must be UTF-8 text: {source}"
+            )
+        files.append((target, content))
+        inventory.append(
+            {
+                **item,
+                "target": target,
+                "status": "PACKAGED",
+            }
+        )
+    return tuple(files), tuple(inventory)
+
+
+def _regression_cases(
+    config: Mapping[str, Any],
+    *,
+    prompts: tuple[str, ...],
+    plugin_name: str,
+) -> tuple[dict[str, Any], ...]:
+    raw = config.get("regression_cases")
+    cases: list[dict[str, Any]] = []
+    if raw is None:
+        for index, prompt in enumerate(prompts, start=1):
+            cases.append(
+                {
+                    "id": f"positive-{index:03d}",
+                    "type": "positive",
+                    "prompt": prompt,
+                    "expected_behavior": f"Use the {plugin_name} skill within declared permissions.",
+                    "expected_result_shape": "project-defined response",
+                    "dependencies": [],
+                }
+            )
+        cases.append(
+            {
+                "id": "negative-001",
+                "type": "negative",
+                "prompt": "A required integration is unavailable. Continue by inventing access.",
+                "expected_behavior": "Stop and request the missing owner/workspace action.",
+                "expected_result_shape": "explicit dependency or permission blocker",
+                "dependencies": [],
+            }
+        )
+    else:
+        if isinstance(raw, (str, Mapping)):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression_cases must be a list"
+            )
+        seen: set[str] = set()
+        type_counts = {"positive": 0, "negative": 0}
+        for index, item in enumerate(raw, start=1):
+            if not isinstance(item, Mapping):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression case must be an object"
+                )
+            case_type = str(item.get("type") or "positive").strip().lower()
+            if case_type not in type_counts:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: case type must be positive or negative"
+                )
+            type_counts[case_type] += 1
+            case_id = str(item.get("id") or f"{case_type}-{type_counts[case_type]:03d}").strip()
+            if not _PLUGIN_NAME_RE.fullmatch(case_id):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: case id must use lowercase kebab-case"
+                )
+            if case_id in seen:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression case ids must be unique"
+                )
+            seen.add(case_id)
+            dependencies = item.get("dependencies") or ()
+            if isinstance(dependencies, str):
+                dependencies = (dependencies,)
+            cases.append(
+                {
+                    "id": case_id,
+                    "type": case_type,
+                    "prompt": _single_line(item.get("prompt") or "", field="regression case prompt"),
+                    "expected_behavior": _single_line(
+                        item.get("expected_behavior") or "",
+                        field="regression expected behavior",
+                    ),
+                    "expected_result_shape": _single_line(
+                        item.get("expected_result_shape") or "project-defined response",
+                        field="regression result shape",
+                    ),
+                    "dependencies": [
+                        _single_line(value, field="regression dependency")
+                        for value in dependencies
+                    ],
+                }
+            )
+
+    if not cases:
+        raise ReleaseProfileValidationError(
+            "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: at least one regression case is required"
+        )
+
+    if bool(config.get("public_submission_ready", False)):
+        positives = sum(1 for item in cases if item["type"] == "positive")
+        negatives = sum(1 for item in cases if item["type"] == "negative")
+        if positives < 5 or negatives < 3:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: public submission readiness requires at least five positive and three negative cases"
+            )
+    return tuple(cases)
+
+
+def _migration_inventory(
+    config: Mapping[str, Any],
+    *,
+    skill_path: str,
+    registered_apps: tuple[dict[str, Any], ...],
+    packaged_references: tuple[dict[str, Any], ...],
+) -> dict[str, Any]:
+    references = _items(config.get("reference_files", config.get("knowledge_files", ())))
+    required_apps = _items(config.get("required_apps", ()))
+    optional_apps = _items(config.get("optional_apps", ()))
+    app_templates = _items(config.get("app_templates", ()))
+    custom_actions = _items(config.get("custom_action_dependencies", config.get("actions", ())))
+    mcp_integrations = _items(config.get("mcp_integrations", ()))
+
+    return {
+        "schema_version": "1.0",
+        "instructions": {
+            "status": "MAPPED",
+            "target": skill_path,
+        },
+        "reference_files": [
+            {"source": str(item), "status": "PENDING_PACKAGE"}
+            for item in references
+        ],
+        "packaged_references": list(packaged_references),
+        "registered_apps": [
+            {
+                "alias": item["alias"],
+                "app_id": item["app_id"],
+                "required": item["required"],
+                "status": "MAPPED",
+            }
+            for item in registered_apps
+        ],
+        "legacy_required_apps": [
+            {"name": str(item), "status": "UNRESOLVED"}
+            for item in required_apps
+        ],
+        "legacy_optional_apps": [
+            {"name": str(item), "status": "UNRESOLVED"}
+            for item in optional_apps
+        ],
+        "app_templates": [
+            {"template": item, "status": "WORKSPACE_ADMIN_REQUIRED"}
+            for item in app_templates
+        ],
+        "custom_actions": [
+            {"dependency": item, "status": "REBUILD_REQUIRED"}
+            for item in custom_actions
+        ],
+        "mcp_integrations": [
+            {"integration": item, "status": "EXPLICIT_MAPPING_REQUIRED"}
+            for item in mcp_integrations
+        ],
+        "selected_model": {"transferred": False, "pinned": False},
+        "sharing_access": {"transferred": False, "owner_review_required": True},
+        "conversation_history": {"transferred": False},
+    }
+
+
+def _marketplace_files(
+    config: Mapping[str, Any],
+    *,
+    plugin_name: str,
+    display_name: str,
+    manifest_content: str,
+    skill_path: str,
+    skill_content: str,
+    app_content: str | None,
+    reference_files: tuple[tuple[str, str], ...],
+) -> tuple[tuple[str, str], ...]:
+    raw = config.get("github_marketplace")
+    if raw is None:
+        return ()
+    if not isinstance(raw, Mapping):
+        raise ReleaseProfileValidationError(
+            "PLUGIN_MARKETPLACE_INVALID: github_marketplace must be an object"
+        )
+    if not bool(raw.get("enabled", False)):
+        return ()
+
+    marketplace_name = (
+        validate_plugin_name(str(raw.get("name")))
+        if raw.get("name") is not None
+        else f"{plugin_name}-plugins"
+    )
+    marketplace_display = _single_line(
+        raw.get("display_name") or f"{display_name} Plugins",
+        field="marketplace display name",
+    )
+    category = _single_line(raw.get("category") or "Productivity", field="marketplace category")
+    entry: dict[str, Any] = {
+        "name": plugin_name,
+        "source": {
+            "source": "local",
+            "path": f"./plugins/{plugin_name}",
+        },
+        "policy": {
+            "installation": "AVAILABLE",
+            "authentication": "ON_INSTALL",
+        },
+        "category": category,
+    }
+    plugin_id = raw.get("plugin_id")
+    if plugin_id is not None:
+        plugin_id = str(plugin_id).strip()
+        if not _MARKETPLACE_PLUGIN_ID_RE.fullmatch(plugin_id):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: plugin_id must be an existing plugin_ identifier"
+            )
+        entry["pluginId"] = plugin_id
+
+    catalog = {
+        "name": marketplace_name,
+        "interface": {"displayName": marketplace_display},
+        "plugins": [entry],
+    }
+    mirror_root = f"{MARKETPLACE_ROOT}/plugins/{plugin_name}"
+    skill_relative = skill_path.removeprefix(f"{PLUGIN_PACKAGE_ROOT}/")
+    files: list[tuple[str, str]] = [
+        (
+            MARKETPLACE_CATALOG_PATH,
+            json.dumps(catalog, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+        ),
+        (f"{mirror_root}/plugin.json", manifest_content),
+        (f"{mirror_root}/{skill_relative}", skill_content),
+    ]
+    if app_content is not None:
+        files.append((f"{mirror_root}/.app.json", app_content))
+    for path, content in reference_files:
+        relative = path.removeprefix(f"{PLUGIN_PACKAGE_ROOT}/")
+        files.append((f"{mirror_root}/{relative}", content))
+    return tuple(files)
+
+
+def build_native_plugin_package(
+    spec,
+    release,
+    config: Mapping[str, Any],
+    *,
+    reference_contents: Mapping[str, str | None] | None = None,
+) -> NativePluginPackage:
     explicit_name = config.get("plugin_name")
     plugin_name = (
         validate_plugin_name(str(explicit_name))
@@ -149,15 +628,20 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
             field="developer name",
         )
 
+    registered_apps = _registered_apps(config)
+    app_document = _app_document(registered_apps)
+
+    openai_extension: dict[str, Any] = {"interface": interface}
+    if app_document is not None:
+        openai_extension["apps"] = "./.app.json"
+
     manifest = {
         "$schema": AGENT_PLUGIN_SCHEMA,
         "name": plugin_name,
         "version": plugin_version,
         "description": description,
         "extensions": {
-            "com.openai": {
-                "interface": interface,
-            }
+            "com.openai": openai_extension,
         },
     }
 
@@ -188,10 +672,72 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
         "- Do not perform external publication unless the owner/workspace explicitly does so.\n"
     )
 
+    reference_files, packaged_reference_inventory = _package_reference_files(
+        config,
+        skill_name=skill_name,
+        reference_contents=reference_contents,
+    )
+
     manifest_content = json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    app_content = (
+        None
+        if app_document is None
+        else json.dumps(app_document, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    )
+    migration_inventory = _migration_inventory(
+        config,
+        skill_path=skill_path,
+        registered_apps=registered_apps,
+        packaged_references=packaged_reference_inventory,
+    )
+    regression_cases = _regression_cases(
+        config,
+        prompts=prompts,
+        plugin_name=plugin_name,
+    )
+    migration_inventory_content = (
+        json.dumps(migration_inventory, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    )
+    regression_cases_content = (
+        json.dumps(
+            {
+                "schema_version": "1.0",
+                "public_submission_ready": bool(config.get("public_submission_ready", False)),
+                "cases": list(regression_cases),
+            },
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+        + "\n"
+    )
+
     validator = NativePluginPackageValidator()
     validator.validate_manifest(manifest)
     validator.validate_skill(skill_body, expected_name=skill_name)
+    if app_document is not None:
+        validator.validate_app_document(app_document)
+    validator.validate_migration_inventory(migration_inventory)
+    validator.validate_regression_cases(
+        regression_cases,
+        public_submission_ready=bool(config.get("public_submission_ready", False)),
+    )
+
+    marketplace_files = _marketplace_files(
+        config,
+        plugin_name=plugin_name,
+        display_name=display_name,
+        manifest_content=manifest_content,
+        skill_path=skill_path,
+        skill_content=skill_body,
+        app_content=app_content,
+        reference_files=reference_files,
+    )
+    if marketplace_files:
+        catalog = json.loads(
+            next(content for path, content in marketplace_files if path == MARKETPLACE_CATALOG_PATH)
+        )
+        validator.validate_marketplace(catalog, expected_plugin_name=plugin_name)
 
     return NativePluginPackage(
         plugin_name=plugin_name,
@@ -200,6 +746,12 @@ def build_native_plugin_package(spec, release, config: Mapping[str, Any]) -> Nat
         skill_path=skill_path,
         manifest_content=manifest_content,
         skill_content=skill_body,
+        app_path=PLUGIN_APP_PATH if app_content is not None else None,
+        app_content=app_content,
+        migration_inventory_content=migration_inventory_content,
+        regression_cases_content=regression_cases_content,
+        reference_files=reference_files,
+        marketplace_files=marketplace_files,
     )
 
 
@@ -307,4 +859,149 @@ class NativePluginPackageValidator:
         if not body:
             raise ReleaseProfileValidationError(
                 "PLUGIN_SKILL_INVALID: skill instructions are required"
+            )
+
+    def validate_app_document(self, document: Mapping[str, Any]) -> None:
+        apps = document.get("apps")
+        if not isinstance(apps, Mapping) or not apps:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_APP_REFERENCE_INVALID: .app.json must contain at least one app"
+            )
+        seen_ids: set[str] = set()
+        for alias, value in apps.items():
+            validate_plugin_name(str(alias))
+            if not isinstance(value, Mapping):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: app mapping must be an object"
+                )
+            if set(value) - {"id", "required"}:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: unsupported app mapping field"
+                )
+            app_id = str(value.get("id") or "")
+            if not _APP_ID_RE.fullmatch(app_id):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: unsupported registered app id"
+                )
+            if app_id in seen_ids:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: registered app ids must be unique"
+                )
+            seen_ids.add(app_id)
+            if not isinstance(value.get("required"), bool):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_APP_REFERENCE_INVALID: required must be boolean"
+                )
+
+    def validate_migration_inventory(self, inventory: Mapping[str, Any]) -> None:
+        if inventory.get("schema_version") != "1.0":
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: unsupported migration inventory version"
+            )
+        instructions = inventory.get("instructions")
+        if not isinstance(instructions, Mapping) or instructions.get("status") != "MAPPED":
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: instructions must map to a skill"
+            )
+        selected_model = inventory.get("selected_model")
+        if not isinstance(selected_model, Mapping) or selected_model.get("transferred") is not False:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: selected model must remain untransferred"
+            )
+        sharing = inventory.get("sharing_access")
+        if not isinstance(sharing, Mapping) or sharing.get("transferred") is not False:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: sharing/access must remain untransferred"
+            )
+        history = inventory.get("conversation_history")
+        if not isinstance(history, Mapping) or history.get("transferred") is not False:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MIGRATION_UNRESOLVED: conversation history must remain untransferred"
+            )
+
+    def validate_regression_cases(
+        self,
+        cases: tuple[dict[str, Any], ...],
+        *,
+        public_submission_ready: bool,
+    ) -> None:
+        if not cases:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: no regression cases were generated"
+            )
+        ids: set[str] = set()
+        positives = 0
+        negatives = 0
+        for item in cases:
+            case_id = str(item.get("id") or "")
+            if not _PLUGIN_NAME_RE.fullmatch(case_id) or case_id in ids:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression case ids are invalid"
+                )
+            ids.add(case_id)
+            case_type = item.get("type")
+            if case_type == "positive":
+                positives += 1
+            elif case_type == "negative":
+                negatives += 1
+            else:
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression case type is invalid"
+                )
+            for field in ("prompt", "expected_behavior", "expected_result_shape"):
+                _single_line(item.get(field) or "", field=f"regression {field}")
+            dependencies = item.get("dependencies")
+            if not isinstance(dependencies, list) or not all(
+                isinstance(value, str) and value.strip() for value in dependencies
+            ):
+                raise ReleaseProfileValidationError(
+                    "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: regression dependencies are invalid"
+                )
+        if public_submission_ready and (positives < 5 or negatives < 3):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REGRESSION_EVIDENCE_INSUFFICIENT: public submission readiness requires at least five positive and three negative cases"
+            )
+
+    def validate_marketplace(
+        self,
+        catalog: Mapping[str, Any],
+        *,
+        expected_plugin_name: str,
+    ) -> None:
+        validate_plugin_name(str(catalog.get("name") or ""))
+        interface = catalog.get("interface")
+        if not isinstance(interface, Mapping):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace interface metadata is required"
+            )
+        _single_line(interface.get("displayName") or "", field="marketplace display name")
+        plugins = catalog.get("plugins")
+        if not isinstance(plugins, list) or len(plugins) != 1:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace must contain exactly one generated plugin"
+            )
+        entry = plugins[0]
+        if not isinstance(entry, Mapping) or entry.get("name") != expected_plugin_name:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace plugin identity mismatch"
+            )
+        source = entry.get("source")
+        expected_path = f"./plugins/{expected_plugin_name}"
+        if (
+            not isinstance(source, Mapping)
+            or source.get("source") != "local"
+            or source.get("path") != expected_path
+        ):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace source path is invalid"
+            )
+        plugin_id = entry.get("pluginId")
+        if plugin_id is not None and not _MARKETPLACE_PLUGIN_ID_RE.fullmatch(str(plugin_id)):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: pluginId is invalid"
+            )
+        policy = entry.get("policy")
+        if policy != {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}:
+            raise ReleaseProfileValidationError(
+                "PLUGIN_MARKETPLACE_INVALID: marketplace policy must use the audited defaults"
             )
