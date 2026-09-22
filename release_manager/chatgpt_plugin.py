@@ -9,6 +9,7 @@ from .plugin_native import (
     PLUGIN_MANIFEST_PATH,
     REGRESSION_CASES_PATH,
     build_native_plugin_package,
+    package_reference_requests,
 )
 
 
@@ -47,7 +48,18 @@ class ChatGPTPluginPreparationProfile:
 
     target_type = "CHATGPT_PLUGIN"
 
-    def generate(self, spec, release, target) -> tuple[BootstrapFile, ...]:
+    def reference_requests(self, spec) -> tuple[str, ...]:
+        config = spec.release.get("chatgpt_plugin", {})
+        return package_reference_requests(config)
+
+    def generate(
+        self,
+        spec,
+        release,
+        target,
+        *,
+        reference_contents=None,
+    ) -> tuple[BootstrapFile, ...]:
         config = spec.release.get("chatgpt_plugin", {})
         reference_files = _items(config.get("reference_files", config.get("knowledge_files", ())))
         required_apps = _items(config.get("required_apps", ()))
@@ -60,7 +72,12 @@ class ChatGPTPluginPreparationProfile:
             f"Run a representative end-to-end workflow for {spec.name}.",
             "Handle a difficult edge case while preserving permissions and output requirements.",
         )
-        native = build_native_plugin_package(spec, release, config)
+        native = build_native_plugin_package(
+            spec,
+            release,
+            config,
+            reference_contents=reference_contents,
+        )
         profile = {
             "schema_version": "1.0",
             "target": self.target_type,
@@ -154,6 +171,7 @@ Owner/platform actions:
         ]
         if native.app_path is not None and native.app_content is not None:
             generated.append(BootstrapFile(native.app_path, native.app_content))
+        generated.extend(BootstrapFile(path, content) for path, content in native.reference_files)
         generated.extend(BootstrapFile(path, content) for path, content in native.marketplace_files)
         return tuple(generated)
 
