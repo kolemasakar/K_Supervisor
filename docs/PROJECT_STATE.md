@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
 
-Version: 5.8
+Version: 5.9
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -19,10 +19,10 @@ v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
-v0.4 Phase 4: AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 4: ACTIVATED — IMPLEMENTATION AUTHORIZED
 v0.4 Phase 5-7: PLANNED / INACTIVE
-Current approved implementation phase: NONE
-Runtime implementation phase: NONE
+Current approved implementation phase: v0.4 Phase 4
+Runtime implementation phase: v0.4 Phase 4 — audited scope only
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -66,13 +66,13 @@ Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
-Phase 4  GitHub Repository Provider & Governed VCS Handoff          AUDIT COMPLETE / ACTIVATION PENDING
+Phase 4  GitHub Repository Provider & Governed VCS Handoff          ACTIVATED — IMPLEMENTATION AUTHORIZED
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 pre-implementation audit is complete. Runtime implementation remains inactive; the next permitted work is a separate owner activation decision for Phase 4.
+Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 pre-implementation audit is complete and owner activation is approved. Runtime implementation is authorized only within the frozen Phase 4 audit scope after the protected activation checkpoint merges.
 
 ## Phase 0 Completion Evidence
 
@@ -226,8 +226,8 @@ Audit baseline tree: 47858060dc9d92f1441496c1ea6713696f9bf008
 Validated runtime predecessor: a1791b607496edfaf84593d753f7d1d7662eede1
 Validated runtime predecessor tree: 0f7b1ecba724623996c7e6e84414c029adcc63c7
 Phase 4 pre-implementation audit: COMPLETE
-Phase 4 activation: NO / PENDING OWNER APPROVAL
-Phase 4 runtime implementation authorization: NO
+Phase 4 activation: YES — PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_ACTIVATED.md
+Phase 4 runtime implementation authorization: YES — audited scope only
 ```
 
 The audit preserves the existing ProjectFactory/FilesystemRepositoryAdapter compatibility floor and requires any production GitHub write path to add policy/approval, protected-reference credential handling, idempotent recovery, normalized errors and governed branch/commit/PR handoff. Direct ProjectFactory/Service/CLI calls to a raw GitHub transport are not authorized.
@@ -274,7 +274,7 @@ Phase 4 activation=NO
 
 Temporary recovery artifacts used during owner bootstrap were removed: temporary Ubuntu SSH key, OCI Run Command policy, OCI dynamic group, serial console connection, local temporary key material, temporary KGM recovery workflows and temporary KGM recovery branch.
 
-This remains an operational CI migration only. Runtime/source behavior is unchanged. The next permitted roadmap work remains Phase 4 pre-implementation audit only.
+This remains an operational CI migration only. Runtime/source behavior is unchanged.
 
 ## ChatGPT Compatibility Boundary
 
