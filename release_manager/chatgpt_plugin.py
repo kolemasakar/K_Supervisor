@@ -4,6 +4,8 @@ import json
 
 from factory.contracts import BootstrapFile
 
+from .plugin_native import PLUGIN_MANIFEST_PATH, build_native_plugin_package
+
 
 _REQUIRED_PLUGIN_FILES = (
     "release/chatgpt_plugin/PLUGIN_PROFILE.json",
@@ -11,6 +13,7 @@ _REQUIRED_PLUGIN_FILES = (
     "release/chatgpt_plugin/INTEGRATIONS.md",
     "release/chatgpt_plugin/REGRESSION_PROMPTS.md",
     "release/chatgpt_plugin/ACCESS_AND_MIGRATION_CHECKLIST.md",
+    PLUGIN_MANIFEST_PATH,
 )
 
 
@@ -50,6 +53,7 @@ class ChatGPTPluginPreparationProfile:
             f"Run a representative end-to-end workflow for {spec.name}.",
             "Handle a difficult edge case while preserving permissions and output requirements.",
         )
+        native = build_native_plugin_package(spec, release, config)
         profile = {
             "schema_version": "1.0",
             "target": self.target_type,
@@ -67,6 +71,11 @@ class ChatGPTPluginPreparationProfile:
             "custom_actions_auto_migrated": False,
             "selected_model_pinned": False,
             "access_review_required": True,
+            "native_plugin_manifest_path": native.manifest_path,
+            "native_skill_path": native.skill_path,
+            "native_plugin_name": native.plugin_name,
+            "native_plugin_version": native.plugin_version,
+            "agent_plugins_schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
         }
         skill = (
             f"# {profile['name']} Skill Source\n\n"
@@ -124,11 +133,22 @@ Owner/platform actions:
             BootstrapFile(_REQUIRED_PLUGIN_FILES[2], integrations),
             BootstrapFile(_REQUIRED_PLUGIN_FILES[3], prompts),
             BootstrapFile(_REQUIRED_PLUGIN_FILES[4], checklist),
+            BootstrapFile(native.manifest_path, native.manifest_content),
+            BootstrapFile(native.skill_path, native.skill_content),
         )
 
     def validate(self, files: tuple[str, ...]) -> tuple[str, ...]:
         available = set(files)
-        return tuple(path for path in _REQUIRED_PLUGIN_FILES if path not in available)
+        missing = [path for path in _REQUIRED_PLUGIN_FILES if path not in available]
+        native_skills = tuple(
+            path
+            for path in available
+            if path.startswith("release/chatgpt_plugin/package/skills/")
+            and path.endswith("/SKILL.md")
+        )
+        if not native_skills:
+            missing.append("release/chatgpt_plugin/package/skills/<skill>/SKILL.md")
+        return tuple(missing)
 
     @property
     def checklist(self) -> tuple[str, ...]:
