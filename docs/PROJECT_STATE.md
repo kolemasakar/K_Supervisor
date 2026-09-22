@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 5 completion and Phase 6 pre-implementation audit.
 
-Version: 6.4
+Version: 6.5
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -21,10 +21,10 @@ v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
 v0.4 Phase 5: COMPLETE
-v0.4 Phase 6: AUDIT COMPLETE / ACTIVATION PENDING
+v0.4 Phase 6: ACTIVATED — IMPLEMENTATION AUTHORIZED
 v0.4 Phase 7: PLANNED / INACTIVE
-Current approved implementation phase: NONE
-Runtime implementation phase: NONE
+Current approved implementation phase: v0.4 Phase 6 — audited scope only
+Runtime implementation phase: v0.4 Phase 6 — audited scope only
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -68,11 +68,11 @@ Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          COMPLETE
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              COMPLETE
-Phase 6  Production Telemetry & Supply-Chain Hardening              AUDIT COMPLETE / ACTIVATION PENDING
+Phase 6  Production Telemetry & Supply-Chain Hardening              ACTIVATED — IMPLEMENTATION AUTHORIZED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phases 0 through 5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE. No runtime implementation phase is active; the next permitted action is the separate owner Phase 6 activation decision.
+Phases 0 through 5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE and owner activation is approved. Phase 6 runtime implementation is authorized only within the audited scope after the protected activation checkpoint merges.
 
 ## Phase 0 Completion Evidence
 
@@ -298,13 +298,30 @@ Audit baseline main: cf827d3d6b5dfa1f030cab28a5284ae2b72990c1
 Audit baseline tree: df376ec022fba242db52d546ea181fa92f96ddd9
 Validated runtime predecessor: cf827d3d6b5dfa1f030cab28a5284ae2b72990c1
 Phase 6 pre-implementation audit: COMPLETE
-Phase 6 activation: NO / PENDING OWNER APPROVAL
-Phase 6 runtime implementation authorization: NO
-Supported stable Python target after activation: 3.13 + 3.14
+Phase 6 activation: YES
+Phase 6 runtime implementation authorization: YES — audited scope only, effective after protected activation merge
+Supported stable Python target: 3.13 + 3.14
 Mandatory remote collector: NO
 ```
 
-The audit freezes a bounded production telemetry architecture, low-cardinality metric vocabulary, optional OTLP/Prometheus exporter boundary, deterministic SBOM/dependency inventory, current vulnerability evidence, immutable GitHub Action pinning, trusted-main artifact/SBOM attestation and an explicit Python 3.13/3.14 compatibility gate. Runtime/source/test/workflow changes remain unauthorized until a separate protected activation checkpoint merges.
+The audit freezes a bounded production telemetry architecture, low-cardinality metric vocabulary, optional OTLP/Prometheus exporter boundary, deterministic SBOM/dependency inventory, current vulnerability evidence, immutable GitHub Action pinning, trusted-main artifact/SBOM attestation and an explicit Python 3.13/3.14 compatibility gate.
+
+## Phase 6 Activation
+
+Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_ACTIVATED.md`.
+
+```text
+Owner approval: YES — 2026-09-22
+Audit PR: #47
+Audit final head: 1570d7d7f028e5d8e9da96842ded99fb7364a165
+Audit final Core Validation: 35778192643 — PASS
+Audit merge main: 45d58aabc40ca67f49d5f7d89072a8073a8e49a9
+Authorized scope: V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md only
+Phase 7 activation: NO
+Zero-cost development policy: REQUIRED
+```
+
+Runtime/source/test/workflow implementation may begin only after this activation checkpoint passes protected governance and merges to `main`.
 
 ## Development Resource Policy
 
