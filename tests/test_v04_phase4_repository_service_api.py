@@ -94,6 +94,60 @@ def test_repository_bootstrap_is_explicit_restart_safe_service_command(tmp_path)
     store.close()
 
 
+def test_repository_bootstrap_replay_survives_store_reopen(tmp_path):
+    path = tmp_path / "state.db"
+    repos = tmp_path / "repos"
+
+    store, projects = open_registry(path)
+    spec = make_spec()
+    projects.register(make_project(spec), spec)
+    api = ServiceApiV1(
+        projects,
+        store,
+        project_factory=ProjectFactory(
+            projects,
+            (FilesystemRepositoryAdapter(repos),),
+        ),
+    )
+    key = "repo-reopen-1"
+    first = api.dispatch(
+        "POST",
+        "/api/v1/projects/P6/repository/bootstrap",
+        principal=principal(REPOSITORY_BOOTSTRAP_SCOPE),
+        idempotency_key=key,
+    )
+    assert first.status_code == 200
+    first_data = first.body["data"]
+    store.close()
+
+    reopened, reopened_projects = open_registry(path)
+    recovered_api = ServiceApiV1(
+        reopened_projects,
+        reopened,
+        project_factory=ProjectFactory(
+            reopened_projects,
+            (FilesystemRepositoryAdapter(repos),),
+        ),
+    )
+    try:
+        replay = recovered_api.dispatch(
+            "POST",
+            "/api/v1/projects/P6/repository/bootstrap",
+            principal=principal(REPOSITORY_BOOTSTRAP_SCOPE),
+            idempotency_key=key,
+        )
+        assert replay.status_code == 200
+        assert replay.body["meta"]["idempotent_replay"] is True
+        assert replay.body["data"] == first_data
+        commands = reopened.list_service_commands("P6")
+        assert len(commands) == 1
+        assert commands[0].status.value == "SUCCEEDED"
+        assert reopened_projects.get("P6").lifecycle_state == ProjectLifecycleState.BOOTSTRAPPED
+        assert len(list(repos.rglob("README.md"))) == 1
+    finally:
+        reopened.close()
+
+
 def test_project_factory_reconciles_bootstrapped_project_without_duplicate_files(tmp_path):
     store, projects, project_factory, _ = build_stack(tmp_path)
 
