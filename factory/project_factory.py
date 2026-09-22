@@ -70,7 +70,11 @@ class ProjectFactory:
             self._block_for_repository(project_id, target, at, "repository provider adapter is unavailable")
 
         try:
-            repository = adapter.prepare(target, context=context)
+            repository = (
+                adapter.prepare(target, context=context)
+                if getattr(adapter, "supports_operation_context", False)
+                else adapter.prepare(target)
+            )
         except RepositoryGovernanceBlockedError as exc:
             if exc.human_action_id is not None:
                 raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
@@ -83,14 +87,21 @@ class ProjectFactory:
         files = generate_bootstrap_files(spec, target)
         validate_bootstrap(spec, target, files)
         try:
-            adapter.apply_files(repository, files, context=context)
+            if getattr(adapter, "supports_operation_context", False):
+                adapter.apply_files(repository, files, context=context)
+            else:
+                adapter.apply_files(repository, files)
         except RepositoryGovernanceBlockedError as exc:
             if exc.human_action_id is not None:
                 raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
             self._block_for_repository(project_id, target, at, str(exc))
 
         expected = {item.path for item in files}
-        actual = set(adapter.list_files(repository, context=context))
+        actual = set(
+            adapter.list_files(repository, context=context)
+            if getattr(adapter, "supports_operation_context", False)
+            else adapter.list_files(repository)
+        )
         missing = sorted(expected.difference(actual))
         if missing:
             raise BootstrapValidationError(f"repository is missing generated files: {', '.join(missing)}")
