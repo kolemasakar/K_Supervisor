@@ -814,7 +814,19 @@ After activation, deterministic Phase 6 verification must prove:
 - no paid external resource is required;
 - full cumulative regression, branch-aware coverage >=80%, compile, wheel/install and required installed-wheel smoke paths remain green.
 
-## 30. Activation Boundary
+## 30. Protected Governance Evidence
+
+```text
+Audit PR: #47
+Initial audit head: 66178b16d3bc4864b83a87226b0a4a169a8363c7
+Initial Core Validation: 35778039230 — PASS
+Validation runner: kgm-e4-owner-pilot
+Runtime/source/test/workflow paths changed: NONE
+```
+
+The exact final audit head, including this evidence, must pass required `Core Validation` before merge. The merged audit remains documentation-only and does not activate Phase 6.
+
+## 31. Activation Boundary
 
 ```text
 PHASE_6_PREIMPLEMENTATION_AUDIT=COMPLETE
