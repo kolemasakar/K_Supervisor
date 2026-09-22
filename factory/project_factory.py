@@ -9,7 +9,7 @@ from models.intervention import HumanActionRequest
 from registry.project_registry import ProjectRegistry
 from supervisor.human_intervention import HumanInterventionBroker
 
-from .contracts import BootstrapResult, RepositoryTarget
+from .contracts import BootstrapResult, RepositoryOperationContext, RepositoryTarget
 from .errors import BootstrapBlockedError, BootstrapValidationError, RepositoryUnavailableError
 from .repository import RepositoryAdapter
 from .templates import generate_bootstrap_files
@@ -55,12 +55,17 @@ class ProjectFactory:
             )
 
         target = RepositoryTarget.from_spec(spec)
+        context = RepositoryOperationContext(
+            project_id=project_id,
+            project_spec_id=spec.project_spec_id,
+            idempotency_key=f"project-factory:{spec.project_spec_id}:bootstrap",
+        )
         adapter = self.adapters.get(target.provider)
         if adapter is None:
             self._block_for_repository(project_id, target, at, "repository provider adapter is unavailable")
 
         try:
-            repository = adapter.prepare(target)
+            repository = adapter.prepare(target, context=context)
         except RepositoryUnavailableError as exc:
             if target.provisioning != "AUTOMATABLE":
                 self._block_for_repository(project_id, target, at, str(exc))
@@ -68,10 +73,10 @@ class ProjectFactory:
 
         files = generate_bootstrap_files(spec, target)
         validate_bootstrap(spec, target, files)
-        adapter.apply_files(repository, files)
+        adapter.apply_files(repository, files, context=context)
 
         expected = {item.path for item in files}
-        actual = set(adapter.list_files(repository))
+        actual = set(adapter.list_files(repository, context=context))
         missing = sorted(expected.difference(actual))
         if missing:
             raise BootstrapValidationError(f"repository is missing generated files: {', '.join(missing)}")
