@@ -54,6 +54,7 @@ class SideEffectGateway:
         access_refs: tuple[AccessReference, ...] = (),
         idempotency_key: str | None = None,
         version_constraint: str = "*",
+        resume_pending: bool = False,
     ) -> SideEffectResult:
         decision = self.policy.evaluate(request)
         blocked = self._authorize(
@@ -150,6 +151,7 @@ class SideEffectGateway:
             payload=payload or {},
             access_refs=access_refs,
             idempotency_key=idempotency_key or request.idempotency_key,
+            resume_pending=resume_pending,
             invoke=lambda key: self._normalize_provider_result(
                 provider.execute(
                     ProviderRequest(
@@ -236,6 +238,7 @@ class SideEffectGateway:
         access_refs: tuple[AccessReference, ...],
         idempotency_key: str | None,
         invoke,
+        resume_pending: bool = False,
     ) -> SideEffectResult:
         signature = self._signature(payload, access_refs)
         execution_id = self._execution_id(
@@ -301,15 +304,31 @@ class SideEffectGateway:
                     )
                 )
                 return result
-            self.store.append_audit_event(
-                self._replay_audit(existing, request, decision, "SIDE_EFFECT_REPLAYED")
-            )
-            return self._result_from_record(
-                existing,
-                replay=True,
-                request_id=request.request_id,
-                policy_decision_id=decision.decision_id,
-            )
+            if existing.status == SideEffectExecutionStatus.PENDING and resume_pending:
+                pending = existing.model_copy(
+                    update={
+                        "request_id": request.request_id,
+                        "policy_decision_id": decision.decision_id,
+                    }
+                )
+                self.store.append_audit_event(
+                    self._replay_audit(
+                        existing,
+                        request,
+                        decision,
+                        "SIDE_EFFECT_PENDING_RESUMED",
+                    )
+                )
+            else:
+                self.store.append_audit_event(
+                    self._replay_audit(existing, request, decision, "SIDE_EFFECT_REPLAYED")
+                )
+                return self._result_from_record(
+                    existing,
+                    replay=True,
+                    request_id=request.request_id,
+                    policy_decision_id=decision.decision_id,
+                )
 
         try:
             output, metadata = invoke(idempotency_key)
