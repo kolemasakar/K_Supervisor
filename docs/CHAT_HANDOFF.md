@@ -1,7 +1,7 @@
 # CHAT_HANDOFF
 Canonical continuation context after ROADMAP v0.4 Phase 4 completion and Phase 5 pre-implementation audit.
 
-Version: 5.8
+Version: 5.9
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -29,8 +29,8 @@ v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
 v0.4 Phase 5 pre-implementation audit: COMPLETE
-v0.4 Phase 5 activation: NO / PENDING OWNER APPROVAL
-v0.4 Phase 5 runtime implementation authorization: NO
+v0.4 Phase 5 activation: YES
+v0.4 Phase 5 runtime implementation authorization: YES — audited scope only
 v0.4 Phase 6-7: PLANNED / INACTIVE
 ```
 
@@ -103,8 +103,4 @@ Zero-cost development policy: REQUIRED
 
 ## Immediate Continuation
 
-No Phase 5 runtime/source/test implementation may begin yet.
-
-Next action is the owner Phase 5 activation decision. If approved, create a separate protected activation checkpoint authorizing only the scope frozen in `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`.
-
-Runtime implementation begins only after that checkpoint passes protected `Core Validation` and merges to `main`.
+Phase 5 activation is owner-approved. Runtime/source/test implementation may begin only after `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_ACTIVATED.md` passes protected `Core Validation` and merges to `main`, and must remain inside `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`.
