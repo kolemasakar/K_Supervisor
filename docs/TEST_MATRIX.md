@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 3.9
+Version: 4.0
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT PENDING
-Date: 2026-09-19
+Current phase: v0.4 Phase 4 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
+Date: 2026-09-22
 
 ## Preserved Regression Floor
 
@@ -30,8 +30,8 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 0 | predecessor traceability, product contract, no runtime diff | COMPLETE |
 | 1 | governed production MODEL provider, protected credentials, non-reference capability path, zero-cost validation | COMPLETE |
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
-| 3 | service host, health/readiness, shutdown, CLI parity | ACTIVE |
-| 4 | GitHub repository/VCS provider and governed handoff | PLANNED |
+| 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
+| 4 | GitHub repository/VCS provider and governed handoff | AUDIT COMPLETE / ACTIVATION PENDING |
 | 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
 | 7 | end-to-end single-node product qualification | PLANNED |
@@ -214,6 +214,38 @@ Phase 4 activation: NO
 ```
 
 Phase 3 satisfies the audited host/config/auth/health/readiness/proxy/client/CLI/restart/idempotency and installed-wheel verification contract. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_3_COMPLETE.md`.
+
+## v0.4 Phase 4 — Audited Verification Contract
+
+Audit authority: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`.
+
+After a separate owner-approved activation checkpoint merges, required deterministic Phase 4 verification includes:
+
+- GitHub repository target canonicalization with explicit owner/name for automatable create;
+- protected GitHub credential references only; no plaintext token persistence/logging/CLI output;
+- deterministic fake/injected GitHub transport in normal CI;
+- versioned GitHub REST request headers and safe response/error normalization;
+- repository create/resolve idempotency, including uncertain-create recovery;
+- exact visibility/default-branch/archive/disabled checks;
+- new/empty repository bootstrap and existing-repository conflict safety;
+- non-force ref updates and concurrent-head conflict handling;
+- policy DENY / REQUIRE_APPROVAL blocks before any material GitHub call;
+- durable idempotency/correlation with same-key/different-payload rejection;
+- branch/commit/PR replay without duplicate repository, commit, branch or PR creation;
+- protected-branch/ruleset denial cannot be bypassed;
+- optional tag creation is idempotent and never moves an existing divergent tag;
+- 401/403 permission/auth failures and 403/429 primary/secondary rate limits normalize safely;
+- bounded retry/backoff respects reset/retry-after metadata;
+- restart/reopen recovers partial repository/VCS handoff without duplicate material effects;
+- Human Intervention fallback for credentials, permissions, policy and content conflicts;
+- production ServiceRuntime / ProjectFactory wiring does not create a raw GitHub bypass;
+- any additive Service/API/CLI repository operation remains explicit, scoped and idempotent;
+- FilesystemRepositoryAdapter predecessor behavior remains compatible;
+- release/publication owner-action boundary remains unchanged;
+- zero paid external resources are required for authoritative validation;
+- cumulative regression and permanent quality gates remain green.
+
+A live GitHub smoke is supplemental and owner-controlled when it can be executed at zero cost. It is not an ordinary protected-PR merge dependency.
 
 ## Permanent Quality Gates
 
