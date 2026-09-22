@@ -1,7 +1,7 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 3 completion.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 4 completion.
 
-Version: 5.9
+Version: 6.0
 Status: ACTIVE
 Date: 2026-09-22
 
@@ -19,10 +19,10 @@ v0.4 Phase 0: COMPLETE
 v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
-v0.4 Phase 4: ACTIVATED — IMPLEMENTATION AUTHORIZED
+v0.4 Phase 4: COMPLETE
 v0.4 Phase 5-7: PLANNED / INACTIVE
-Current approved implementation phase: v0.4 Phase 4
-Runtime implementation phase: v0.4 Phase 4 — audited scope only
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -66,13 +66,13 @@ Phase 0  Baseline Freeze & Operator Product Contract                 COMPLETE
 Phase 1  Production Model Provider & AI Execution                   COMPLETE
 Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
-Phase 4  GitHub Repository Provider & Governed VCS Handoff          ACTIVATED — IMPLEMENTATION AUTHORIZED
+Phase 4  GitHub Repository Provider & Governed VCS Handoff          COMPLETE
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              PLANNED
 Phase 6  Production Telemetry & Supply-Chain Hardening              PLANNED
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 pre-implementation audit is complete and owner activation is approved. Runtime implementation is authorized only within the frozen Phase 4 audit scope after the protected activation checkpoint merges.
+Phase 0, Phase 1, Phase 2 and Phase 3 are complete. Phase 3 delivered only the audited production composition/host/client/CLI layer around Service/API v1. Phase 4 is COMPLETE. The governed GitHub repository/VCS provider, ProjectFactory integration, explicit Service/API + CLI operator surface, deterministic recovery tests and installed-wheel qualification are merged and green. No runtime implementation phase is active; the next permitted work is Phase 5 pre-implementation audit only.
 
 ## Phase 0 Completion Evidence
 
@@ -231,6 +231,27 @@ Phase 4 runtime implementation authorization: YES — audited scope only
 ```
 
 The audit preserves the existing ProjectFactory/FilesystemRepositoryAdapter compatibility floor and requires any production GitHub write path to add policy/approval, protected-reference credential handling, idempotent recovery, normalized errors and governed branch/commit/PR handoff. Direct ProjectFactory/Service/CLI calls to a raw GitHub transport are not authorized.
+
+## Phase 4 Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_COMPLETE.md`.
+
+```text
+Activation merge: 4b0f1479a9de2165211b6a6274e0bc2903124c2e
+Provider boundary PR: #36 / Core Validation 35742759396 PASS
+VCS handoff PR: #37 / Core Validation 35743886773 PASS
+ProjectFactory wiring PR: #38 / Core Validation 35748024918 PASS
+Service/API + CLI PR: #39 / Core Validation 35753867888 PASS
+Qualification PR: #40 / Core Validation 35755061918 PASS
+Final implementation/qualification main: 8ba51416c561e841ae7a43c5941426b681299e80
+Merged-main Core Validation: 35755228146 PASS
+Full regression: 279 passed
+Branch-aware coverage: 81.54%
+Installed-wheel Phase 4 repository Service/API/CLI smoke: PASS
+Phase 5 activation: NO
+```
+
+Phase 4 is complete. Runtime implementation authorization is NONE; Phase 5 remains planned/inactive.
 
 ## Development Resource Policy
 

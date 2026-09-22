@@ -7,12 +7,12 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 4 — ACTIVATED / IMPLEMENTATION AUTHORIZED
+Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
 Phase 3: COMPLETE
-Runtime implementation authorized: YES — v0.4 Phase 4 audited scope only
+Runtime implementation authorized: NO
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -142,7 +142,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 4 — GitHub Repository Provider & Governed VCS Handoff
 
-**Phase 4 status:** ACTIVATED — IMPLEMENTATION AUTHORIZED. Canonical audit: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`. Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_ACTIVATED.md`. Runtime/source/test implementation is authorized only within the audited scope after the protected activation checkpoint merges.
+**Phase 4 status:** COMPLETE. Canonical audit: `V0_4_PHASE4_PREIMPLEMENTATION_AUDIT.md`; activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_ACTIVATED.md`; completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_COMPLETE.md`. The governed GitHub provider, VCS handoff, ProjectFactory/ServiceRuntime integration, explicit Service/API + CLI repository operator surface, deterministic recovery coverage and installed-wheel qualification are merged and green.
 
 **Goal:** let K_Supervisor bootstrap and update a real GitHub repository through existing Project Factory/provisioning/policy boundaries.
 
@@ -277,4 +277,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-3 are COMPLETE. No runtime implementation phase is active. Phase 4-7 remain inactive. The next permitted work is Phase 4 pre-implementation audit only; Phase 4 runtime implementation requires its own completed audit, explicit owner activation and protected merge gate.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-4 are COMPLETE. No runtime implementation phase is active. Phase 5-7 remain inactive. The next permitted work is Phase 5 pre-implementation audit only; Phase 5 runtime implementation requires its own completed audit, explicit owner activation and protected merge gate.
