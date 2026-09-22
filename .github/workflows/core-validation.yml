@@ -260,3 +260,134 @@ jobs:
               finally:
                   connection.close()
           PY
+
+      - name: Installed wheel Phase 5 plugin package smoke
+        run: |
+          cd /tmp
+          python - <<'PY'
+          import json
+          import tempfile
+          from pathlib import Path
+          from types import SimpleNamespace
+
+          from release_manager.chatgpt_plugin import ChatGPTPluginPreparationProfile
+
+          cases = [
+              {
+                  "id": f"positive-{index:03d}",
+                  "type": "positive",
+                  "prompt": f"Run supported workflow {index}.",
+                  "expected_behavior": "Use the packaged skill within declared permissions.",
+                  "expected_result_shape": "project-defined response",
+                  "dependencies": ["repo-tools"],
+              }
+              for index in range(1, 6)
+          ] + [
+              {
+                  "id": f"negative-{index:03d}",
+                  "type": "negative",
+                  "prompt": f"Attempt unsafe workflow {index}.",
+                  "expected_behavior": "Stop and surface the required owner/workspace action.",
+                  "expected_result_shape": "explicit safe blocker",
+                  "dependencies": [],
+              }
+              for index in range(1, 4)
+          ]
+
+          spec = SimpleNamespace(
+              name="Phase 5 Wheel Smoke",
+              short_name="phase5-wheel-smoke",
+              purpose="Validate installed-wheel native plugin package generation.",
+              problem_statement="Plugin packaging must work outside the source checkout.",
+              success_criteria=("native plugin package is deterministic",),
+              release={
+                  "chatgpt_plugin": {
+                      "plugin_name": "phase5-wheel-smoke",
+                      "registered_apps": [{
+                          "alias": "repo-tools",
+                          "app_id": "asdk_app_phase5_wheel_smoke",
+                          "required": True,
+                      }],
+                      "package_references": [{
+                          "source": "docs/REFERENCE.md",
+                          "destination": "reference.md",
+                          "required": True,
+                      }],
+                      "custom_action_dependencies": ["legacy-action"],
+                      "mcp_integrations": ["legacy-mcp"],
+                      "public_submission_ready": True,
+                      "regression_cases": cases,
+                      "github_marketplace": {
+                          "enabled": True,
+                          "name": "phase5-wheel-marketplace",
+                          "plugin_id": "plugin_existing_phase5_wheel",
+                      },
+                  }
+              },
+          )
+          release = SimpleNamespace(release_id="REL_PHASE5_WHEEL", version="0.1.0")
+          target = SimpleNamespace(target_type="CHATGPT_PLUGIN")
+          profile = ChatGPTPluginPreparationProfile()
+          generated = profile.generate(
+              spec,
+              release,
+              target,
+              reference_contents={"docs/REFERENCE.md": "# Installed-wheel reference\n"},
+          )
+
+          paths = tuple(item.path for item in generated)
+          assert profile.validate(paths) == ()
+          assert not any(path.endswith("/mcp.json") or path.endswith("/.mcp.json") for path in paths)
+
+          with tempfile.TemporaryDirectory() as raw:
+              root = Path(raw)
+              for item in generated:
+                  destination = root / item.path
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  destination.write_text(item.content, encoding="utf-8")
+
+              package = root / "release" / "chatgpt_plugin" / "package"
+              manifest = json.loads((package / "plugin.json").read_text(encoding="utf-8"))
+              apps = json.loads((package / ".app.json").read_text(encoding="utf-8"))
+              inventory = json.loads(
+                  (root / "release" / "chatgpt_plugin" / "MIGRATION_INVENTORY.json").read_text(
+                      encoding="utf-8"
+                  )
+              )
+              regression = json.loads(
+                  (root / "release" / "chatgpt_plugin" / "REGRESSION_CASES.json").read_text(
+                      encoding="utf-8"
+                  )
+              )
+              catalog = json.loads(
+                  (
+                      root
+                      / "release"
+                      / "chatgpt_plugin"
+                      / "marketplace"
+                      / ".agents"
+                      / "plugins"
+                      / "marketplace.json"
+                  ).read_text(encoding="utf-8")
+              )
+
+              assert manifest["name"] == "phase5-wheel-smoke"
+              assert manifest["version"] == "0.1.0"
+              assert manifest["extensions"]["com.openai"]["apps"] == "./.app.json"
+              assert "pluginId" not in manifest
+              assert apps["apps"]["repo-tools"]["required"] is True
+              assert inventory["custom_actions"][0]["status"] == "REBUILD_REQUIRED"
+              assert inventory["mcp_integrations"][0]["status"] == "EXPLICIT_MAPPING_REQUIRED"
+              assert inventory["selected_model"] == {"pinned": False, "transferred": False}
+              assert inventory["sharing_access"]["transferred"] is False
+              assert regression["public_submission_ready"] is True
+              assert len(regression["cases"]) == 8
+              assert catalog["plugins"][0]["pluginId"] == "plugin_existing_phase5_wheel"
+              assert (
+                  package
+                  / "skills"
+                  / "phase5-wheel-smoke"
+                  / "references"
+                  / "reference.md"
+              ).read_text(encoding="utf-8") == "# Installed-wheel reference\n"
+          PY
