@@ -29,6 +29,7 @@ class GitHubRepositoryProvider:
         "resolve_repository",
         "create_repository",
         "bootstrap_files",
+        "list_files",
         "handoff_pull_request",
         "create_tag",
     )
@@ -91,6 +92,8 @@ class GitHubRepositoryProvider:
             return self._create_or_recover(target)
         if request.operation == "bootstrap_files":
             return self._bootstrap_files(target, request.payload)
+        if request.operation == "list_files":
+            return self._list_files(target)
         if request.operation == "handoff_pull_request":
             return self._handoff_pull_request(target, request)
         return self._create_tag(target, request.payload)
@@ -251,6 +254,41 @@ class GitHubRepositoryProvider:
                 "noop": noop,
             },
             metadata={"conflict_safe": True},
+        )
+
+    def _list_files(self, target: RepositoryTarget) -> ProviderResponse:
+        self._resolve_managed(target)
+        branch_sha = self._get_ref(target, "heads", target.default_branch)
+        if branch_sha is None:
+            return ProviderResponse(payload={"files": []}, metadata={"recursive": True})
+        tree_sha = self._get_commit_tree(target, branch_sha)
+        assert target.credential_ref is not None
+        repo = self._repo_path(target)
+        try:
+            data = self.client.request_json(
+                "GET",
+                f"{repo}/git/trees/{quote(tree_sha, safe='')}?recursive=1",
+                credential_ref=target.credential_ref,
+            )
+        except GitHubRepositoryError as exc:
+            raise self._provider_error(exc) from exc
+        if not isinstance(data, dict):
+            raise self._malformed("GitHub tree response is invalid")
+        tree = data.get("tree")
+        if not isinstance(tree, list):
+            raise self._malformed("GitHub tree response is missing entries")
+        files = []
+        for item in tree:
+            if not isinstance(item, dict):
+                continue
+            if item.get("type") != "blob":
+                continue
+            path = item.get("path")
+            if isinstance(path, str) and path:
+                files.append(path)
+        return ProviderResponse(
+            payload={"files": sorted(set(files))},
+            metadata={"recursive": True},
         )
 
     def _handoff_pull_request(
