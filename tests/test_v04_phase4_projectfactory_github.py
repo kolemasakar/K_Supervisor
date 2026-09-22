@@ -214,6 +214,6 @@ def test_missing_policy_access_reference_blocks_before_provider_and_opens_reposi
 
     assert blocked.value.human_action_id is not None
     assert item.requests == []
-    actions = human.list("P4")
+    actions = store.list_human_actions("P4")
     assert any(action.action_type == "REPOSITORY_PROVISIONING" for action in actions)
     store.close()
