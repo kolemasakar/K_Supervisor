@@ -1,14 +1,16 @@
-from .contracts import BootstrapFile, BootstrapResult, ManagedRepository, RepositoryTarget
+from .contracts import BootstrapFile, BootstrapResult, ManagedRepository, RepositoryOperationContext, RepositoryTarget
 from .errors import (
     BootstrapBlockedError,
     BootstrapValidationError,
     ProjectFactoryError,
     GitHubRepositoryError,
     RepositoryConflictError,
+    RepositoryGovernanceBlockedError,
     RepositoryUnavailableError,
 )
 from .onboarding import build_draft_project_spec
 from .project_factory import ProjectFactory
+from .governed_github import GovernedGitHubRepositoryAdapter
 from .github import (
     GITHUB_API_VERSION,
     GitHubHttpResponse,
@@ -37,10 +39,13 @@ __all__ = [
     "GitHubTransportError",
     "UrllibGitHubTransport",
     "ManagedRepository",
+    "RepositoryOperationContext",
     "ProjectFactory",
     "ProjectFactoryError",
     "RepositoryAdapter",
     "RepositoryConflictError",
+    "RepositoryGovernanceBlockedError",
+    "GovernedGitHubRepositoryAdapter",
     "RepositoryTarget",
     "RepositoryUnavailableError",
     "build_draft_project_spec",
