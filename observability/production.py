@@ -159,13 +159,34 @@ class StructuredLogger:
 def normalize_service_route(path: str) -> str:
     route = path.split("?", 1)[0].rstrip("/") or "/"
     prefix = "/api/v1/projects/"
-    if route.startswith(prefix):
-        remainder = route[len(prefix):]
-        parts = remainder.split("/", 1)
-        if parts[0]:
-            suffix = "" if len(parts) == 1 else "/" + parts[1]
-            return prefix + "{project_id}" + suffix
-    return route
+    if not route.startswith(prefix):
+        return route
+    remainder = route[len(prefix):]
+    parts = remainder.split("/")
+    if not parts or not parts[0]:
+        return route
+    normalized = ["", "api", "v1", "projects", "{project_id}"]
+    tail = parts[1:]
+    id_segments = {
+        "specs": "{spec_id}",
+        "human-actions": "{human_action_id}",
+        "approvals": "{approval_id}",
+        "tasks": "{task_id}",
+        "workflows": "{workflow_id}",
+        "releases": "{release_id}",
+        "targets": "{target_type}",
+    }
+    index = 0
+    while index < len(tail):
+        segment = tail[index]
+        normalized.append(segment)
+        placeholder = id_segments.get(segment)
+        if placeholder is not None and index + 1 < len(tail):
+            normalized.append(placeholder)
+            index += 2
+            continue
+        index += 1
+    return "/".join(normalized)
 
 
 def _escape_label(value: str) -> str:
@@ -186,12 +207,39 @@ class ProductionMetricRegistry:
         "/api/v1/projects/{project_id}",
         "/api/v1/projects/{project_id}/lifecycle-transitions",
         "/api/v1/projects/{project_id}/operational-transitions",
+        "/api/v1/projects/{project_id}/specs",
+        "/api/v1/projects/{project_id}/specs/{spec_id}/approve",
+        "/api/v1/projects/{project_id}/specs/{spec_id}/reject",
+        "/api/v1/projects/{project_id}/specs/{spec_id}/activate",
+        "/api/v1/projects/{project_id}/human-actions",
+        "/api/v1/projects/{project_id}/human-actions/{human_action_id}/verify",
+        "/api/v1/projects/{project_id}/human-actions/{human_action_id}/cancel",
+        "/api/v1/projects/{project_id}/approvals",
+        "/api/v1/projects/{project_id}/approvals/{approval_id}/approve",
+        "/api/v1/projects/{project_id}/approvals/{approval_id}/reject",
+        "/api/v1/projects/{project_id}/approvals/{approval_id}/revoke",
+        "/api/v1/projects/{project_id}/tasks",
+        "/api/v1/projects/{project_id}/tasks/{task_id}",
+        "/api/v1/projects/{project_id}/tasks/{task_id}/cancel",
+        "/api/v1/projects/{project_id}/workflows",
+        "/api/v1/projects/{project_id}/workflows/{workflow_id}",
+        "/api/v1/projects/{project_id}/workflows/{workflow_id}/cancel",
+        "/api/v1/projects/{project_id}/releases",
+        "/api/v1/projects/{project_id}/releases/{release_id}",
+        "/api/v1/projects/{project_id}/releases/{release_id}/targets/{target_type}/confirm-publication",
+        "/api/v1/projects/{project_id}/repository",
+        "/api/v1/projects/{project_id}/repository/bootstrap",
+        "/api/v1/projects/{project_id}/recovery-status",
     })
-    DEFAULT_PROVIDER_TYPES = frozenset({"MODEL", "TOOL", "EMAIL", "GITHUB"})
-    DEFAULT_PROVIDER_OPERATIONS = frozenset({"invoke", "send", "execute", "read", "write"})
+    DEFAULT_PROVIDER_TYPES = frozenset({"MODEL", "TOOL", "EMAIL", "GITHUB", "REPOSITORY", "CLOUD"})
+    DEFAULT_PROVIDER_OPERATIONS = frozenset({
+        "invoke", "send", "execute", "read", "write", "provision",
+        "resolve_repository", "create_repository", "bootstrap_files", "list_files",
+        "read_file", "handoff_pull_request", "create_tag",
+    })
     DEFAULT_REPOSITORY_PROVIDERS = frozenset({"FILESYSTEM", "GITHUB"})
     DEFAULT_REPOSITORY_OPERATIONS = frozenset({
-        "create_repository", "bootstrap_files", "list_files", "read_file",
+        "resolve_repository", "create_repository", "bootstrap_files", "list_files", "read_file",
         "handoff_pull_request", "create_tag",
     })
     DEFAULT_RELEASE_TARGETS = frozenset({"CHATGPT_PLUGIN", "GPT_STORE", "PYPI"})
@@ -365,3 +413,110 @@ class ProductionMetricRegistry:
             encoded = ",".join(f'{key}="{_escape_label(item)}"' for key, item in labels)
             family = f"{family}{{{encoded}}}"
         return f"{family} {_number(value)}"
+
+
+class ProductionObservability:
+    """Best-effort instrumentation over existing authoritative control paths."""
+
+    def __init__(self, *, telemetry=None, logger=None, metrics: ProductionMetricRegistry | None = None):
+        self.telemetry = telemetry
+        self.logger = logger
+        self.metrics = metrics
+
+    def emit(
+        self,
+        *,
+        event_name: str,
+        component: str,
+        project_id: str | None = None,
+        level: str = "INFO",
+        status: str | None = None,
+        duration_ms: float | None = None,
+        correlation_id: str | None = None,
+        request_id: str | None = None,
+        operation: str | None = None,
+        error_code: str | None = None,
+        attributes: dict[str, Any] | None = None,
+    ) -> bool:
+        safe = safe_production_attributes(event_name, attributes)
+        ok = True
+        if self.telemetry is not None and project_id is not None:
+            try:
+                self.telemetry.record(
+                    project_id=project_id,
+                    event_name=event_name,
+                    correlation_id=correlation_id,
+                    request_id=request_id,
+                    service_operation=operation,
+                    status=status,
+                    duration_ms=duration_ms,
+                    attributes=safe,
+                )
+            except Exception:
+                ok = False
+        if self.logger is not None:
+            try:
+                ok = self.logger.emit(
+                    event_name=event_name,
+                    component=component,
+                    level=level,
+                    status=status,
+                    duration_ms=duration_ms,
+                    correlation_id=correlation_id,
+                    request_id=request_id,
+                    project_id=project_id,
+                    operation=operation,
+                    error_code=error_code,
+                    attributes=safe,
+                ) and ok
+            except Exception:
+                ok = False
+        if self.metrics is not None:
+            try:
+                self._record_metrics(event_name, status, duration_ms, safe)
+            except Exception:
+                ok = False
+        return ok
+
+    def _record_metrics(
+        self,
+        event_name: str,
+        status: str | None,
+        duration_ms: float | None,
+        attributes: dict[str, Any],
+    ) -> None:
+        if event_name == "service.request.completed":
+            self.metrics.record_service_request(
+                str(attributes["method"]),
+                str(attributes["route"]),
+                int(status or "0"),
+                float(duration_ms or 0.0),
+            )
+        elif event_name in {"auth.accepted", "auth.rejected"}:
+            self.metrics.record_auth(str(attributes["result"]))
+        elif event_name in {"provider.call.completed", "provider.call.failed"}:
+            self.metrics.record_provider(
+                str(attributes["provider_type"]),
+                str(attributes["operation"]),
+                str(attributes["result"]),
+            )
+        elif event_name in {
+            "repository.operation.completed",
+            "repository.operation.blocked",
+            "repository.operation.failed",
+        }:
+            self.metrics.record_repository(
+                str(attributes["provider"]),
+                str(attributes["operation"]),
+                str(attributes["result"]),
+            )
+        elif event_name in {
+            "release.prepare.completed",
+            "release.prepare.failed",
+            "release.publication_required",
+        }:
+            self.metrics.record_release(
+                str(attributes["target"]),
+                str(attributes["operation"]),
+                str(attributes["result"]),
+            )

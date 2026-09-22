@@ -243,6 +243,7 @@ def build_governed_github_repository_adapter(
     secret_backend,
     *,
     transport=None,
+    observability=None,
 ) -> GovernedGitHubRepositoryAdapter:
     """Build an isolated repository-governance stack without polluting runtime agent routing."""
 
@@ -306,6 +307,7 @@ def build_governed_github_repository_adapter(
         store,
         policy,
         providers=providers,
+        observability=observability,
     )
     return GovernedGitHubRepositoryAdapter(
         gateway,

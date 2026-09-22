@@ -4,6 +4,7 @@ import hashlib
 import json
 from collections.abc import Callable
 from datetime import datetime, timezone
+from time import perf_counter
 from typing import Any
 
 from pydantic import ValidationError
@@ -12,6 +13,7 @@ from models.control import ServiceMutationRecord
 from models.project import Project
 from persistence.base import PersistenceConflictError, PersistenceStore
 from registry.project_registry import ProjectRegistry
+from observability import normalize_service_route
 
 from .operator import OperatorApiError, OperatorControlApi
 
@@ -47,6 +49,7 @@ class ServiceApiV1:
         store: PersistenceStore,
         telemetry=None,
         *,
+        observability=None,
         kernel=None,
         workflows=None,
         human=None,
@@ -59,6 +62,7 @@ class ServiceApiV1:
         self.projects = projects
         self.store = store
         self.telemetry = telemetry
+        self.observability = observability
         self.operator = OperatorControlApi(
             projects,
             store,
@@ -80,6 +84,7 @@ class ServiceApiV1:
         idempotency_key: str | None = None,
     ) -> ApiResponse:
         method = method.upper()
+        started = perf_counter()
         project_id = self._project_id_from_path(path)
         if (
             project_id is None
@@ -110,11 +115,31 @@ class ServiceApiV1:
                 500,
                 "internal service error",
             )
-        self._telemetry(project_id, method, path, response.status_code, principal)
+        duration_ms = (perf_counter() - started) * 1000.0
+        self._telemetry(project_id, method, path, response.status_code, principal, duration_ms)
         return response
 
 
-    def _telemetry(self, project_id, method, path, status_code, principal) -> None:
+    def _telemetry(self, project_id, method, path, status_code, principal, duration_ms) -> None:
+        del principal
+        route = normalize_service_route(path)
+        status_class = f"{status_code // 100}xx"
+        attributes = {"method": method, "route": route, "status_class": status_class}
+        operation = f"{method} {route}"
+        if self.observability is not None:
+            try:
+                self.observability.emit(
+                    project_id=project_id,
+                    event_name="service.request.completed",
+                    component="service_api",
+                    status=str(status_code),
+                    duration_ms=duration_ms,
+                    operation=operation,
+                    attributes=attributes,
+                )
+            except Exception:
+                pass
+            return
         if self.telemetry is None or project_id is None:
             return
         try:
@@ -122,9 +147,10 @@ class ServiceApiV1:
                 project_id=project_id,
                 event_name="service.request.completed",
                 correlation_id=None,
-                service_operation=f"{method} {path}",
+                service_operation=operation,
                 status=str(status_code),
-                attributes={"method": method, "path": path, "principal_id": None if principal is None else principal.principal_id},
+                duration_ms=duration_ms,
+                attributes=attributes,
             )
         except Exception:
             pass

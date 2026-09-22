@@ -4,6 +4,8 @@ import json
 from http import HTTPStatus
 from typing import Any
 
+from observability import normalize_service_route
+
 from .auth import ServiceAuthenticator
 from .service import ServiceApiV1
 
@@ -13,15 +15,33 @@ class WsgiServiceAppV1:
 
     MAX_BODY_BYTES = 64 * 1024
 
-    def __init__(self, api: ServiceApiV1, authenticator: ServiceAuthenticator):
+    def __init__(self, api: ServiceApiV1, authenticator: ServiceAuthenticator, observability=None):
         self.api = api
         self.authenticator = authenticator
+        self.observability = observability
 
     def __call__(self, environ: dict[str, Any], start_response):
         method = str(environ.get("REQUEST_METHOD", "GET")).upper()
         path = str(environ.get("PATH_INFO", "/"))
         principal = self.authenticator.authenticate(environ.get("HTTP_AUTHORIZATION"))
         idempotency_key = environ.get("HTTP_IDEMPOTENCY_KEY")
+        if self.observability is not None:
+            result = "accepted" if principal is not None else "rejected"
+            try:
+                self.observability.emit(
+                    event_name="auth.accepted" if principal is not None else "auth.rejected",
+                    component="service_auth",
+                    status=result.upper(),
+                    operation=f"{method} {normalize_service_route(path)}",
+                    attributes={
+                        "result": result,
+                        "method": method,
+                        "route": normalize_service_route(path),
+                        **({"error_code": "AUTH_REQUIRED"} if principal is None else {}),
+                    },
+                )
+            except Exception:
+                pass
 
         if principal is None:
             response = self.api.dispatch(
