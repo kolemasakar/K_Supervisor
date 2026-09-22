@@ -7,6 +7,7 @@ from .contracts import (
 )
 from .email import EmailProvider, OutboundEmail
 from .errors import ProviderExecutionError
+from .github_repository import GitHubRepositoryProvider
 from .openai_responses import (
     HTTPSOpenAIResponsesTransport,
     OpenAIResponsesProvider,
@@ -29,6 +30,7 @@ __all__ = [
     "EmailProvider",
     "OutboundEmail",
     "ProviderExecutionError",
+    "GitHubRepositoryProvider",
     "OpenAIResponsesProvider",
     "OpenAIResponsesTransport",
     "HTTPSOpenAIResponsesTransport",
