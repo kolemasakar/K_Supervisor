@@ -14,10 +14,11 @@ from .state import transition_target
 
 
 class TargetPreparer:
-    def __init__(self, store, repository_adapter, readiness_checker):
+    def __init__(self, store, repository_adapter, readiness_checker, *, observability=None):
         self.store = store
         self.repository_adapter = repository_adapter
         self.readiness = readiness_checker
+        self.observability = observability
 
     def prepare(
         self,
@@ -30,6 +31,15 @@ class TargetPreparer:
         satisfied_criteria=(),
     ):
         target_id = f"TARGET_{release.release_id}_{target_name.upper()}"
+        target_type = target_name.upper()
+        self._observe(
+            project_id=project.project_id,
+            event_name="release.prepare.started",
+            target=target_type,
+            operation="prepare",
+            release_id=release.release_id,
+            status="STARTED",
+        )
         target = self.store.get_release_target(target_id)
         if target is None:
             target = ReleaseTarget(
@@ -81,6 +91,16 @@ class TargetPreparer:
         if not report.ready:
             failed = transition_target(target, ReleaseStatus.FAILED, at)
             self.store.save_release_target(failed)
+            self._observe(
+                project_id=project.project_id,
+                event_name="release.prepare.failed",
+                target=target.target_type,
+                operation="prepare",
+                release_id=release.release_id,
+                status="FAILED",
+                result="failed",
+                error_code="RELEASE_NOT_READY",
+            )
             raise ReleaseNotReadyError(report)
 
         profile = profile_for(target.target_type)
@@ -111,6 +131,16 @@ class TargetPreparer:
         if missing:
             failed = transition_target(target, ReleaseStatus.FAILED, at)
             self.store.save_release_target(failed)
+            self._observe(
+                project_id=project.project_id,
+                event_name="release.prepare.failed",
+                target=target.target_type,
+                operation="prepare",
+                release_id=release.release_id,
+                status="FAILED",
+                result="failed",
+                error_code="RELEASE_PROFILE_VALIDATION_FAILED",
+            )
             raise ReleaseProfileValidationError(
                 "release profile validation failed: " + ", ".join(missing)
             )
@@ -123,6 +153,15 @@ class TargetPreparer:
         )
         target = transition_target(target, ReleaseStatus.READY, at)
         self.store.save_release_target(target)
+        self._observe(
+            project_id=project.project_id,
+            event_name="release.prepare.completed",
+            target=target.target_type,
+            operation="prepare",
+            release_id=release.release_id,
+            status="READY",
+            result="success",
+        )
         return target, report
 
     def _report(
@@ -149,6 +188,39 @@ class TargetPreparer:
         )
         return report
 
+
+    def _observe(
+        self,
+        *,
+        project_id: str,
+        event_name: str,
+        target: str,
+        operation: str,
+        release_id: str,
+        status: str,
+        result: str | None = None,
+        error_code: str | None = None,
+    ) -> None:
+        if self.observability is None:
+            return
+        attributes = {"target": target, "operation": operation}
+        if result is not None:
+            attributes["result"] = result
+        if error_code is not None:
+            attributes["error_code"] = error_code
+        try:
+            self.observability.emit(
+                project_id=project_id,
+                event_name=event_name,
+                component="release_manager",
+                correlation_id=release_id,
+                status=status,
+                operation=operation,
+                error_code=error_code,
+                attributes=attributes,
+            )
+        except Exception:
+            pass
 
     def _list_files(self, repository, context: RepositoryOperationContext):
         if getattr(self.repository_adapter, "supports_operation_context", False):

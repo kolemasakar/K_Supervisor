@@ -10,9 +10,10 @@ from .state import transition_target
 
 
 class PublicationHandoff:
-    def __init__(self, store, human):
+    def __init__(self, store, human, *, observability=None):
         self.store = store
         self.human = human
+        self.observability = observability
 
     def open(self, target, at):
         if not target.owner_publication_required or target.status != ReleaseStatus.READY:
@@ -50,6 +51,7 @@ class PublicationHandoff:
             correlation_id=target.release_id,
             details={"target_type": target.target_type},
         )
+        self._observe_publication_required(target)
         return target
 
     def confirm(self, target, at):
@@ -73,3 +75,24 @@ class PublicationHandoff:
             details={"target_type": target.target_type},
         )
         return target
+
+
+    def _observe_publication_required(self, target) -> None:
+        if self.observability is None:
+            return
+        try:
+            self.observability.emit(
+                project_id=target.project_id,
+                event_name="release.publication_required",
+                component="release_manager",
+                correlation_id=target.release_id,
+                status="PUBLICATION_REQUIRED",
+                operation="publication_handoff",
+                attributes={
+                    "target": target.target_type,
+                    "operation": "publication_handoff",
+                    "result": "required",
+                },
+            )
+        except Exception:
+            pass
