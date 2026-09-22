@@ -26,6 +26,7 @@ class ReleaseManager:
         notification_broker=None,
         readiness_checker=None,
         operational_evidence_provider=None,
+        observability=None,
     ):
         self.store = store
         self.projects = projects
@@ -35,8 +36,17 @@ class ReleaseManager:
             operational_evidence_provider
             or OperationalReleaseEvidenceProvider(store, projects)
         )
-        self.targets = TargetPreparer(store, repository_adapter, self.readiness)
-        self.publication = PublicationHandoff(store, human)
+        self.targets = TargetPreparer(
+            store,
+            repository_adapter,
+            self.readiness,
+            observability=observability,
+        )
+        self.publication = PublicationHandoff(
+            store,
+            human,
+            observability=observability,
+        )
         self.events = ReleaseEventEmitter(store, notification_broker)
 
     def handle_first_working(
