@@ -159,6 +159,7 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             workflows=workflows,
             human=human,
             approvals=approvals,
+            project_factory=project_factory,
         )
         app = WsgiServiceAppV1(api, authenticator)
         return ServiceRuntime(

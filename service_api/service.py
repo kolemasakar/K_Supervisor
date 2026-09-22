@@ -52,6 +52,7 @@ class ServiceApiV1:
         human=None,
         approvals=None,
         releases=None,
+        project_factory=None,
     ):
         if projects.store is not store:
             raise ValueError("ProjectRegistry and ServiceApiV1 must share one PersistenceStore")
@@ -66,6 +67,7 @@ class ServiceApiV1:
             human=human,
             approvals=approvals,
             releases=releases,
+            project_factory=project_factory,
         )
 
     def dispatch(
@@ -96,7 +98,12 @@ class ServiceApiV1:
                 idempotency_key=idempotency_key,
             )
         except (ServiceApiError, OperatorApiError) as exc:
-            response = self.error_response(exc.code, exc.status_code, exc.message)
+            response = self.error_response(
+                exc.code,
+                exc.status_code,
+                exc.message,
+                details=getattr(exc, "details", None),
+            )
         except Exception:
             response = self.error_response(
                 "INTERNAL_ERROR",
@@ -336,11 +343,20 @@ class ServiceApiV1:
         return ApiResponse(status_code=200, body=body)
 
     @staticmethod
-    def error_response(code: str, status_code: int, message: str) -> ApiResponse:
+    def error_response(
+        code: str,
+        status_code: int,
+        message: str,
+        *,
+        details: dict[str, Any] | None = None,
+    ) -> ApiResponse:
+        error: dict[str, Any] = {"code": code, "message": message}
+        if details:
+            error["details"] = details
         return ApiResponse(
             status_code=status_code,
             body={
                 "api_version": API_VERSION,
-                "error": {"code": code, "message": message},
+                "error": error,
             },
         )

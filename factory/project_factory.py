@@ -42,8 +42,9 @@ class ProjectFactory:
         if project.lifecycle_state not in {
             ProjectLifecycleState.APPROVED,
             ProjectLifecycleState.PROVISIONING,
+            ProjectLifecycleState.BOOTSTRAPPED,
         }:
-            raise BootstrapValidationError("project must be APPROVED or PROVISIONING")
+            raise BootstrapValidationError("project must be APPROVED, PROVISIONING or BOOTSTRAPPED")
 
         snapshot = self.registry.recover(project_id)
         spec = snapshot.active_spec
@@ -111,13 +112,14 @@ class ProjectFactory:
             raise KeyError(project_id)
         updated = current.model_copy(update={"current_roadmap_phase": "Phase 0", "updated_at": at})
         self.registry.store.save_project(updated)
-        self.registry.transition_lifecycle(
-            project_id,
-            ProjectLifecycleState.BOOTSTRAPPED,
-            "repository bootstrap validated",
-            "project_factory",
-            at,
-        )
+        if current.lifecycle_state != ProjectLifecycleState.BOOTSTRAPPED:
+            self.registry.transition_lifecycle(
+                project_id,
+                ProjectLifecycleState.BOOTSTRAPPED,
+                "repository bootstrap validated",
+                "project_factory",
+                at,
+            )
 
         return BootstrapResult(
             project_id=project_id,
