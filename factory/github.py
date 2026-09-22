@@ -108,7 +108,7 @@ class GitHubRestClient:
         *,
         credential_ref: AccessReference,
         payload: dict | None = None,
-    ) -> dict:
+    ) -> dict | list:
         if not path.startswith("/"):
             raise ValueError("GitHub REST path must be absolute")
 
@@ -171,7 +171,7 @@ class GitHubRestClient:
                 retryable=False,
                 status_code=response.status,
             ) from exc
-        if not isinstance(decoded, dict):
+        if not isinstance(decoded, (dict, list)):
             raise GitHubRepositoryError(
                 "GITHUB_RESPONSE_INVALID",
                 "GitHub returned an invalid response",
