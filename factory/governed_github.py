@@ -22,6 +22,7 @@ class GovernedGitHubRepositoryAdapter:
 
     provider = "GITHUB"
     provider_id = "github.repository"
+    supports_operation_context = True
 
     def __init__(
         self,
