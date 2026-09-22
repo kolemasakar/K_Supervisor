@@ -4,16 +4,32 @@ from pathlib import Path
 from subprocess import CalledProcessError, run
 from typing import Protocol
 
-from .contracts import BootstrapFile, ManagedRepository, RepositoryTarget
+from .contracts import BootstrapFile, ManagedRepository, RepositoryOperationContext, RepositoryTarget
 from .errors import RepositoryConflictError, RepositoryUnavailableError
 
 
 class RepositoryAdapter(Protocol):
     provider: str
 
-    def prepare(self, target: RepositoryTarget) -> ManagedRepository: ...
-    def apply_files(self, repository: ManagedRepository, files: tuple[BootstrapFile, ...]) -> None: ...
-    def list_files(self, repository: ManagedRepository) -> tuple[str, ...]: ...
+    def prepare(
+        self,
+        target: RepositoryTarget,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> ManagedRepository: ...
+    def apply_files(
+        self,
+        repository: ManagedRepository,
+        files: tuple[BootstrapFile, ...],
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> None: ...
+    def list_files(
+        self,
+        repository: ManagedRepository,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> tuple[str, ...]: ...
 
 
 class FilesystemRepositoryAdapter:
@@ -23,7 +39,13 @@ class FilesystemRepositoryAdapter:
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
-    def prepare(self, target: RepositoryTarget) -> ManagedRepository:
+    def prepare(
+        self,
+        target: RepositoryTarget,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> ManagedRepository:
+        del context
         path = (self.root / target.name).resolve()
         if self.root != path and self.root not in path.parents:
             raise RepositoryUnavailableError("repository path escapes managed root")
@@ -55,7 +77,14 @@ class FilesystemRepositoryAdapter:
             created=created,
         )
 
-    def apply_files(self, repository: ManagedRepository, files: tuple[BootstrapFile, ...]) -> None:
+    def apply_files(
+        self,
+        repository: ManagedRepository,
+        files: tuple[BootstrapFile, ...],
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> None:
+        del context
         base = Path(repository.locator).resolve()
         for item in files:
             path = (base / item.path).resolve()
@@ -68,7 +97,13 @@ class FilesystemRepositoryAdapter:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(item.content, encoding="utf-8")
 
-    def list_files(self, repository: ManagedRepository) -> tuple[str, ...]:
+    def list_files(
+        self,
+        repository: ManagedRepository,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> tuple[str, ...]:
+        del context
         base = Path(repository.locator).resolve()
         return tuple(
             sorted(
