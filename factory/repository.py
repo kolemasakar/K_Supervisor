@@ -34,6 +34,7 @@ class RepositoryAdapter(Protocol):
 
 class FilesystemRepositoryAdapter:
     provider = "FILESYSTEM"
+    supports_operation_context = True
 
     def __init__(self, root: str | Path):
         self.root = Path(root).resolve()
