@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-import sys
 
 from access import EnvironmentSecretBackend, SecretBackend
 from factory import FilesystemRepositoryAdapter, ProjectFactory
@@ -12,7 +11,6 @@ from observability import (
     ProductionMetricRegistry,
     ProductionObservability,
     ServiceHealthEvaluator,
-    StructuredLogger,
     TelemetryRecorder,
 )
 from persistence import SQLitePersistenceStore
@@ -87,7 +85,6 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
         production_metrics = ProductionMetricRegistry()
         production_observability = ProductionObservability(
             telemetry=telemetry,
-            logger=StructuredLogger(sys.stderr),
             metrics=production_metrics,
         )
         health = ServiceHealthEvaluator(
