@@ -7,13 +7,9 @@ from pathlib import PurePosixPath
 from urllib.parse import quote, urlencode
 
 from access import AccessReference
-from factory import (
-    GitHubRepositoryError,
-    GitHubRepositoryResolver,
-    GitHubRestClient,
-    RepositoryConflictError,
-    RepositoryTarget,
-)
+from factory.contracts import RepositoryTarget
+from factory.errors import GitHubRepositoryError, RepositoryConflictError
+from factory.github import GitHubRepositoryResolver, GitHubRestClient
 from integrations import AvailabilityReport, AvailabilityState
 
 from .contracts import ProviderDescriptor, ProviderRequest, ProviderResponse
