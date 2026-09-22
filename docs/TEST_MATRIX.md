@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 4.0
+Version: 4.1
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 5 — PRE-IMPLEMENTATION AUDIT PENDING
+Current phase: v0.4 Phase 6 — PRE-IMPLEMENTATION AUDIT PENDING
 Date: 2026-09-22
 
 ## Preserved Regression Floor
@@ -32,8 +32,8 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 2 | operator API lifecycle, scopes, idempotency, redaction | COMPLETE |
 | 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
 | 4 | GitHub repository/VCS provider and governed handoff | COMPLETE |
-| 5 | Plugin-native package/manifest/marketplace validation | PLANNED |
-| 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | PLANNED |
+| 5 | Plugin-native package/manifest/marketplace validation | COMPLETE |
+| 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | AUDIT PENDING |
 | 7 | end-to-end single-node product qualification | PLANNED |
 
 ## Phase 0 Evidence
@@ -298,6 +298,34 @@ After a separate owner-approved activation checkpoint merges, required determini
 
 Local/private plugin installation and account/workspace testing may supplement evidence when available at no project-attributable cost. They are not ordinary protected-PR merge dependencies.
 
+## v0.4 Phase 5 — Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md`.
+
+```text
+Activation checkpoint merge: 696c9b2a5873506f6164c03d71d21b557c66c8b4
+Native package PR: #44 / Core Validation 35762060534 — PASS
+Native package merged main: 57bb901a50fa5217727fa7335550f9794050b604
+Metadata/reference/marketplace PR: #45 / Core Validation 35766681043 — PASS
+Implementation merged main: f3cf85fce9a88eceab1a5636baf78b109f80d1d4
+Implementation merged-main Core Validation: 35772305722 — PASS
+Qualification PR: #46
+Qualification code/test head: 4dc6308663ff51e86a69aaf8c9671311be17a630
+Qualification Core Validation: 35772935562 — PASS
+Full regression: 322 passed
+Branch-aware total coverage: 81.20%
+Installed-wheel Phase 5 native package generation: PASS
+Reference fail-closed/path safety: PASS
+Registered-app / marketplace consistency: PASS
+Owner publication boundary / recovery: PASS
+Legacy GPT_STORE compatibility: PASS
+Implicit MCP generation: NONE
+External ChatGPT install/share/publication: NOT REQUIRED / NOT PERFORMED
+Zero-cost development policy: PASS
+```
+
+The audited deterministic Phase 5 verification contract is satisfied. Live account/workspace plugin installation remains supplemental owner-controlled evidence and is not a protected merge dependency.
+
 ## Permanent Quality Gates
 
 ```text
@@ -325,4 +353,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 through Phase 4 are COMPLETE. No runtime implementation phase is active. Phase 5-7 remain inactive; the next permitted work is Phase 5 pre-implementation audit only.
+Phase 0 through Phase 5 are COMPLETE after protected merge of the Phase 5 completion checkpoint. No runtime implementation phase is active. The next permitted work is Phase 6 pre-implementation audit only.

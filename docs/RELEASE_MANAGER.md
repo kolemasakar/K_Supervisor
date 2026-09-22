@@ -72,7 +72,9 @@ A failed required check keeps the project in `RELEASE_PREPARATION`, marks the re
 
 The preferred ChatGPT-facing target is `CHATGPT_PLUGIN`.
 
-Automatically generated portable evidence:
+Phase 5 preserves the portable migration evidence and adds deterministic native package artifacts.
+
+Always-generated release evidence:
 
 ```text
 release/chatgpt_plugin/PLUGIN_PROFILE.json
@@ -80,13 +82,32 @@ release/chatgpt_plugin/SKILL.md
 release/chatgpt_plugin/INTEGRATIONS.md
 release/chatgpt_plugin/REGRESSION_PROMPTS.md
 release/chatgpt_plugin/ACCESS_AND_MIGRATION_CHECKLIST.md
+release/chatgpt_plugin/MIGRATION_INVENTORY.json
+release/chatgpt_plugin/REGRESSION_CASES.json
+release/chatgpt_plugin/package/plugin.json
+release/chatgpt_plugin/package/skills/<slug>/SKILL.md
 ```
 
-The profile records reusable skill guidance, reference assets, required/optional apps, app templates, Custom Action dependencies requiring rebuild, custom MCP integrations, regression prompts, and access/sharing review requirements. It does not pin a selected ChatGPT model or claim that Custom Actions migrated automatically.
+Conditional native artifacts:
+
+```text
+release/chatgpt_plugin/package/.app.json
+release/chatgpt_plugin/package/skills/<slug>/references/...
+release/chatgpt_plugin/marketplace/.agents/plugins/marketplace.json
+release/chatgpt_plugin/marketplace/plugins/<slug>/...
+```
+
+`.app.json` is emitted only for explicitly configured validated registered app IDs. Marketplace export is emitted only when requested. Declared package references are copied through the repository read boundary after safe path/credential-like path validation; a missing required reference blocks readiness.
+
+The machine-readable migration inventory keeps Custom Actions as `REBUILD_REQUIRED`, custom MCP inventory as `EXPLICIT_MAPPING_REQUIRED`, model pinning disabled, and prior sharing/access and conversation-history transfer disabled.
+
+The structured regression evidence supports explicit positive/negative cases. When public-submission readiness is requested, the local validator requires at least five positive and three negative cases.
+
+No bundled MCP configuration is generated implicitly. Plugin installation, app authorization, workspace import/sync, sharing and public submission remain external owner/workspace-admin actions.
 
 `GPT_STORE` remains a supported legacy profile so persisted releases and active Custom GPT migration work stay resumable. New ChatGPT-oriented projects should prefer `CHATGPT_PLUGIN`.
 
-Generated assets contain configuration data and references only. They do not embed raw credentials.
+Generated package artifacts contain configuration/reference content only and do not embed raw credentials.
 
 ## Owner Publication Boundary
 
@@ -115,7 +136,7 @@ When a NotificationBroker and owner email are configured, the same events can us
 
 ## Repository Boundary
 
-Release asset generation uses the existing Phase 6 `RepositoryAdapter` interface. Generated files are conflict-protected by the adapter and therefore do not silently overwrite different owner-authored content.
+Release asset generation uses the current `RepositoryAdapter` boundary. Phase 5 adds a read-only `read_text_file()` operation for declared reference packaging; the governed GitHub implementation keeps that read behind the existing policy/provider/access-reference path. Generated files remain conflict-protected and therefore do not silently overwrite different owner-authored content.
 
 ## Recovery
 

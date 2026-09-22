@@ -1,18 +1,18 @@
 # CHAT_HANDOFF
-Canonical continuation context after ROADMAP v0.4 Phase 4 completion and Phase 5 pre-implementation audit.
+Canonical continuation context after ROADMAP v0.4 Phase 5 implementation and qualification.
 
-Version: 5.9
+Version: 6.0
 Status: ACTIVE
 Date: 2026-09-22
 
 ## Start Here
 
-- docs/V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md
-- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_4_COMPLETE.md
+- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md
 - docs/PROJECT_STATE.md
 - docs/ROADMAP.md
 - docs/TEST_MATRIX.md
-- docs/OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md
+- docs/V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md
+- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_ACTIVATED.md
 - docs/RELEASE_MANAGER.md
 - docs/DEVELOPMENT_RESOURCE_POLICY.md
 - docs/HARDENING_BASELINE_V0_4.md
@@ -28,65 +28,52 @@ v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
-v0.4 Phase 5 pre-implementation audit: COMPLETE
-v0.4 Phase 5 activation: YES
-v0.4 Phase 5 runtime implementation authorization: YES — audited scope only
-v0.4 Phase 6-7: PLANNED / INACTIVE
+v0.4 Phase 5: COMPLETE — effective on protected completion merge
+v0.4 Phase 6: PRE-IMPLEMENTATION AUDIT PENDING
+v0.4 Phase 7: PLANNED / INACTIVE
+Current runtime implementation authorization: NONE
 ```
 
-## Validated Runtime Predecessor
+## Phase 5 Qualification Baseline
 
 ```text
-Phase 4 final qualification main: 8ba51416c561e841ae7a43c5941426b681299e80
-Merged-main Core Validation: 35755228146 — PASS
-Full regression: 279 passed
-Branch-aware coverage: 81.54%
-Installed-wheel Phase 4 repository Service/API/CLI smoke: PASS
+Implementation predecessor main: f3cf85fce9a88eceab1a5636baf78b109f80d1d4
+Qualification PR: #46
+Qualification code/test head: 4dc6308663ff51e86a69aaf8c9671311be17a630
+Protected Core Validation: 35772935562 — PASS
+Full regression: 322 passed
+Branch-aware coverage: 81.20%
+Installed-wheel Phase 5 plugin package smoke: PASS
+Zero-cost validation: PASS
 ```
 
-Current Phase 5 audit baseline:
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md`.
+
+## Delivered Phase 5 Surface
+
+`CHATGPT_PLUGIN` now supports deterministic generation of:
 
 ```text
-main=c9337ea8d22849a5e8895e7cb5b86e0c9f012112
-tree=5b50cd52d00c17c0d67c481d3d46ffc5df07e92d
+plugin.json
+skills/<slug>/SKILL.md
+.app.json when registered apps are configured
+skills/<slug>/references/... when declared package references are configured
+MIGRATION_INVENTORY.json
+REGRESSION_CASES.json
+.agents/plugins/marketplace.json when marketplace export is configured
 ```
 
-The compare from Phase 4 qualification main to the audit baseline changes only documentation. No runtime/source/test path changed after the validated Phase 4 runtime baseline.
+Registered app IDs are validated; legacy app/template inventory remains distinct. Custom Actions remain rebuild-required. MCP inventory remains explicit-mapping-required. No MCP package is generated implicitly. Model pinning, GPT sharing/access transfer and conversation-history transfer are explicitly absent.
 
-## Phase 5 Audit Conclusion
+Reference resources are read through the repository boundary. Governed GitHub reads use the existing policy/provider/access-reference path.
 
-Current `CHATGPT_PLUGIN` preparation already preserves migration inventory and owner publication boundaries, but it is evidence-only rather than a valid native plugin package.
+## Publication Boundary
 
-The audited implementation target is:
+Release Manager still stops at `PUBLICATION_REQUIRED`.
 
-```text
-ReleaseManager
-  -> native Plugin package builder
-  -> pinned local package/schema validator
-  -> repository release assets
-  -> RELEASE_READY
-  -> PUBLICATION_REQUIRED
-  -> explicit owner/workspace action
-```
+Plugin installation, app authorization, workspace marketplace import/sync, sharing, workspace publication and public submission are owner/workspace-admin actions. No external Plugin publication action was added to protected CI.
 
-Required native artifacts include a portable Agent Plugins root `plugin.json`, valid `skills/<slug>/SKILL.md`, explicit registered-app mappings where configured, optional GitHub marketplace catalog, structured migration inventory and structured regression evidence.
-
-Custom Actions are never automatically migrated. Selected GPT model and prior sharing/access state are not transferred. `GPT_STORE` remains a legacy persisted compatibility path.
-
-Audit authority: `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`.
-
-## Current OpenAI Compatibility Snapshot
-
-The 2026-09-22 audit uses current official OpenAI plugin documentation:
-
-- new packages should prefer the portable Agent Plugins 1.0 root `plugin.json`;
-- `.codex-plugin/plugin.json` remains a compatibility fallback;
-- skills use `skills/<name>/SKILL.md` with name/description metadata;
-- existing registered apps can be referenced via root `.app.json`;
-- GitHub marketplace import uses `.agents/plugins/marketplace.json`;
-- marketplace import does not grant app/workspace/provider permissions;
-- bundled MCP declarations can make imported plugins Desktop only;
-- public submission is a separate owner/developer flow.
+Legacy `GPT_STORE` remains compatible.
 
 ## CI / Governance Baseline
 
@@ -103,4 +90,13 @@ Zero-cost development policy: REQUIRED
 
 ## Immediate Continuation
 
-Phase 5 activation is owner-approved. Runtime/source/test implementation may begin only after `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_ACTIVATED.md` passes protected `Core Validation` and merges to `main`, and must remain inside `V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md`.
+Do not continue Phase 5 runtime work after completion merge.
+
+Next permitted activity:
+
+```text
+ROADMAP v0.4 Phase 6 pre-implementation audit only
+Phase 6 runtime implementation authorization: NO
+```
+
+Phase 6 runtime/source/test implementation requires its own completed audit, explicit owner activation and protected merge checkpoint.
