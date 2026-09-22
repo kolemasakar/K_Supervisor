@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from factory.contracts import RepositoryOperationContext
 from models.enums import ReleaseStatus
 from models.release import ReleaseTarget
 from observability.release_validation import record_release_validation
@@ -43,27 +44,62 @@ class TargetPreparer:
             )
             self.store.save_release_target(target)
 
+        context = RepositoryOperationContext(
+            project_id=project.project_id,
+            project_spec_id=spec.project_spec_id,
+            idempotency_key=f"release-manager:{release.release_id}:{target_name.lower()}",
+        )
+
         if target.status in {
             ReleaseStatus.READY,
             ReleaseStatus.PUBLICATION_REQUIRED,
             ReleaseStatus.PUBLISHED,
         }:
-            return target, self._report(project, spec, release, target, repository, satisfied_criteria)
+            return target, self._report(
+                project,
+                spec,
+                release,
+                target,
+                repository,
+                satisfied_criteria,
+                context=context,
+            )
 
         if target.status in {ReleaseStatus.DRAFT, ReleaseStatus.FAILED}:
             target = transition_target(target, ReleaseStatus.PREPARING, at)
             self.store.save_release_target(target)
 
-        report = self._report(project, spec, release, target, repository, satisfied_criteria)
+        report = self._report(
+            project,
+            spec,
+            release,
+            target,
+            repository,
+            satisfied_criteria,
+            context=context,
+        )
         if not report.ready:
             failed = transition_target(target, ReleaseStatus.FAILED, at)
             self.store.save_release_target(failed)
             raise ReleaseNotReadyError(report)
 
         profile = profile_for(target.target_type)
-        generated = profile.generate(spec, release, target)
-        self.repository_adapter.apply_files(repository, generated)
-        files = self.repository_adapter.list_files(repository)
+        reference_requester = getattr(profile, "reference_requests", None)
+        if callable(reference_requester):
+            reference_contents = {
+                path: self._read_text_file(repository, path, context)
+                for path in reference_requester(spec)
+            }
+            generated = profile.generate(
+                spec,
+                release,
+                target,
+                reference_contents=reference_contents,
+            )
+        else:
+            generated = profile.generate(spec, release, target)
+        self._apply_files(repository, generated, context)
+        files = self._list_files(repository, context)
         missing = profile.validate(files)
         if missing:
             failed = transition_target(target, ReleaseStatus.FAILED, at)
@@ -82,9 +118,19 @@ class TargetPreparer:
         self.store.save_release_target(target)
         return target, report
 
-    def _report(self, project, spec, release, target, repository, criteria):
+    def _report(
+        self,
+        project,
+        spec,
+        release,
+        target,
+        repository,
+        criteria,
+        *,
+        context: RepositoryOperationContext,
+    ):
         evidence = ReleaseEvidence(
-            available_files=self.repository_adapter.list_files(repository),
+            available_files=self._list_files(repository, context),
             satisfied_criteria=tuple(criteria),
         )
         report = self.readiness.check(project, spec, release, target, evidence)
@@ -95,3 +141,30 @@ class TargetPreparer:
             created_at=datetime.now(timezone.utc),
         )
         return report
+
+
+    def _list_files(self, repository, context: RepositoryOperationContext):
+        if getattr(self.repository_adapter, "supports_operation_context", False):
+            return self.repository_adapter.list_files(repository, context=context)
+        return self.repository_adapter.list_files(repository)
+
+    def _apply_files(self, repository, files, context: RepositoryOperationContext) -> None:
+        if getattr(self.repository_adapter, "supports_operation_context", False):
+            self.repository_adapter.apply_files(repository, files, context=context)
+            return
+        self.repository_adapter.apply_files(repository, files)
+
+    def _read_text_file(
+        self,
+        repository,
+        path: str,
+        context: RepositoryOperationContext,
+    ) -> str | None:
+        reader = getattr(self.repository_adapter, "read_text_file", None)
+        if not callable(reader):
+            raise ReleaseProfileValidationError(
+                "PLUGIN_REFERENCE_MISSING: repository adapter cannot read reference resources"
+            )
+        if getattr(self.repository_adapter, "supports_operation_context", False):
+            return reader(repository, path, context=context)
+        return reader(repository, path)
