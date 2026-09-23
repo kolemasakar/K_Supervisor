@@ -1,10 +1,10 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 4.4
+Version: 4.5
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 7 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
+Current phase: v0.4 Phase 7 — ACTIVATED / IMPLEMENTATION AUTHORIZED
 Date: 2026-09-23
 
 ## Preserved Regression Floor
@@ -34,7 +34,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 4 | GitHub repository/VCS provider and governed handoff | COMPLETE |
 | 5 | Plugin-native package/manifest/marketplace validation | COMPLETE |
 | 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | COMPLETE |
-| 7 | end-to-end single-node product qualification | AUDIT COMPLETE / ACTIVATION PENDING |
+| 7 | end-to-end single-node product qualification | ACTIVATED / IMPLEMENTATION AUTHORIZED |
 
 ## Phase 0 Evidence
 
@@ -417,4 +417,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 through Phase 6 are COMPLETE. Phase 7 pre-implementation audit is COMPLETE. No runtime implementation phase is active; the next permitted action is a separate owner Phase 7 activation decision.
+Phase 0 through Phase 6 are COMPLETE. Phase 7 pre-implementation audit is COMPLETE and owner activation is approved. Phase 7 runtime/source/test/workflow implementation is permitted only within the audited scope after the protected activation checkpoint merges.
