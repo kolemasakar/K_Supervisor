@@ -31,6 +31,7 @@ EXECUTIONS_READ_SCOPE = "executions:read"
 EXECUTIONS_START_SCOPE = "executions:start"
 EXECUTIONS_CANCEL_SCOPE = "executions:cancel"
 RELEASES_READ_SCOPE = "releases:read"
+RELEASES_PREPARE_SCOPE = "releases:prepare"
 RELEASES_CONFIRM_SCOPE = "releases:publication:confirm"
 RECOVERY_READ_SCOPE = "recovery:read"
 REPOSITORY_READ_SCOPE = "repository:read"
@@ -75,6 +76,15 @@ class TaskStartRequest(ContractModel):
     context: JsonObject = {}
     policy: JsonObject = {}
     limits: JsonObject = {}
+
+
+class ReleasePrepareRequest(ContractModel):
+    version: str = Field(
+        min_length=1,
+        max_length=100,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+    )
+    satisfied_criteria: tuple[str, ...] = Field(default=(), max_length=100)
 
 
 class WorkflowStartRequest(ContractModel):
