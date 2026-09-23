@@ -1,9 +1,9 @@
 # PROJECT_STATE
-Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 5 completion and Phase 6 pre-implementation audit.
+Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 6 completion.
 
-Version: 6.5
+Version: 6.6
 Status: ACTIVE
-Date: 2026-09-22
+Date: 2026-09-23
 
 ## Current Baseline
 
@@ -21,24 +21,23 @@ v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
 v0.4 Phase 5: COMPLETE
-v0.4 Phase 6: ACTIVATED — IMPLEMENTATION AUTHORIZED
+v0.4 Phase 6: COMPLETE
 v0.4 Phase 7: PLANNED / INACTIVE
-Current approved implementation phase: v0.4 Phase 6 — audited scope only
-Runtime implementation phase: v0.4 Phase 6 — audited scope only
+Current approved implementation phase: NONE
+Runtime implementation phase: NONE
 v0.3 Phase 9: NOT DEFINED
 ```
 
 ## Current Validated Runtime Baseline
 
 ```text
-Phase 5 qualification PR: #46
-Qualification code/test head: 4dc6308663ff51e86a69aaf8c9671311be17a630
-Protected Core Validation: 35772935562 — PASS
-Implementation predecessor main: f3cf85fce9a88eceab1a5636baf78b109f80d1d4
-Python workflow: 3.13
-Full regression: 322 passed
-Branch-aware coverage: 81.20%
-coverage gate >=80%: PASS
+Phase 6 qualification PR: #59
+Qualification code/test head: 79024500a0e0dd03f898c3677683bf1e5a4dc60a
+Protected Core Validation: 35811716736 — PASS
+Implementation predecessor main: b395fbb783f2e0d638aac5874c1b4ae5df918880
+Python 3.13.15: 362 passed / 80.74% coverage
+Python 3.14.7: 362 passed / 80.09% coverage
+coverage gate >=80%: PASS on both supported minors
 ResourceWarning gate: PASS
 compileall: PASS
 wheel build/install: PASS
@@ -46,10 +45,15 @@ public CLI/import smoke: PASS
 installed-wheel Phase 3 service/CLI smoke: PASS
 installed-wheel Phase 4 repository Service/API/CLI smoke: PASS
 installed-wheel Phase 5 plugin package smoke: PASS
+installed-wheel Phase 6 observability/supply-chain smoke: PASS
+SPDX 2.3 generation: PASS
+OSV machine-readable vulnerability evidence: PASS
+immutable Action SHA regression: PASS
+trusted-main attestation contract: PASS
 Zero-cost development policy: PASS
 ```
 
-Phase 5 completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md`. Final completion becomes effective when the protected completion PR merges.
+Phase 6 completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md`. Completion becomes effective when the protected completion PR merges.
 
 ## v0.4 Approval State
 
@@ -68,11 +72,11 @@ Phase 2  Operator Control API                                       COMPLETE
 Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          COMPLETE
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              COMPLETE
-Phase 6  Production Telemetry & Supply-Chain Hardening              ACTIVATED — IMPLEMENTATION AUTHORIZED
+Phase 6  Production Telemetry & Supply-Chain Hardening              COMPLETE
 Phase 7  End-to-End Single-Node Product Qualification               PLANNED
 ```
 
-Phases 0 through 5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE and owner activation is approved. Phase 6 runtime implementation is authorized only within the audited scope after the protected activation checkpoint merges.
+Phases 0 through 6 are COMPLETE. No runtime implementation phase is active. Phase 7 remains PLANNED / INACTIVE and requires its own pre-implementation audit and activation boundary before runtime work.
 
 ## Phase 0 Completion Evidence
 
@@ -321,7 +325,34 @@ Phase 7 activation: NO
 Zero-cost development policy: REQUIRED
 ```
 
-Runtime/source/test/workflow implementation may begin only after this activation checkpoint passes protected governance and merges to `main`.
+Runtime/source/test/workflow implementation was subsequently completed and qualified within the audited scope.
+
+## Phase 6 Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md`.
+
+```text
+Activation merge: 1637f8dfc15e0e14fafe7ffc80e1a353b0848ebf
+Observability primitives PR: #49 / merged ca5ab41ee7ae68f70aea62a075987db81aca089e
+Boundary instrumentation PR: #50 / merged 192d959537c6289bb1f6a73f0bac6c392779368a
+Release instrumentation PR: #51 / merged 4e47c245e179baa83cc449558e3d1aedc9918356
+Python 3.13/3.14 compatibility PR: #52 / merged 607e4654bf3deb02ba6686fdad8b1f50901bfaef
+Pinned dependency-resolution PR: #53 / merged b9285a97090392310d0e7ae53d8d8d640c8495f9
+SPDX 2.3 SBOM PR: #54 / merged 6da35fe16b4aa13b9be2991fe062d66eb1852e5a
+Vulnerability evidence PR: #55 / merged 5bd4047153fd7af6a381a1d0185bf2befe14eb82
+Immutable Action SHA PR: #56 / merged 3e5e8e90f2af03abe76fcf94226c7d21fa5cfe83
+Trusted-main attestations PR: #57 / merged c3d088d32fb87228fe10147aee534068534c4ef9
+Operations/security docs PR: #58 / merged b395fbb783f2e0d638aac5874c1b4ae5df918880
+Qualification PR: #59
+Qualification code/test head: 79024500a0e0dd03f898c3677683bf1e5a4dc60a
+Qualification Core Validation: 35811716736 — PASS
+Python 3.13.15: 362 passed / 80.74%
+Python 3.14.7: 362 passed / 80.09%
+Installed-wheel Phase 6 observability/supply-chain smoke: PASS
+Phase 7 activation: NO
+```
+
+Phase 6 is closed on protected merge of the completion checkpoint. Runtime implementation authorization returns to NONE.
 
 ## Development Resource Policy
 

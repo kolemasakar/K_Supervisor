@@ -110,3 +110,65 @@ def test_spdx_document_rejects_non_full_commit_sha():
             commit="abc123",
             source_timestamp=0,
         )
+
+
+def test_spdx_failure_paths_fail_closed(tmp_path):
+    lock = tmp_path / "ci.lock"
+    lock.write_text("", encoding="utf-8")
+    with pytest.raises(ValueError, match="empty"):
+        parse_lock(lock)
+
+    lock.write_text("pydantic==2.13.5\nPydantic==2.13.5\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="duplicate"):
+        parse_lock(lock)
+
+    packages = _packages()
+    with pytest.raises(RuntimeError, match="missing from lock"):
+        verify_locked_runtime(
+            packages,
+            {"pydantic": "2.13.5"},
+            root_distribution="k-supervisor",
+        )
+
+    with pytest.raises(ValueError, match="root distribution"):
+        build_spdx_document(
+            packages={"pydantic": packages["pydantic"]},
+            root_distribution="k-supervisor",
+            wheel_sha256=WHEEL_SHA,
+            repository="https://github.com/kolemasakar/K_Supervisor",
+            commit=COMMIT,
+            source_timestamp=0,
+        )
+
+    broken = dict(packages)
+    broken["pydantic"] = ResolvedPackage("pydantic", "2.13.5", ("missing-dependency",))
+    with pytest.raises(ValueError, match="absent from the runtime graph"):
+        build_spdx_document(
+            packages=broken,
+            root_distribution="k-supervisor",
+            wheel_sha256=WHEEL_SHA,
+            repository="https://github.com/kolemasakar/K_Supervisor",
+            commit=COMMIT,
+            source_timestamp=0,
+        )
+
+
+def test_spdx_validation_rejects_incomplete_and_invalid_relationships():
+    document = build_spdx_document(
+        packages=_packages(),
+        root_distribution="k-supervisor",
+        wheel_sha256=WHEEL_SHA,
+        repository="https://github.com/kolemasakar/K_Supervisor",
+        commit=COMMIT,
+        source_timestamp=0,
+    )
+
+    incomplete = dict(document)
+    incomplete.pop("packages")
+    with pytest.raises(ValueError, match="missing fields"):
+        validate_spdx_document(incomplete, root_distribution="k-supervisor")
+
+    wrong = json.loads(json.dumps(document))
+    wrong["relationships"][0]["relatedSpdxElement"] = "SPDXRef-Package-missing"
+    with pytest.raises(ValueError, match="target is missing"):
+        validate_spdx_document(wrong, root_distribution="k-supervisor")

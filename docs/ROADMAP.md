@@ -7,12 +7,12 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 6 — ACTIVATED / IMPLEMENTATION AUTHORIZED
+Current phase: v0.4 Phase 6 — COMPLETE / Phase 7 PRE-IMPLEMENTATION AUDIT NEXT
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
 Phase 3: COMPLETE
-Runtime implementation authorized: YES — v0.4 Phase 6 audited scope only
+Runtime implementation authorized: NO
 Development resource policy: ZERO-COST DEVELOPMENT REQUIRED — docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Program Objective
@@ -198,7 +198,7 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 6 — Production Telemetry & Supply-Chain Hardening
 
-**Phase 6 status:** ACTIVATED — IMPLEMENTATION AUTHORIZED. Canonical audit: `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`. Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_ACTIVATED.md`. Runtime/source/test/workflow implementation is authorized only within the audited scope after the protected activation checkpoint merges.
+**Phase 6 status:** COMPLETE. Canonical audit: `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`. Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_ACTIVATED.md`. Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md`. The audited telemetry/supply-chain scope is implemented and cumulatively qualified on Python 3.13 and 3.14.
 
 **Goal:** make the single-node product diagnosable and release artifacts independently inspectable without making external collectors mandatory.
 
@@ -281,4 +281,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE and owner activation is approved. Phase 6 runtime/source/test/workflow implementation is authorized only within the audited scope after the protected activation checkpoint merges.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-6 are COMPLETE. No runtime implementation phase is active. The next permitted work is the Phase 7 pre-implementation audit; Phase 7 runtime implementation remains unauthorized.
