@@ -1,9 +1,9 @@
 # DOCS_INDEX
 Індекс основних документів K_Supervisor та рекомендований порядок їх читання.
 
-Version: 6.3
+Version: 6.4
 Status: ACTIVE
-Date: 2026-09-22
+Date: 2026-09-23
 
 ## Reading Order
 
@@ -39,22 +39,23 @@ Date: 2026-09-22
 30. `POST_V0_3_PRODUCT_GAP_AUDIT.md` - immutable audit that produced v0.4.
 31. `TEST_MATRIX_V0_3_ARCHIVE.md` - immutable completed v0.2/v0.3 regression evidence.
 32. `VISION.md` - product direction and success definition.
-33. `OPERATIONS_RUNBOOK.md` - deployment, backup/restore/upgrade and recovery procedures.
-34. `COMPATIBILITY_POLICY.md` - public compatibility rules.
-35. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
-36. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
-37. `ARCHITECTURE.md` - control plane and multi-agent core.
-38. `PERSISTENCE.md` - storage and recovery semantics.
-39. `AGENT_RUNTIME.md` - runtime execution control.
-40. `INTEGRATIONS.md` - tools/providers/model-selection/side-effect gateway.
-41. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
-42. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
-43. `SERVICE_API.md` - currently implemented v1 Service/API contract.
-44. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
-45. `RELEASE_MANAGER.md` - release targets and owner publication boundary.
-46. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap.
-47. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 closure evidence.
-48. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
+33. `OPERATIONS_RUNBOOK.md` - deployment, backup/restore/upgrade, Phase 6 observability, vulnerability evidence and trusted-main attestation procedures.
+34. `SUPPLY_CHAIN_SECURITY.md` - Phase 6 dependency locks, SPDX SBOM, vulnerability evidence, immutable Action pins and trusted-main attestation security contract.
+35. `COMPATIBILITY_POLICY.md` - public compatibility rules.
+36. `PLATFORM_INTERFACES.md` - package, CLI, Service/API and extension discovery.
+37. `PROJECT_CONTROL_PLANE.md` - project control-plane boundaries.
+38. `ARCHITECTURE.md` - control plane and multi-agent core.
+39. `PERSISTENCE.md` - storage and recovery semantics.
+40. `AGENT_RUNTIME.md` - runtime execution control.
+41. `INTEGRATIONS.md` - tools/providers/model-selection/side-effect gateway.
+42. `POLICY_AND_PERMISSIONS.md` - policy, approvals, permissions and audit.
+43. `OBSERVABILITY_AND_RELIABILITY.md` - observability/reliability and deployment qualification.
+44. `SERVICE_API.md` - currently implemented v1 Service/API contract.
+45. `OPENAI_CUSTOM_GPT_TO_PLUGIN_IMPACT_2026-09-16.md` - ChatGPT release-target compatibility decision.
+46. `RELEASE_MANAGER.md` - release targets and owner publication boundary.
+47. `ROADMAP_V0_3_ARCHIVE.md` - immutable completed predecessor roadmap.
+48. `PROJECT_CHECKPOINT_ROADMAP_V0_3_COMPLETE.md` - v0.3 closure evidence.
+49. `ROADMAP_V0_2_ARCHIVE.md` - completed v0.2 predecessor snapshot.
 
 ## Current Roadmap State
 
