@@ -27,13 +27,13 @@ def test_supply_chain_attestation_uses_pinned_official_actions_and_exact_artifac
     assert "actions/attest-sbom@4651f806c01d8637787e274ac3bdf724ef169f34 # v3" in text
     assert "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7" in text
     assert "--lock-file requirements/ci-py313.lock" in text
-    assert "--commit \"\${GITHUB_SHA}\"" in text
+    assert '--commit "${GITHUB_SHA}"' in text
     assert "dist/k-supervisor.spdx.json" in text
     assert "dist/supply-chain-evidence.json" in text
 
 
 def test_supply_chain_attestation_has_no_mutable_external_action_refs():
     text = WORKFLOW.read_text(encoding="utf-8")
-    refs = re.findall(r"uses:\\s+[^@\\s]+@([^\\s#]+)", text)
+    refs = re.findall(r"uses:\s+[^@\s]+@([^\s#]+)", text)
     assert refs
     assert all(re.fullmatch(r"[0-9a-f]{40}", ref) for ref in refs)
