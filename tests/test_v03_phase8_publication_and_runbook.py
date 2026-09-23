@@ -15,15 +15,15 @@ def test_package_publication_workflow_is_manual_owner_gated_and_trusted():
     assert "schedule:" not in trigger_block
     assert "confirm_owner_publication:" in text
     assert "inputs.confirm_owner_publication == true" in text
-    assert "actions/checkout@v7" in text
-    assert "actions/setup-python@v7" in text
-    assert "actions/upload-artifact@v7" in text
-    assert "actions/download-artifact@v7" in text
+    assert "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7" in text
+    assert "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7" in text
+    assert "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7" in text
+    assert "actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7" in text
     assert "python -m build" in text
     assert "python -m twine check dist/*" in text
     assert "name: pypi" in text
     assert "id-token: write" in text
-    assert "pypa/gh-action-pypi-publish@release/v1" in text
+    assert "pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1" in text
     assert "PYPI_TOKEN" not in text
     assert "password:" not in text
 
