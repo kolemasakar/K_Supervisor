@@ -96,7 +96,9 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q access agent_factory agents examples factory integrations ksupervisor models observability persistence policy providers provisioning registry release_manager runtime scheduler service_api supervisor tools workflows
       - name: Test with coverage gate and resource-warning gate
-        run: python -m pytest -q -W error::ResourceWarning --cov=. --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+        run: |
+          python -m pytest -q -W error::ResourceWarning --cov=. --cov-report=term-missing --cov-report=xml
+          python -m coverage report --fail-under=80
       - name: Build wheel
         run: |
           rm -rf dist build k_supervisor.egg-info
