@@ -145,3 +145,74 @@ class FilesystemRepositoryAdapter:
             return candidate.read_text(encoding="utf-8")
         except UnicodeDecodeError as exc:
             raise RepositoryConflictError("repository reference file must be UTF-8 text") from exc
+
+
+
+class RoutedRepositoryAdapter:
+    """Route repository operations by the authoritative ManagedRepository provider."""
+
+    provider = "ROUTED"
+    supports_operation_context = True
+
+    def __init__(self, adapters: tuple[RepositoryAdapter, ...]):
+        self.adapters: dict[str, RepositoryAdapter] = {}
+        for adapter in adapters:
+            key = adapter.provider.upper()
+            if key in self.adapters:
+                raise ValueError(f"duplicate repository adapter: {key}")
+            self.adapters[key] = adapter
+        if not self.adapters:
+            raise ValueError("at least one repository adapter is required")
+
+    def _for_provider(self, provider: str) -> RepositoryAdapter:
+        adapter = self.adapters.get(provider.upper())
+        if adapter is None:
+            raise RepositoryUnavailableError(
+                f"repository provider adapter is unavailable: {provider}"
+            )
+        return adapter
+
+    @staticmethod
+    def _call(adapter, name: str, *args, context=None):
+        method = getattr(adapter, name)
+        if getattr(adapter, "supports_operation_context", False):
+            return method(*args, context=context)
+        return method(*args)
+
+    def prepare(
+        self,
+        target: RepositoryTarget,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> ManagedRepository:
+        adapter = self._for_provider(target.provider)
+        return self._call(adapter, "prepare", target, context=context)
+
+    def apply_files(
+        self,
+        repository: ManagedRepository,
+        files: tuple[BootstrapFile, ...],
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> None:
+        adapter = self._for_provider(repository.provider)
+        self._call(adapter, "apply_files", repository, files, context=context)
+
+    def list_files(
+        self,
+        repository: ManagedRepository,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> tuple[str, ...]:
+        adapter = self._for_provider(repository.provider)
+        return self._call(adapter, "list_files", repository, context=context)
+
+    def read_text_file(
+        self,
+        repository: ManagedRepository,
+        path: str,
+        *,
+        context: RepositoryOperationContext | None = None,
+    ) -> str | None:
+        adapter = self._for_provider(repository.provider)
+        return self._call(adapter, "read_text_file", repository, path, context=context)
