@@ -1,10 +1,10 @@
 # PLATFORM_INTERFACES
 Публічні межі встановлення, CLI, конфігурації, extension discovery та Service/API для K_Supervisor.
 
-Version: 1.2
+Version: 1.3
 Status: ACTIVE
-Baseline: v0.4 Phase 3 implementation candidate
-Date: 2026-09-19
+Baseline: v0.4 Phase 7 P7-A implementation candidate
+Date: 2026-09-23
 
 ## 1. Public Package Boundary
 
@@ -25,6 +25,8 @@ k-supervisor extensions [--kind agent|capability|project_template|adapter]
 ```
 
 Phase 3 adds `k-supervisor serve --config CONFIG` and HTTP-only operator groups for Projects, ProjectSpecs, Human Actions, Policy Approvals, Tasks, Workflows, Releases and recovery status. Operator mutations require or auto-generate an idempotency key; generated keys are surfaced in machine-readable output. Bearer-token contents are never accepted as command-line arguments.
+
+Phase 7 P7-A adds `k-supervisor releases prepare <project_id> --body RELEASE.json --config CONFIG`. It calls the versioned Service API only and requires the independent `releases:prepare` scope.
 
 ## 3. Service/API Boundary
 
@@ -74,6 +76,8 @@ strict_extensions
 
 Phase 3 adds optional `service_host` and `service_client` sections while retaining `config_version = "1"`. Host configuration bounds bind/port, workers, socket/drain timeouts, trusted proxies, protected principal token references, and optional governed extension activations. Client configuration accepts only HTTPS for non-loopback endpoints and may use HTTP only for loopback.
 
+Phase 7 P7-A adds optional `model_provider` configuration while retaining `config_version = "1"`. An enabled provider requires a protected credential reference and at least one explicit model profile. Supported fields bound provider identity, model/features/context/priority, default model, connect/request timeouts, retry/backoff, and output-token limits. Plaintext provider credentials are not configuration values. The current built-in production MODEL provider ID is `openai.responses`.
+
 JSON and TOML are supported by `load_config()`. Secrets are not configuration values; only opaque `secret://...` references may persist.
 
 ## 5. Extension Discovery
@@ -114,3 +118,15 @@ pytest: 129 passed
 branch-aware coverage: 85.34%
 Core Validation: PASS
 ```
+
+
+## 10. Phase 7 P7-A Production Composition
+
+The public owner/operator surface does not gain a second control plane.
+
+- MODEL-backed Tasks continue to use the existing Task API/CLI and `CapabilityRequirement`; P7-A only wires the existing governed MODEL stack into standard `ServiceRuntime`.
+- Release preparation is additive at `POST /api/v1/projects/{project_id}/releases` and CLI `releases prepare`.
+- Deterministic `model_transport` and `github_transport` injection exist only on the internal composition function used for qualification. They are not public business-operation endpoints.
+- The real `OpenAIResponsesProvider` and governed GitHub provider remain the code under deterministic transport tests.
+- Release packaging routes repository reads/writes through the configured authoritative repository adapter.
+- No install/share/publication command is added for ChatGPT Plugins or package indexes.
