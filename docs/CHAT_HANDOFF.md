@@ -1,22 +1,22 @@
 # CHAT_HANDOFF
-Canonical continuation context after ROADMAP v0.4 Phase 5 completion and Phase 6 pre-implementation audit.
+Canonical continuation context after ROADMAP v0.4 Phase 6 completion.
 
-Version: 6.2
+Version: 6.3
 Status: ACTIVE
-Date: 2026-09-22
+Date: 2026-09-23
 
 ## Start Here
 
-- docs/V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md
-- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md
+- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md
 - docs/PROJECT_STATE.md
 - docs/ROADMAP.md
 - docs/TEST_MATRIX.md
-- docs/V0_4_PHASE5_PREIMPLEMENTATION_AUDIT.md
-- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_ACTIVATED.md
-- docs/RELEASE_MANAGER.md
+- docs/SUPPLY_CHAIN_SECURITY.md
+- docs/OBSERVABILITY_AND_RELIABILITY.md
+- docs/OPERATIONS_RUNBOOK.md
+- docs/V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md
+- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_ACTIVATED.md
 - docs/DEVELOPMENT_RESOURCE_POLICY.md
-- docs/HARDENING_BASELINE_V0_4.md
 
 ## Current Roadmap State
 
@@ -29,89 +29,68 @@ v0.4 Phase 1: COMPLETE
 v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
-v0.4 Phase 5: COMPLETE — effective on protected completion merge
-v0.4 Phase 6 pre-implementation audit: COMPLETE
-v0.4 Phase 6 activation: YES
+v0.4 Phase 5: COMPLETE
+v0.4 Phase 6: COMPLETE — effective on protected completion merge
 v0.4 Phase 7: PLANNED / INACTIVE
-Current runtime implementation authorization: v0.4 Phase 6 — audited scope only
+Current runtime implementation authorization: NONE
 ```
 
-## Phase 5 Qualification Baseline
+## Phase 6 Qualification Baseline
 
 ```text
-Implementation predecessor main: f3cf85fce9a88eceab1a5636baf78b109f80d1d4
-Qualification PR: #46
-Qualification code/test head: 4dc6308663ff51e86a69aaf8c9671311be17a630
-Protected Core Validation: 35772935562 — PASS
-Full regression: 322 passed
-Branch-aware coverage: 81.20%
-Installed-wheel Phase 5 plugin package smoke: PASS
-Zero-cost validation: PASS
+Qualification PR: #59
+Qualification code/test head: 79024500a0e0dd03f898c3677683bf1e5a4dc60a
+Protected Core Validation: 35811716736 — PASS
+Python 3.13.15: 362 passed / 80.74% coverage
+Python 3.14.7: 362 passed / 80.09% coverage
+coverage gate >=80%: PASS on both supported minors
+installed-wheel Phase 6 observability/supply-chain smoke: PASS
+SPDX 2.3 + vulnerability evidence: PASS
+immutable Action SHA policy: PASS
+trusted-main attestation contract: PASS
+Zero-cost development policy: PASS
 ```
 
-Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_5_COMPLETE.md`.
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md`.
 
-## Delivered Phase 5 Surface
+## Delivered Phase 6 Surface
 
-`CHATGPT_PLUGIN` now supports deterministic generation of:
+Phase 6 now provides:
+
+- schema-driven production telemetry attributes and deterministic structured JSON logging;
+- fixed low-cardinality service/auth/provider/repository/release metrics;
+- bounded exporter queue/retry/timeout/drop semantics with non-authoritative failure isolation;
+- optional OTLP/HTTP and Prometheus-compatible surfaces;
+- service/auth/provider/repository/release boundary instrumentation;
+- Python support bounded to `>=3.13,<3.15` with protected 3.13 + 3.14 validation;
+- exact per-minor CI dependency locks;
+- deterministic SPDX 2.3 SBOM and wheel SHA-256 evidence;
+- machine-readable OSV vulnerability evidence with fail-closed unavailable/malformed states;
+- immutable full-SHA external GitHub Actions;
+- trusted-main wheel build-provenance and SBOM attestations with isolated OIDC/write permissions;
+- operations/security/release documentation and installed-wheel Phase 6 qualification smoke.
+
+Remote collectors/SaaS remain optional. Package/Plugin publication remains owner-controlled.
+
+## Qualification Correction
+
+The first Phase 6 qualification pass exposed that pytest-cov could print a threshold failure for Python 3.14 (79.91%) while the job still continued. The protected workflow was hardened to run an explicit `coverage report --fail-under=80` command. Additional Phase 6 SPDX/vulnerability failure-path tests raised authoritative Python 3.14 coverage to 80.09%.
+
+Only the corrected qualification run `35811716736` is completion evidence.
+
+## Governance Boundary
 
 ```text
-plugin.json
-skills/<slug>/SKILL.md
-.app.json when registered apps are configured
-skills/<slug>/references/... when declared package references are configured
-MIGRATION_INVENTORY.json
-REGRESSION_CASES.json
-.agents/plugins/marketplace.json when marketplace export is configured
-```
-
-Registered app IDs are validated; legacy app/template inventory remains distinct. Custom Actions remain rebuild-required. MCP inventory remains explicit-mapping-required. No MCP package is generated implicitly. Model pinning, GPT sharing/access transfer and conversation-history transfer are explicitly absent.
-
-Reference resources are read through the repository boundary. Governed GitHub reads use the existing policy/provider/access-reference path.
-
-## Publication Boundary
-
-Release Manager still stops at `PUBLICATION_REQUIRED`.
-
-Plugin installation, app authorization, workspace marketplace import/sync, sharing, workspace publication and public submission are owner/workspace-admin actions. No external Plugin publication action was added to protected CI.
-
-Legacy `GPT_STORE` remains compatible.
-
-## CI / Governance Baseline
-
-```text
-Core Validation runner: [self-hosted, linux, arm64, k-supervisor-ci]
-Runner host: kgm-e4-owner-pilot
 Required check: Core Validation
-Ruleset: main-core-validation
-Ruleset id: 23556478
-Bypass actors: NONE
-Public external contributor workflow approval: REQUIRED
-Zero-cost development policy: REQUIRED
+Protected Python minors: 3.13 + 3.14
+Pull-request permissions: read-only/minimal
+Trusted-main attestation permissions: contents:read + id-token:write + attestations:write
+Automatic external publication: NO
+Phase 7 activation: NO
 ```
-
-## Phase 6 Audit Conclusion
-
-The existing telemetry persistence, correlation, metrics snapshots, health/reliability primitives and projection exporters remain the compatibility floor.
-
-The audited Phase 6 target adds:
-
-```text
-safe structured logs
-+ frozen low-cardinality metric/event taxonomy
-+ bounded optional OTLP/Prometheus export
-+ service/auth/provider/repository/release instrumentation
-+ pinned Python 3.13/3.14 CI compatibility
-+ deterministic dependency inventory + SPDX SBOM
-+ current vulnerability evidence
-+ immutable GitHub Action pinning
-+ trusted-main wheel/SBOM attestations
-```
-
-Remote collectors remain optional. Exporter failure remains non-authoritative. Package publication remains owner-controlled.
-
-Audit authority: `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`.
 
 ## Immediate Continuation
 
-Phase 6 activation is owner-approved. Runtime/source/test/workflow implementation may begin only after `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_ACTIVATED.md` passes protected `Core Validation` and merges to `main`, and must remain inside `V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md`.
+Phase 6 is complete after protected merge of PR #59. Do not begin Phase 7 runtime/source/test/workflow implementation.
+
+Next permitted work: **ROADMAP v0.4 Phase 7 pre-implementation audit only**.
