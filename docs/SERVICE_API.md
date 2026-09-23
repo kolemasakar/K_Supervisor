@@ -1,10 +1,10 @@
 # SERVICE_API
 Versioned Service/API boundary for K_Supervisor owner/operator control.
 
-Version: 2.1
+Version: 2.2
 Status: ACTIVE
-Baseline: v0.4 Phase 3 implementation candidate
-Date: 2026-09-19
+Baseline: v0.4 Phase 7 P7-A implementation candidate
+Date: 2026-09-23
 Public API version: v1
 
 ## 1. Purpose
@@ -115,10 +115,13 @@ Task/Workflow cancellation is durable. Active runtime cancellation is requested 
 
 ```text
 GET  /api/v1/projects/{project_id}/releases
+POST /api/v1/projects/{project_id}/releases
 GET  /api/v1/projects/{project_id}/releases/{release_id}
 POST /api/v1/projects/{project_id}/releases/{release_id}/targets/{target_type}/confirm-publication
 GET  /api/v1/projects/{project_id}/recovery-status
 ```
+
+Phase 7 P7-A adds explicit release preparation on `POST /api/v1/projects/{project_id}/releases`. The request supplies a bounded release `version` plus optional explicit `satisfied_criteria`. The operation requires `releases:prepare`, a durable `Idempotency-Key`, resolves the active governed repository through `ProjectFactory`, and delegates to `ReleaseManager.handle_first_working()`. Successful preparation may move the project to `RELEASE_READY` and the release/target to `PUBLICATION_REQUIRED`; it never publishes externally.
 
 Publication confirmation delegates to `ReleaseManager.confirm_publication()`. It confirms an already owner-performed publication action; the API does not automatically publish externally.
 
@@ -147,6 +150,7 @@ executions:start
 executions:cancel
 
 releases:read
+releases:prepare
 releases:publication:confirm
 
 recovery:read
@@ -220,6 +224,7 @@ Human Action                -> HumanInterventionBroker
 Policy Approval             -> PolicyApprovalBroker
 Task execution/cancel       -> SupervisorKernel
 Workflow execution/cancel   -> WorkflowEngine
+Release preparation         -> ReleaseManager + ProjectFactory repository authority
 Publication confirmation    -> ReleaseManager
 ```
 
@@ -256,6 +261,12 @@ EXECUTION_INTERRUPTED      409
 OWNER_ACTION_INVALID       409
 APPROVAL_STATE_CONFLICT    409
 RELEASE_STATE_CONFLICT     409
+RELEASE_NOT_READY          409
+RELEASE_PROFILE_INVALID    409
+REPOSITORY_NOT_READY       409
+REPOSITORY_UNAVAILABLE     503
+REPOSITORY_CONFLICT        409
+OWNER_ACTION_REQUIRED      409
 DEPENDENCY_UNAVAILABLE     503
 METHOD_NOT_ALLOWED         405
 INTERNAL_ERROR             500
@@ -328,3 +339,37 @@ The safe default bind is loopback. Non-loopback binding requires explicit proxy 
 The reusable `ServiceClientV1` contains transport logic only. Operator CLI mutation commands call this client, never persistence/registry/kernel/workflow mutation authorities. Plaintext bearer tokens are not CLI arguments; client and host credentials resolve from protected references/environment injection.
 
 The installed-wheel Core Validation smoke runs outside the checkout and verifies host startup, health/readiness, authenticated CLI-over-HTTP access, clean shutdown and SQLite integrity.
+
+
+## 14. v0.4 Phase 7 P7-A Composition Boundary
+
+P7-A keeps `/api/v1` as the single owner/operator business boundary while completing production composition of already-delivered Phase 1-6 services.
+
+The standard `ServiceRuntime` now composes:
+
+```text
+configured model_provider
+  -> OpenAIResponsesProvider
+  -> ProviderRegistry
+  -> PolicyEngine + PersistencePolicyAuditSink
+  -> SideEffectGateway
+  -> ModelBackedAgent
+  -> LocalAgentDispatcher
+  -> SupervisorKernel
+  -> existing Task API/CLI
+
+ProjectFactory
+  -> filesystem / governed GitHub repository adapters
+  -> governed repository resolve/reconcile
+
+RoutedRepositoryAdapter
+  -> ReleaseManager
+  -> explicit releases:prepare API/CLI
+  -> RELEASE_READY / PUBLICATION_REQUIRED
+```
+
+MODEL execution remains subject to ProjectSpec policy, capability permissions and protected `secret://` access references. The API does not expose a raw Provider endpoint.
+
+Release preparation is a long durable service command. Same operation/key/payload replays authoritative persisted release state; key reuse with different input fails with `IDEMPOTENCY_CONFLICT`. Repository resolution remains under `ProjectFactory` and the configured governed adapter.
+
+P7-A adds no automatic publication path. `RELEASE_READY` and `PUBLICATION_REQUIRED` preserve the explicit owner/workspace boundary.

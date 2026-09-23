@@ -1,7 +1,7 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 4.5
+Version: 4.6
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
 Current phase: v0.4 Phase 7 — ACTIVATED / IMPLEMENTATION AUTHORIZED
@@ -418,3 +418,41 @@ A live external smoke is supplemental when the required operation is available w
 ## Activation Rule
 
 Phase 0 through Phase 6 are COMPLETE. Phase 7 pre-implementation audit is COMPLETE and owner activation is approved. Phase 7 runtime/source/test/workflow implementation is permitted only within the audited scope after the protected activation checkpoint merges.
+
+
+## v0.4 Phase 7 P7-A — Production Composition Candidate Evidence
+
+P7-A candidate PR: #62.
+
+Required candidate behaviors now covered:
+
+- enabled MODEL configuration fails closed without protected credential/model declarations;
+- standard ServiceRuntime registers the production MODEL capability/agent and executes it through the existing Task Service API;
+- MODEL execution traverses PolicyEngine + SideEffectGateway + OpenAIResponsesProvider and emits no resolved credential into durable audit/policy evidence;
+- disabled/unconfigured MODEL provider remains absent rather than being implicitly enabled;
+- repository routing uses the authoritative ManagedRepository provider;
+- ProjectFactory repository resolution fails closed for missing/non-operational projects;
+- release preparation requires independent `releases:prepare` scope;
+- release preparation delegates to ProjectFactory + ReleaseManager and stops at `PUBLICATION_REQUIRED`;
+- same idempotency key/payload replays without duplicate Release/ReleaseTarget/HumanAction;
+- same key with different payload fails closed;
+- CLI exposes the same Service/API release-preparation operation;
+- no automatic external publication path is introduced.
+
+Candidate validation before final docs head:
+
+```text
+Code/test head: 7f0cf75a4915de4bde9a85452bc9506a3967bba4
+Core Validation: 35823162345 — PASS
+Python 3.13.15: 371 passed / 80.75% branch-aware coverage
+Python 3.14.7: 371 passed / 80.11% branch-aware coverage
+coverage gate: python -m coverage report --precision=2 --fail-under=80
+ResourceWarning: PASS
+compileall: PASS
+wheel build/install: PASS
+installed-wheel Phase 3/4/5/6 predecessor smokes: PASS
+```
+
+The initial P7-A candidate revealed that zero-decimal `coverage report` could accept 79.83% after rounding. P7-A hardens the permanent gate to precision 2; any actual total below 80.00% now fails the protected job.
+
+The final PR #62 documentation head must repeat protected `Core Validation` before merge. This evidence does not by itself complete Phase 7; P7-B through P7-E remain required.

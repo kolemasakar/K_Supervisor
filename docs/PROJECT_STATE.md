@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 7 pre-implementation audit.
 
-Version: 6.8
+Version: 6.9
 Status: ACTIVE
 Date: 2026-09-23
 
@@ -471,3 +471,38 @@ Next implementation wave: P7-A
 Automatic external publication: NO
 Zero-cost development policy: REQUIRED
 ```
+
+
+## Phase 7 P7-A Implementation Candidate
+
+P7-A production composition gap closure is implemented in PR #62 and remains pending final exact-head protected validation/merge after documentation synchronization.
+
+Implemented candidate surface:
+
+- additive `PlatformConfig.model_provider` under config version 1;
+- standard ServiceRuntime registration of the existing governed `generation.model` capability and `agent.model.production`;
+- OpenAIResponsesProvider -> PolicyEngine -> SideEffectGateway -> ModelBackedAgent -> LocalAgentDispatcher composition;
+- internal deterministic MODEL/GitHub transport injection seams for protected qualification only;
+- ProjectFactory governed repository resolve/reconcile boundary;
+- RoutedRepositoryAdapter for ReleaseManager repository operations;
+- production ReleaseManager wiring into ServiceRuntime/ServiceApiV1;
+- `releases:prepare` scope, API operation and CLI command;
+- durable idempotent release-preparation command with owner publication stop.
+
+Code/test candidate evidence before final docs synchronization:
+
+```text
+PR: #62
+Code/test head: 7f0cf75a4915de4bde9a85452bc9506a3967bba4
+Core Validation: 35823162345 — PASS
+Python 3.13.15: 371 passed / 80.75%
+Python 3.14.7: 371 passed / 80.11%
+precise coverage gate: --precision=2 --fail-under=80
+ResourceWarning gate: PASS
+wheel/install/supply-chain predecessor smokes: PASS
+automatic publication: NONE
+```
+
+The earlier P7-A Python 3.14 result at 79.83% exposed that `coverage report --fail-under=80` with default zero precision could round the displayed threshold. The protected workflow candidate now uses `--precision=2 --fail-under=80`, and focused failure-path tests raise actual Python 3.14 coverage above 80%.
+
+P7-A is not considered merged/complete until the final documentation head of PR #62 passes protected `Core Validation` and merges to `main`. Phase 7 remains active; P7-B starts only from the merged P7-A baseline.

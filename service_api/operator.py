@@ -25,6 +25,11 @@ from registry.project_registry import ProjectRegistry
 from supervisor.kernel import ProjectNotRunnableError
 from supervisor.routing import NoProviderError
 from workflows.engine import WorkflowRuntimeError
+from release_manager import (
+    ReleaseManagerError,
+    ReleaseNotReadyError,
+    ReleaseProfileValidationError,
+)
 
 from .contracts import (
     API_VERSION,
@@ -44,11 +49,13 @@ from .contracts import (
     REPOSITORY_BOOTSTRAP_SCOPE,
     REPOSITORY_READ_SCOPE,
     RELEASES_CONFIRM_SCOPE,
+    RELEASES_PREPARE_SCOPE,
     RELEASES_READ_SCOPE,
     ApiResponse,
     ApprovalRevokeRequest,
     ProjectRegistrationRequest,
     ProjectSpecSubmissionRequest,
+    ReleasePrepareRequest,
     ServicePrincipal,
     TaskStartRequest,
     WorkflowStartRequest,
@@ -192,8 +199,17 @@ class OperatorControlApi:
         if len(parts) == 4 and parts[1] == "workflows" and parts[3] == "cancel" and method == "POST":
             return self._cancel_workflow(project_id, parts[2], principal, idempotency_key)
 
-        if len(parts) == 2 and parts[1] == "releases" and method == "GET":
-            return self._list_releases(project_id, principal)
+        if len(parts) == 2 and parts[1] == "releases":
+            if method == "GET":
+                return self._list_releases(project_id, principal)
+            if method == "POST":
+                return self._prepare_release(
+                    project_id,
+                    principal,
+                    body,
+                    idempotency_key,
+                )
+            return None
         if len(parts) == 3 and parts[1] == "releases" and method == "GET":
             return self._get_release(project_id, parts[2], principal)
         if (
@@ -697,6 +713,141 @@ class OperatorControlApi:
         )
 
     # Release / recovery ----------------------------------------------------
+
+    def _prepare_release(self, project_id, principal, body, idempotency_key):
+        self._require_scope(principal, RELEASES_PREPARE_SCOPE)
+        self._require_dependency(self.releases, "release manager")
+        self._require_dependency(self.project_factory, "project factory")
+        self._require_project(project_id)
+        request = self._validate(ReleasePrepareRequest, body)
+        key = self._require_key(idempotency_key)
+        payload = request.model_dump(mode="json")
+        release_id = f"RELEASE_{project_id}_{request.version}"
+        command_id = self._command_id(project_id, "release-prepare", key)
+        existing, _ = self._begin_long_command(
+            project_id,
+            "release-prepare",
+            key,
+            payload,
+            {"release_id": release_id, "version": request.version},
+        )
+        if existing is not None:
+            if existing.status == ServiceCommandStatus.SUCCEEDED:
+                return self._release_prepare_response(existing, replay=True)
+            if self._is_active(command_id):
+                raise OperatorApiError(
+                    "COMMAND_IN_PROGRESS",
+                    409,
+                    "release preparation command is in progress",
+                )
+            self._mark_active(command_id)
+
+        try:
+            try:
+                repository = self.project_factory.resolve_repository(
+                    project_id,
+                    datetime.now(timezone.utc),
+                    idempotency_key=f"service:{command_id}:repository",
+                )
+                outcome = self.releases.handle_first_working(
+                    project_id,
+                    request.version,
+                    repository,
+                    datetime.now(timezone.utc),
+                    satisfied_criteria=request.satisfied_criteria,
+                )
+            except BootstrapBlockedError as exc:
+                details = {}
+                if exc.human_action_id is not None:
+                    details["human_action_id"] = exc.human_action_id
+                raise OperatorApiError(
+                    "OWNER_ACTION_REQUIRED",
+                    409,
+                    "release repository requires owner action",
+                    "OWNER_ACTION",
+                    details=details,
+                ) from exc
+            except RepositoryConflictError as exc:
+                self._fail_command(command_id, "REPOSITORY_CONFLICT", 409, "CONFLICT")
+                raise OperatorApiError(
+                    "REPOSITORY_CONFLICT",
+                    409,
+                    "release repository conflicts with governed state",
+                    "CONFLICT",
+                ) from exc
+            except BootstrapValidationError as exc:
+                self._fail_command(command_id, "REPOSITORY_NOT_READY", 409, "VALIDATION")
+                raise OperatorApiError(
+                    "REPOSITORY_NOT_READY",
+                    409,
+                    "release repository is not ready",
+                    "VALIDATION",
+                ) from exc
+            except RepositoryUnavailableError as exc:
+                raise OperatorApiError(
+                    "REPOSITORY_UNAVAILABLE",
+                    503,
+                    "release repository provider is temporarily unavailable",
+                    "DEPENDENCY",
+                ) from exc
+            except ReleaseNotReadyError as exc:
+                self._fail_command(command_id, "RELEASE_NOT_READY", 409, "VALIDATION")
+                raise OperatorApiError(
+                    "RELEASE_NOT_READY",
+                    409,
+                    "release readiness criteria are not satisfied",
+                    "VALIDATION",
+                ) from exc
+            except ReleaseProfileValidationError as exc:
+                self._fail_command(command_id, "RELEASE_PROFILE_INVALID", 409, "VALIDATION")
+                raise OperatorApiError(
+                    "RELEASE_PROFILE_INVALID",
+                    409,
+                    "release package validation failed",
+                    "VALIDATION",
+                ) from exc
+            except ReleaseManagerError as exc:
+                self._fail_command(command_id, "RELEASE_STATE_CONFLICT", 409, "PROJECT_STATE")
+                raise OperatorApiError(
+                    "RELEASE_STATE_CONFLICT",
+                    409,
+                    "project cannot prepare a release in its current state",
+                    "PROJECT_STATE",
+                ) from exc
+
+            if outcome.release.release_id != release_id:
+                raise RuntimeError("release manager returned an unexpected release identity")
+            self._succeed_command(command_id)
+            command = self.store.get_service_command(command_id)
+            if command is None:
+                raise RuntimeError("release preparation service command disappeared")
+            return self._release_prepare_response(command, replay=False)
+        except OperatorApiError:
+            raise
+        except Exception as exc:
+            self._fail_command(command_id, "INTERNAL_ERROR", 500, "INTERNAL")
+            raise OperatorApiError(
+                "INTERNAL_ERROR",
+                500,
+                "internal service error",
+                "INTERNAL",
+            ) from exc
+        finally:
+            self._clear_active(command_id)
+
+    def _release_prepare_response(self, command, *, replay):
+        release_id = command.result_refs.get("release_id")
+        release = self.store.get_release(release_id) if isinstance(release_id, str) else None
+        if release is None or release.project_id != command.project_id:
+            raise OperatorApiError(
+                "COMMAND_IN_PROGRESS",
+                409,
+                "release preparation result is unavailable",
+            )
+        return self._success(
+            {"release": self._release_payload(release)},
+            meta={"idempotent_replay": replay},
+        )
 
     def _list_releases(self, project_id, principal):
         self._require_scope(principal, RELEASES_READ_SCOPE)

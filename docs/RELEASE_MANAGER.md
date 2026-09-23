@@ -1,9 +1,9 @@
 # RELEASE_MANAGER
 Керування підготовкою релізів, перевіркою готовності та передачею публікації власнику.
 
-Version: 1.2
+Version: 1.3
 Status: ACTIVE
-Phase: v0.4 Phase 6 production observability and supply-chain release evidence
+Phase: v0.4 Phase 7 P7-A production Service/API composition
 
 ## Purpose
 
@@ -195,3 +195,37 @@ A release candidate intended for promotion should be tied to:
 - trusted-main GitHub build-provenance and SBOM attestations where supported.
 
 These artifacts strengthen release evidence but do not publish the package. External Plugin/package publication remains an explicit owner/workspace action.
+
+
+## v0.4 Phase 7 P7-A — Production Operator Composition
+
+P7-A connects the existing Release Manager to the standard production `ServiceRuntime` without changing release-state authority.
+
+The operator path is:
+
+```text
+POST /api/v1/projects/{project_id}/releases
+  -> releases:prepare scope
+  -> durable ServiceCommandRecord
+  -> ProjectFactory.resolve_repository()
+  -> configured governed repository adapter
+  -> ReleaseManager.handle_first_working()
+  -> target profile generation/validation
+  -> RELEASE_READY
+  -> PUBLICATION_REQUIRED
+  -> HumanAction WAITING_FOR_OWNER
+```
+
+`ProjectFactory.resolve_repository()` derives provider and repository identity only from the active approved ProjectSpec and reuses the configured filesystem/GitHub adapters. It does not perform an independent raw-provider bypass or manufacture lifecycle transitions.
+
+`RoutedRepositoryAdapter` lets one production `ReleaseManager` delegate release file operations to the adapter identified by the authoritative `ManagedRepository.provider`. It adds routing only; readiness, target generation and publication state remain Release Manager responsibilities.
+
+Release preparation is explicit and idempotent. It is not automatically triggered by an arbitrary lifecycle transition to `FIRST_WORKING`. Replay of the same durable service command returns persisted authoritative release state and does not duplicate release targets or owner actions.
+
+P7-A does not change the publication invariant:
+
+```text
+RELEASE_READY != PUBLISHED
+PUBLICATION_REQUIRED -> explicit owner/workspace action
+automatic external publication = NO
+```
