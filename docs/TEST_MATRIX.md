@@ -1,11 +1,11 @@
 # TEST_MATRIX
 Active cumulative verification contract for approved ROADMAP v0.4.
 
-Version: 4.2
+Version: 4.3
 Status: ACTIVE
 Roadmap baseline: v0.2 COMPLETE + v0.3 COMPLETE + v0.4 ACTIVE
-Current phase: v0.4 Phase 6 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
-Date: 2026-09-22
+Current phase: v0.4 Phase 6 — COMPLETE
+Date: 2026-09-23
 
 ## Preserved Regression Floor
 
@@ -33,7 +33,7 @@ Local exact-tree regression: 163 passed / 85.82% branch coverage
 | 3 | service host, health/readiness, shutdown, CLI parity | COMPLETE |
 | 4 | GitHub repository/VCS provider and governed handoff | COMPLETE |
 | 5 | Plugin-native package/manifest/marketplace validation | COMPLETE |
-| 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | AUDIT COMPLETE / ACTIVATION PENDING |
+| 6 | structured telemetry plus SBOM/vulnerability/provenance evidence | COMPLETE |
 | 7 | end-to-end single-node product qualification | PLANNED |
 
 ## Phase 0 Evidence
@@ -361,6 +361,35 @@ After a separate owner-approved activation checkpoint merges, Phase 6 verificati
 
 Vulnerability advisory status is intentionally time-sensitive as databases evolve; dependency resolution, scanner/tool configuration and evidence schema remain deterministic and reviewable.
 
+## v0.4 Phase 6 — Completion Evidence
+
+Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md`.
+
+```text
+Qualification PR: #59
+Qualification code/test head: 79024500a0e0dd03f898c3677683bf1e5a4dc60a
+Protected Core Validation: 35811716736 — PASS
+Python 3.13.15: 362 passed / 80.74% branch-aware total coverage
+Python 3.14.7: 362 passed / 80.09% branch-aware total coverage
+coverage gate >=80%: PASS on both supported minors
+ResourceWarning gate: PASS
+compileall: PASS
+wheel build/install: PASS
+installed-wheel Phase 3 service/CLI smoke: PASS
+installed-wheel Phase 4 repository Service/API/CLI smoke: PASS
+installed-wheel Phase 5 plugin package smoke: PASS
+installed-wheel Phase 6 observability/supply-chain smoke: PASS
+deterministic SPDX 2.3 SBOM: PASS
+machine-readable OSV vulnerability evidence: PASS
+immutable external Action SHA regression: PASS
+trusted-main attestation contract: PASS
+zero-cost development policy: PASS
+```
+
+The earlier Python 3.14 observation at 79.91% exposed a coverage-gate weakness: pytest-cov printed a threshold failure while the job remained green. Qualification fixed the workflow to run an explicit `coverage report --fail-under=80` gate and added Phase 6 security failure-path tests. The authoritative exact qualification candidate is the later 80.09% PASS above.
+
+The final documentation head of PR #59 must also pass protected `Core Validation` before merge.
+
 ## Permanent Quality Gates
 
 ```text
@@ -388,4 +417,4 @@ A live external smoke is supplemental when the required operation is available w
 
 ## Activation Rule
 
-Phase 0 through Phase 5 are COMPLETE. Phase 6 pre-implementation audit is COMPLETE. No runtime implementation phase is active; the next permitted action is a separate owner Phase 6 activation decision.
+Phase 0 through Phase 6 are COMPLETE. No runtime implementation phase is active. The next permitted work is the Phase 7 pre-implementation audit; Phase 7 runtime implementation remains unauthorized.
