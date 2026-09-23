@@ -1,9 +1,9 @@
 # RELEASE_MANAGER
 Керування підготовкою релізів, перевіркою готовності та передачею публікації власнику.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
-Phase: 13 baseline + v0.3 Phase 8 operational qualification
+Phase: v0.4 Phase 6 production observability and supply-chain release evidence
 
 ## Purpose
 
