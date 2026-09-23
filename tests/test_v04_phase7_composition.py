@@ -138,6 +138,7 @@ def _model_spec():
         project_type="AI",
         success_criteria=("model task succeeds",),
         first_working_criteria=("model output exists",),
+        documentation={"roadmap_required": True},
         repository={"repository_provider": "FILESYSTEM"},
         architecture={"architecture_style": "MODULAR"},
         notifications={"primary_channel": "EMAIL"},
