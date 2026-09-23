@@ -138,6 +138,65 @@ class ServiceClientConfig(BaseModel):
         return value
 
 
+class ModelProfileConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    model_id: str = Field(min_length=1, max_length=200)
+    features: tuple[str, ...] = ()
+    context_window: int | None = Field(default=None, ge=1)
+    priority: int = 0
+
+    @field_validator("model_id")
+    @classmethod
+    def validate_model_id(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("model_id must not be empty")
+        return value
+
+    @field_validator("features")
+    @classmethod
+    def validate_features(cls, values: tuple[str, ...]) -> tuple[str, ...]:
+        normalized = tuple(value.strip() for value in values)
+        if any(not value for value in normalized):
+            raise ValueError("model features must not be empty")
+        if len(set(normalized)) != len(normalized):
+            raise ValueError("model features must be unique")
+        return normalized
+
+
+class ModelProviderConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    enabled: bool = True
+    provider_id: Literal["openai.responses"] = "openai.responses"
+    credential_ref: AccessReference | None = None
+    models: tuple[ModelProfileConfig, ...] = ()
+    default_model: str | None = Field(default=None, max_length=200)
+    connect_timeout_seconds: float = Field(default=5.0, gt=0, le=60)
+    request_timeout_seconds: float = Field(default=60.0, gt=0, le=300)
+    max_retries: int = Field(default=0, ge=0, le=5)
+    retry_backoff_seconds: float = Field(default=0.0, ge=0, le=30)
+    default_max_output_tokens: int = Field(default=1024, ge=1, le=1048576)
+    max_output_tokens_limit: int = Field(default=8192, ge=1, le=1048576)
+
+    @model_validator(mode="after")
+    def validate_provider(self):
+        if self.enabled:
+            if self.credential_ref is None:
+                raise ValueError("enabled model_provider requires credential_ref")
+            if not self.models:
+                raise ValueError("enabled model_provider requires at least one model")
+        ids = [item.model_id for item in self.models]
+        if len(set(ids)) != len(ids):
+            raise ValueError("model_provider model_id values must be unique")
+        if self.default_model is not None and self.default_model not in set(ids):
+            raise ValueError("model_provider default_model must reference a configured model")
+        if self.default_max_output_tokens > self.max_output_tokens_limit:
+            raise ValueError("default_max_output_tokens exceeds max_output_tokens_limit")
+        return self
+
+
 class PlatformConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -147,6 +206,7 @@ class PlatformConfig(BaseModel):
     strict_extensions: bool = True
     service_host: ServiceHostConfig | None = None
     service_client: ServiceClientConfig | None = None
+    model_provider: ModelProviderConfig | None = None
 
     @field_validator("config_version")
     @classmethod
