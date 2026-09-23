@@ -98,7 +98,7 @@ jobs:
       - name: Test with coverage gate and resource-warning gate
         run: |
           python -m pytest -q -W error::ResourceWarning --cov=. --cov-report=term-missing --cov-report=xml
-          python -m coverage report --fail-under=80
+          python -m coverage report --precision=2 --fail-under=80
       - name: Build wheel
         run: |
           rm -rf dist build k_supervisor.egg-info
