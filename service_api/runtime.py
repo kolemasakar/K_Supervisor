@@ -4,8 +4,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from access import EnvironmentSecretBackend, SecretBackend
+from agents import ModelBackedAgent
 from factory import FilesystemRepositoryAdapter, ProjectFactory
 from factory.governed_github import build_governed_github_repository_adapter
+from factory.repository import RoutedRepositoryAdapter
+from integrations.gateway import SideEffectGateway
+from models.agent import AgentDescriptor, CapabilityRef
+from models.capability import CapabilityDescriptor
 from observability import (
     DeploymentQualifier,
     ProductionMetricRegistry,
@@ -15,7 +20,21 @@ from observability import (
 )
 from persistence import SQLitePersistenceStore
 from policy.approval import PolicyApprovalBroker
-from registry import AgentRegistry, CapabilityRegistry, ProjectRegistry
+from policy.engine import PolicyEngine
+from policy.persistence import PersistencePolicyAuditSink
+from providers import (
+    ModelProfile,
+    OpenAIResponsesProvider,
+    PriorityModelSelector,
+)
+from registry import (
+    AgentRegistry,
+    CapabilityRegistry,
+    ProjectRegistry,
+    ProviderRegistry,
+)
+from release_manager import ReleaseManager
+from runtime.contracts import ExecutionControl, RuntimeLimits
 from supervisor.dispatch import LocalAgentDispatcher
 from supervisor.human_intervention import HumanInterventionBroker
 from supervisor.kernel import SupervisorKernel
@@ -25,6 +44,11 @@ from .auth import StaticBearerAuthenticator
 from .contracts import ServicePrincipal
 from .service import ServiceApiV1
 from .wsgi import WsgiServiceAppV1
+
+
+MODEL_CAPABILITY_ID = "generation.model"
+MODEL_CAPABILITY_VERSION = "1.0.0"
+MODEL_AGENT_ID = "agent.model.production"
 
 
 @dataclass
@@ -41,6 +65,7 @@ class ServiceRuntime:
     human: HumanInterventionBroker
     approvals: PolicyApprovalBroker
     workflows: WorkflowEngine
+    releases: ReleaseManager
     telemetry: TelemetryRecorder
     production_metrics: ProductionMetricRegistry
     production_observability: ProductionObservability
@@ -59,7 +84,111 @@ class ServiceRuntime:
         self.store.close()
 
 
-def build_service_runtime(config, *, secret_backend: SecretBackend | None = None) -> ServiceRuntime:
+def _configure_model_provider(
+    config,
+    *,
+    backend: SecretBackend,
+    store,
+    projects,
+    capabilities,
+    agents,
+    approvals,
+    dispatcher,
+    observability,
+    transport=None,
+) -> None:
+    provider_config = config.model_provider
+    if provider_config is None or not provider_config.enabled:
+        return
+    credential_ref = provider_config.credential_ref
+    if credential_ref is None:
+        raise ValueError("enabled model_provider requires credential_ref")
+
+    capability = CapabilityDescriptor(
+        capability_id=MODEL_CAPABILITY_ID,
+        capability_version=MODEL_CAPABILITY_VERSION,
+        description="Generate text through the governed production MODEL provider.",
+        operations=("run",),
+        input_schema="schema://model/generation/input",
+        output_schema="schema://model/generation/output",
+        side_effects=("WRITE_EXTERNAL",),
+        risk_class="LOW",
+        metadata={"reference": False, "model_backed": True},
+    )
+    capabilities.register(capability)
+    agents.register(
+        AgentDescriptor(
+            agent_id=MODEL_AGENT_ID,
+            agent_type="MODEL_BACKED",
+            agent_version="1.0.0",
+            display_name="Governed Model Agent",
+            capabilities=(
+                CapabilityRef(
+                    capability_id=MODEL_CAPABILITY_ID,
+                    capability_version=MODEL_CAPABILITY_VERSION,
+                ),
+            ),
+            status="AVAILABLE",
+            metadata={"reference": False},
+        )
+    )
+
+    providers = ProviderRegistry()
+    providers.register(
+        OpenAIResponsesProvider(
+            secret_backend=backend,
+            credential_ref=credential_ref,
+            models=tuple(
+                ModelProfile(
+                    model_id=item.model_id,
+                    features=item.features,
+                    context_window=item.context_window,
+                    priority=item.priority,
+                )
+                for item in provider_config.models
+            ),
+            default_model=provider_config.default_model,
+            transport=transport,
+            connect_timeout_seconds=provider_config.connect_timeout_seconds,
+            request_timeout_seconds=provider_config.request_timeout_seconds,
+            max_retries=provider_config.max_retries,
+            retry_backoff_seconds=provider_config.retry_backoff_seconds,
+            default_max_output_tokens=provider_config.default_max_output_tokens,
+            max_output_tokens_limit=provider_config.max_output_tokens_limit,
+        )
+    )
+    policy = PolicyEngine(
+        projects,
+        agents,
+        approvals=approvals,
+        audit=PersistencePolicyAuditSink(store),
+    )
+    gateway = SideEffectGateway(
+        store,
+        policy,
+        providers=providers,
+        observability=observability,
+    )
+    model_agent = ModelBackedAgent(
+        gateway,
+        PriorityModelSelector(),
+        provider_access_refs={provider_config.provider_id: (credential_ref,)},
+    )
+
+    def handle(request):
+        control = ExecutionControl(RuntimeLimits.from_request(dict(request.limits)))
+        return model_agent(request, control)
+
+    dispatcher.register(MODEL_AGENT_ID, handle)
+
+
+def build_service_runtime(
+    config,
+    *,
+    secret_backend: SecretBackend | None = None,
+    model_transport=None,
+    github_transport=None,
+) -> ServiceRuntime:
     host = config.service_host
     if host is None:
         raise ValueError("service_host configuration is required for serve")
@@ -69,23 +198,39 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
     store = SQLitePersistenceStore(config.state_db_path)
     try:
         store.initialize()
+        backend = secret_backend or EnvironmentSecretBackend()
         projects = ProjectRegistry(store)
         capabilities = CapabilityRegistry()
         agents = AgentRegistry(capabilities)
         dispatcher = LocalAgentDispatcher()
-        kernel = SupervisorKernel(projects, agents, store, dispatcher)
         human = HumanInterventionBroker(store, projects)
         approvals = PolicyApprovalBroker(store, agents, human)
-        workflows = WorkflowEngine(
-            kernel,
-            store,
-            HumanInterventionApprovalRequester(human),
-        )
+
         telemetry = TelemetryRecorder(store)
         production_metrics = ProductionMetricRegistry()
         production_observability = ProductionObservability(
             telemetry=telemetry,
             metrics=production_metrics,
+        )
+
+        _configure_model_provider(
+            config,
+            backend=backend,
+            store=store,
+            projects=projects,
+            capabilities=capabilities,
+            agents=agents,
+            approvals=approvals,
+            dispatcher=dispatcher,
+            observability=production_observability,
+            transport=model_transport,
+        )
+
+        kernel = SupervisorKernel(projects, agents, store, dispatcher)
+        workflows = WorkflowEngine(
+            kernel,
+            store,
+            HumanInterventionApprovalRequester(human),
         )
         health = ServiceHealthEvaluator(
             {
@@ -132,22 +277,32 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
                     if config.strict_extensions:
                         raise
 
-        backend = secret_backend or EnvironmentSecretBackend()
         repository_root = Path(config.state_db_path).resolve().parent / "repositories"
+        filesystem_repository = FilesystemRepositoryAdapter(repository_root)
         github_repository = build_governed_github_repository_adapter(
             store,
             projects,
             human,
             backend,
+            transport=github_transport,
             observability=production_observability,
+        )
+        repository_adapters = (
+            filesystem_repository,
+            github_repository,
         )
         project_factory = ProjectFactory(
             projects,
-            (
-                FilesystemRepositoryAdapter(repository_root),
-                github_repository,
-            ),
+            repository_adapters,
             human,
+        )
+        routed_repository = RoutedRepositoryAdapter(repository_adapters)
+        releases = ReleaseManager(
+            store,
+            projects,
+            routed_repository,
+            human,
+            observability=production_observability,
         )
 
         tokens: dict[str, ServicePrincipal] = {}
@@ -176,6 +331,7 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             workflows=workflows,
             human=human,
             approvals=approvals,
+            releases=releases,
             project_factory=project_factory,
         )
         app = WsgiServiceAppV1(api, authenticator, production_observability)
@@ -190,6 +346,7 @@ def build_service_runtime(config, *, secret_backend: SecretBackend | None = None
             human=human,
             approvals=approvals,
             workflows=workflows,
+            releases=releases,
             telemetry=telemetry,
             production_metrics=production_metrics,
             production_observability=production_observability,
