@@ -7,7 +7,7 @@ Approved: 2026-09-16
 Amended: 2026-09-19 — zero-cost development policy
 Roadmap start: 2026-09-16
 Predecessor: ROADMAP v0.3 COMPLETE
-Current phase: v0.4 Phase 6 — COMPLETE / Phase 7 PRE-IMPLEMENTATION AUDIT NEXT
+Current phase: v0.4 Phase 7 — PRE-IMPLEMENTATION AUDIT COMPLETE / ACTIVATION PENDING
 Phase 0: COMPLETE
 Phase 1 activation: YES — audit/activation gate approved
 Phase 1 implementation: COMPLETE
@@ -226,6 +226,8 @@ The v0.4 program will make the existing control plane practically operable throu
 
 ## v0.4 Phase 7 — End-to-End Single-Node Product Qualification
 
+**Phase 7 status:** PRE-IMPLEMENTATION AUDIT COMPLETE — ACTIVATION PENDING. Canonical audit: `V0_4_PHASE7_PREIMPLEMENTATION_AUDIT.md`. Runtime/source/test/workflow implementation remains unauthorized until a separate owner-approved activation checkpoint passes protected governance and merges.
+
 **Goal:** prove the complete v0.4 owner/operator journey on the supported topology without claiming distributed or automatic-publication capabilities.
 
 **Deliverables:**
@@ -281,4 +283,4 @@ Phase 7  End-to-End Single-Node Product Qualification
 
 ## Activation Rule
 
-ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-6 are COMPLETE. No runtime implementation phase is active. The next permitted work is the Phase 7 pre-implementation audit; Phase 7 runtime implementation remains unauthorized.
+ROADMAP v0.4 was explicitly approved by the owner on 2026-09-16 and amended on 2026-09-19 by `DEVELOPMENT_RESOURCE_POLICY.md`. v0.4 Phases 0-6 are COMPLETE. Phase 7 pre-implementation audit is COMPLETE. No runtime implementation phase is active; the next gate is a separate owner Phase 7 activation decision.
