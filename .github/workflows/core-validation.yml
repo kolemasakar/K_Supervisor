@@ -483,6 +483,129 @@ jobs:
               ).read_text(encoding="utf-8") == "# Installed-wheel reference\n"
           PY
 
+
+      - name: Installed wheel Phase 6 observability and supply-chain smoke
+        run: |
+          cd /tmp
+          python - <<'PY'
+          import io
+          import json
+          import tempfile
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          from observability import (
+              BoundedExporterSupervisor,
+              ProductionMetricRegistry,
+              StructuredLogger,
+          )
+          from tools.sbom import (
+              ResolvedPackage,
+              build_spdx_document,
+              validate_spdx_document,
+          )
+          from tools.vulnerability_scan import scan
+
+          sink = io.StringIO()
+          logger = StructuredLogger(sink)
+          assert logger.emit(
+              event_name="service.request.completed",
+              component="phase6-wheel-smoke",
+              status="200",
+              duration_ms=12.5,
+              correlation_id="corr-phase6-wheel",
+              request_id="req-phase6-wheel",
+              attributes={
+                  "method": "GET",
+                  "route": "/healthz",
+                  "status_class": "2xx",
+              },
+          )
+          line = json.loads(sink.getvalue())
+          assert line["event_name"] == "service.request.completed"
+          assert line["attributes"]["route"] == "/healthz"
+
+          metrics = ProductionMetricRegistry()
+          metrics.record_service_request("GET", "/healthz", 200, 12.5)
+          rendered = metrics.render_prometheus()
+          assert "ksupervisor_service_requests_total" in rendered
+          assert 'route="/healthz"' in rendered
+
+          class Exporter:
+              def __init__(self):
+                  self.batches = []
+
+              def export(self, records, *, timeout_seconds):
+                  assert timeout_seconds == 1.0
+                  self.batches.append(tuple(records))
+
+          exporter = Exporter()
+          supervisor = BoundedExporterSupervisor(
+              "otlp_http",
+              exporter,
+              queue_size=2,
+              batch_size=2,
+              timeout_seconds=1.0,
+              max_retries=0,
+              metrics=metrics,
+          )
+          assert supervisor.enqueue({"event": "one"})
+          assert supervisor.enqueue({"event": "two"})
+          assert not supervisor.enqueue({"event": "three"})
+          snapshot = supervisor.flush()
+          assert snapshot.exported == 2
+          assert snapshot.dropped == 1
+          assert snapshot.queued == 0
+
+          packages = {
+              "k-supervisor": ResolvedPackage(
+                  name="k-supervisor",
+                  version="0.1.0",
+                  requires=("pydantic",),
+              ),
+              "pydantic": ResolvedPackage(
+                  name="pydantic",
+                  version="2.12.5",
+                  requires=(),
+              ),
+          }
+          document = build_spdx_document(
+              packages=packages,
+              root_distribution="k-supervisor",
+              wheel_sha256="a" * 64,
+              repository="https://github.com/kolemasakar/K_Supervisor",
+              commit="b" * 40,
+              source_timestamp=1_700_000_000,
+          )
+          validate_spdx_document(document, root_distribution="k-supervisor")
+          assert document["spdxVersion"] == "SPDX-2.3"
+
+          with tempfile.TemporaryDirectory() as raw:
+              root = Path(raw)
+              sbom = root / "sbom.json"
+              allowlist = root / "allowlist.json"
+              evidence_path = root / "vulnerabilities.json"
+              sbom.write_text(
+                  json.dumps(document, sort_keys=True),
+                  encoding="utf-8",
+              )
+              allowlist.write_text(
+                  json.dumps({"schema_version": 1, "exceptions": []}),
+                  encoding="utf-8",
+              )
+
+              evidence = scan(
+                  sbom=sbom,
+                  allowlist=allowlist,
+                  output=evidence_path,
+                  now=datetime(2026, 9, 23, tzinfo=timezone.utc),
+                  query=lambda name, version: {"vulns": []},
+              )
+              assert evidence["status"] == "CLEAN"
+              assert evidence["input"]["package_count"] == 1
+              assert json.loads(evidence_path.read_text(encoding="utf-8"))["status"] == "CLEAN"
+          PY
+
   core-validation:
     name: Core Validation
     if: ${{ always() }}
