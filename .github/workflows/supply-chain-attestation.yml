@@ -1,0 +1,116 @@
+name: Supply Chain Attestation
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  attest:
+    name: Trusted Main Supply Chain Attestation
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: [self-hosted, linux, arm64, k-supervisor-ci]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.13"
+      - name: Create isolated pinned build environment
+        run: |
+          set -euo pipefail
+          rm -rf .venv-attest
+          python -m venv .venv-attest
+          .venv-attest/bin/python -m pip install --disable-pip-version-check --only-binary=:all: "pip==26.2.1"
+          .venv-attest/bin/python -m pip install --disable-pip-version-check --only-binary=:all: -r requirements/ci-py313.lock
+          echo "${GITHUB_WORKSPACE}/.venv-attest/bin" >> "${GITHUB_PATH}"
+      - name: Build wheel from exact main commit
+        run: |
+          set -euo pipefail
+          rm -rf dist build k_supervisor.egg-info
+          python -m build --wheel --no-isolation
+          set -- dist/*.whl
+          test "$#" -eq 1
+          python -m pip install --no-deps --force-reinstall "$1"
+      - name: Generate deterministic SPDX 2.3 SBOM
+        run: |
+          set -euo pipefail
+          set -- dist/*.whl
+          test "$#" -eq 1
+          WHEEL="$1"
+          SOURCE_TIMESTAMP="$(git show -s --format=%ct HEAD)"
+          python -m tools.sbom \
+            --wheel "$WHEEL" \
+            --lock-file requirements/ci-py313.lock \
+            --repository "https://github.com/${GITHUB_REPOSITORY}" \
+            --commit "${GITHUB_SHA}" \
+            --source-timestamp "${SOURCE_TIMESTAMP}" \
+            --output dist/k-supervisor.spdx.json
+          sha256sum "$WHEEL" > dist/SHA256SUMS
+      - name: Attest wheel build provenance
+        id: provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: dist/*.whl
+      - name: Attest wheel SBOM
+        id: sbom_attestation
+        uses: actions/attest-sbom@4651f806c01d8637787e274ac3bdf724ef169f34 # v3
+        with:
+          subject-path: dist/*.whl
+          sbom-path: dist/k-supervisor.spdx.json
+      - name: Record attestation evidence
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+          PROVENANCE_URL: ${{ steps.provenance.outputs.attestation-url }}
+          SBOM_BUNDLE: ${{ steps.sbom_attestation.outputs.bundle-path }}
+          SBOM_ATTESTATION_URL: ${{ steps.sbom_attestation.outputs.attestation-url }}
+        run: |
+          set -euo pipefail
+          cp "${PROVENANCE_BUNDLE}" dist/build-provenance.intoto.jsonl
+          cp "${SBOM_BUNDLE}" dist/sbom-attestation.intoto.jsonl
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          wheels = sorted(Path("dist").glob("*.whl"))
+          if len(wheels) != 1:
+              raise SystemExit("expected exactly one wheel")
+          wheel = wheels[0]
+          digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+          evidence = {
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "commit_sha": os.environ["GITHUB_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "wheel": wheel.name,
+              "wheel_sha256": digest,
+              "sbom": "k-supervisor.spdx.json",
+              "build_provenance_attestation_url": os.environ["PROVENANCE_URL"],
+              "sbom_attestation_url": os.environ["SBOM_ATTESTATION_URL"],
+          }
+          Path("dist/supply-chain-evidence.json").write_text(
+              json.dumps(evidence, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Upload trusted-main supply-chain evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: k-supervisor-supply-chain-${{ github.sha }}
+          path: |
+            dist/*.whl
+            dist/k-supervisor.spdx.json
+            dist/SHA256SUMS
+            dist/build-provenance.intoto.jsonl
+            dist/sbom-attestation.intoto.jsonl
+            dist/supply-chain-evidence.json
+          if-no-files-found: error
+          retention-days: 30
