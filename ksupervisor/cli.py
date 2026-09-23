@@ -86,6 +86,7 @@ def build_parser() -> argparse.ArgumentParser:
     releases = _resource_group(sub, "releases", "operate Releases through Service/API")
     leaf = releases.add_parser("list"); leaf.add_argument("project_id"); _add_config(leaf)
     leaf = releases.add_parser("get"); leaf.add_argument("project_id"); leaf.add_argument("release_id"); _add_config(leaf)
+    leaf = releases.add_parser("prepare"); leaf.add_argument("project_id"); _add_mutation(leaf, body=True)
     leaf = releases.add_parser("confirm-publication")
     leaf.add_argument("project_id"); leaf.add_argument("release_id"); leaf.add_argument("target_type"); _add_mutation(leaf)
 
@@ -275,6 +276,8 @@ def _dispatch_operator(args) -> int:
             return _call_read(args, base)
         if action == "get":
             return _call_read(args, f"{base}/{args.release_id}")
+        if action == "prepare":
+            return _call_mutation(args, base, body=_read_body(args.body))
         return _call_mutation(
             args,
             f"{base}/{args.release_id}/targets/{args.target_type}/confirm-publication",
