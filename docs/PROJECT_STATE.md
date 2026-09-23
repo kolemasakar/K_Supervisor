@@ -1,7 +1,7 @@
 # PROJECT_STATE
 Canonical current snapshot of K_Supervisor after ROADMAP v0.4 Phase 7 pre-implementation audit.
 
-Version: 6.7
+Version: 6.8
 Status: ACTIVE
 Date: 2026-09-23
 
@@ -22,9 +22,9 @@ v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
 v0.4 Phase 5: COMPLETE
 v0.4 Phase 6: COMPLETE
-v0.4 Phase 7: PRE-IMPLEMENTATION AUDIT COMPLETE — ACTIVATION PENDING
-Current approved implementation phase: NONE
-Runtime implementation phase: NONE
+v0.4 Phase 7: ACTIVATED — IMPLEMENTATION AUTHORIZED
+Current approved implementation phase: v0.4 Phase 7 — audited scope only
+Runtime implementation phase: v0.4 Phase 7 — audited scope only
 v0.3 Phase 9: NOT DEFINED
 ```
 
@@ -73,10 +73,10 @@ Phase 3  Production Single-Node Service Host & Operator CLI         COMPLETE
 Phase 4  GitHub Repository Provider & Governed VCS Handoff          COMPLETE
 Phase 5  Plugin-Native ChatGPT/Codex Release Packaging              COMPLETE
 Phase 6  Production Telemetry & Supply-Chain Hardening              COMPLETE
-Phase 7  End-to-End Single-Node Product Qualification               AUDIT COMPLETE — ACTIVATION PENDING
+Phase 7  End-to-End Single-Node Product Qualification               ACTIVATED — IMPLEMENTATION AUTHORIZED
 ```
 
-Phases 0 through 6 are COMPLETE. Phase 7 pre-implementation audit is COMPLETE, but activation is pending. No runtime implementation phase is active.
+Phases 0 through 6 are COMPLETE. Phase 7 pre-implementation audit is COMPLETE and owner activation is approved. Phase 7 runtime implementation is authorized only within the audited scope after the protected activation checkpoint merges.
 
 ## Phase 0 Completion Evidence
 
@@ -452,3 +452,22 @@ Next gate: owner Phase 7 activation decision
 ```
 
 The audit identifies two production-composition gaps that Phase 7 may close only after activation: the existing governed MODEL path is not yet assembled in standard ServiceRuntime, and ReleaseManager is not yet wired into production ServiceRuntime/ServiceApiV1 for explicit owner/operator release preparation. The remaining Phase 7 work is bounded single-node integration/qualification, not product-scope expansion.
+
+
+## Phase 7 Activation
+
+Activation authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_7_ACTIVATED.md`.
+
+```text
+Owner approval: YES — 2026-09-23
+Audit PR: #60
+Audit final head: 12da73290c9a31e401601abafd41106498378294
+Audit final Core Validation: 35819849884 — PASS
+Audit merge main: a8167fb119b371cc4a88d56d8a91526df4caeea3
+Audit merge Supply Chain Attestation: 35820087935 — PASS
+Authorized scope: V0_4_PHASE7_PREIMPLEMENTATION_AUDIT.md only
+Runtime implementation authorization: YES — effective after protected activation merge
+Next implementation wave: P7-A
+Automatic external publication: NO
+Zero-cost development policy: REQUIRED
+```
