@@ -168,3 +168,30 @@ Phase 8 end-to-end qualification proves an approved ProjectSpec can traverse the
 ## Package-Index Publication Workflow
 
 `.github/workflows/package-publish.yml` is an owner-controlled manual workflow only. It has no automatic push/tag/release/schedule trigger, requires explicit `confirm_owner_publication`, builds and validates distributions separately, and publishes from the protected `pypi` GitHub environment through OIDC Trusted Publishing. External publication still requires owner/workspace configuration and is never performed by normal Release Manager execution.
+
+
+## Phase 6 Release Observability
+
+Release preparation now emits best-effort production telemetry at existing authoritative boundaries:
+
+- `release.prepare.started`;
+- `release.prepare.completed`;
+- `release.prepare.failed`;
+- `release.publication_required`.
+
+The release state machine remains authoritative. Telemetry failure cannot convert a valid preparation/publication-handoff outcome into a release failure.
+
+Release telemetry uses bounded target/operation/result values and does not include generated release artifact contents, readiness-evidence payloads or publication credentials.
+
+## Phase 6 Supply-chain Release Evidence
+
+A release candidate intended for promotion should be tied to:
+
+- a protected Python 3.13 + 3.14 `Core Validation` result;
+- the exact dependency lock used by the relevant build;
+- the deterministic SPDX 2.3 SBOM;
+- current machine-readable vulnerability evidence;
+- the built wheel SHA-256;
+- trusted-main GitHub build-provenance and SBOM attestations where supported.
+
+These artifacts strengthen release evidence but do not publish the package. External Plugin/package publication remains an explicit owner/workspace action.
