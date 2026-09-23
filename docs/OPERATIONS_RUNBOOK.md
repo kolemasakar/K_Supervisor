@@ -2,9 +2,9 @@
 
 K_Supervisor single-node operational-readiness runbook.
 
-Version: 1.1
+Version: 1.2
 Status: ACTIVE
-Date: 2026-09-19
+Date: 2026-09-23
 
 ## Scope and invariants
 
@@ -17,7 +17,7 @@ This runbook covers the supported PRE-ALPHA single-node operational boundary: pr
 Before deployment or package promotion:
 
 1. Use a commit that passed protected `Core Validation` on a pull request to `main`.
-2. Use Python 3.13 and install the built wheel outside the source checkout.
+2. Require protected validation on both supported stable Python minors, 3.13 and 3.14. Consumer metadata is bounded to `>=3.13,<3.15`. Install the built wheel outside the source checkout.
 3. Run `DeploymentQualifier` with required service probes and the Projects whose recovery/integrity must be qualified.
 4. Require current SQLite schema and `PRAGMA integrity_check` success.
 5. Create and verify an online backup before replacing an existing deployment or applying an upgrade.
@@ -218,3 +218,64 @@ Repository rulesets and protected branches remain authoritative. K_Supervisor mu
 A GitHub repository operation that is blocked by credentials, repository policy, organization policy or conflicting owner-authored content remains owner-intervention state until the safe resume condition is satisfied.
 
 
+
+
+## Phase 6 Production Observability Operations
+
+Production observability is additive and non-authoritative. Durable `TelemetryRecord` data remains separate from business/audit state.
+
+Operational invariants:
+
+- production events use the frozen schema/allowlist in `observability.production`;
+- structured logging is JSON and fails closed on unregistered attributes;
+- secrets, bearer material, cookies, authorization values and `secret://...` values must not enter logs/export payloads;
+- metric labels use bounded route/provider/repository/release vocabularies; dynamic IDs must not become labels;
+- Prometheus-compatible exposition is local projection and does not require a Prometheus server;
+- OTLP/HTTP export is optional; cleartext HTTP is accepted only for loopback endpoints;
+- exporter queues, retries and timeouts are bounded;
+- exporter failure/drop state is observable, but exporter failure must not change authoritative service/provider/repository/release outcomes;
+- optional exporter absence/degradation must not make default service readiness false.
+
+When diagnosing observability incidents, inspect local telemetry/metrics first. Do not bypass redaction or widen telemetry attributes to debug a production incident.
+
+## Phase 6 Dependency, SBOM and Vulnerability Evidence
+
+Protected validation runs independently on Python 3.13 and 3.14 using per-minor exact lock files under `requirements/`.
+
+For each protected candidate:
+
+- dependencies are installed from exact-version CI locks;
+- the wheel is built without dependency re-resolution;
+- installed metadata is checked against the lock;
+- a deterministic SPDX 2.3 SBOM is generated from the installed runtime graph;
+- the wheel SHA-256 and exact source commit are recorded;
+- OSV is queried for the runtime packages represented by the SBOM;
+- vulnerability evidence is emitted as machine-readable JSON.
+
+Vulnerability status semantics:
+
+- `CLEAN`: OSV responded successfully and no known advisory was returned;
+- `EXCEPTIONS_APPLIED`: known advisories exist only under explicit unexpired exceptions;
+- `VULNERABLE`: at least one unexcepted advisory is present and validation fails;
+- `UNAVAILABLE`: the advisory source could not be queried; this is not clean evidence and validation fails;
+- `MALFORMED`: input/source evidence is invalid and validation fails.
+
+Exceptions live only in `security/vulnerability_allowlist.json` and require advisory id, canonical package name, expiry date and rationale. Expired/duplicate/malformed exceptions fail closed.
+
+## Trusted-main Supply-chain Attestation
+
+`.github/workflows/supply-chain-attestation.yml` runs only for trusted `main` or explicit trusted manual dispatch. It is not a pull-request workflow.
+
+The workflow:
+
+- checks out the exact `main` commit using immutable Action SHAs;
+- builds in the pinned Python 3.13 environment;
+- generates deterministic SPDX 2.3 SBOM and `SHA256SUMS`;
+- creates GitHub build-provenance attestation for the wheel;
+- creates a GitHub SBOM attestation linking that wheel to the generated SBOM;
+- records `supply-chain-evidence.json`;
+- retains the wheel, SBOM, attestation bundles and evidence as a workflow artifact for 30 days.
+
+Only this trusted workflow receives `contents: read`, `id-token: write` and `attestations: write`. Pull-request validation remains read-only.
+
+Before promoting a wheel, verify that the wheel digest, source commit, SBOM and GitHub attestations refer to the same trusted-main build. Package publication remains a separate manual owner-controlled action.
