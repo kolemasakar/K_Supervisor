@@ -107,6 +107,39 @@ jobs:
           cd /tmp
           k-supervisor version
           python -c "import ksupervisor; print(ksupervisor.__version__)"
+      - name: Generate deterministic SPDX 2.3 SBOM
+        env:
+          LOCK_FILE: ${{ matrix.lock-file }}
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          set -- dist/*.whl
+          test "$#" -eq 1
+          WHEEL="$1"
+          SOURCE_TIMESTAMP="$(git show -s --format=%ct HEAD)"
+          python -m tools.sbom \
+            --wheel "$WHEEL" \
+            --lock-file "$LOCK_FILE" \
+            --repository "https://github.com/${GITHUB_REPOSITORY}" \
+            --commit "${GITHUB_SHA}" \
+            --source-timestamp "${SOURCE_TIMESTAMP}" \
+            --output "dist/k-supervisor-py${PYTHON_VERSION}.spdx.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(f"dist/k-supervisor-py{os.environ['PYTHON_VERSION']}.spdx.json")
+          document = json.loads(path.read_text(encoding="utf-8"))
+          assert document["spdxVersion"] == "SPDX-2.3"
+          assert document["dataLicense"] == "CC0-1.0"
+          assert document["SPDXID"] == "SPDXRef-DOCUMENT"
+          assert document["packages"]
+          assert any(
+              item["SPDXID"] == "SPDXRef-Package-k-supervisor"
+              and item.get("checksums")
+              for item in document["packages"]
+          )
+          PY
       - name: Installed wheel Phase 3 service and CLI smoke
         run: |
           cd /tmp
