@@ -128,6 +128,59 @@ class ProjectFactory:
             files=tuple(sorted(actual)),
         )
 
+    def resolve_repository(
+        self,
+        project_id: str,
+        at: datetime,
+        *,
+        idempotency_key: str,
+    ):
+        """Resolve the active governed repository without changing lifecycle state."""
+        at = ensure_tz(at)
+        project = self.registry.get(project_id)
+        if project is None:
+            raise KeyError(project_id)
+        if project.operational_state not in {
+            ProjectOperationalState.ACTIVE,
+            ProjectOperationalState.WAITING_FOR_OWNER,
+        }:
+            raise BootstrapBlockedError("project repository is not operationally available")
+
+        snapshot = self.registry.recover(project_id)
+        spec = snapshot.active_spec
+        if spec is None or spec.status != ProjectSpecStatus.APPROVED:
+            raise BootstrapValidationError("active APPROVED ProjectSpec is required")
+
+        target = RepositoryTarget.from_spec(spec)
+        adapter = self.adapters.get(target.provider)
+        if adapter is None:
+            self._block_for_repository(
+                project_id,
+                target,
+                at,
+                "repository provider adapter is unavailable",
+            )
+        context = RepositoryOperationContext(
+            project_id=project_id,
+            project_spec_id=spec.project_spec_id,
+            idempotency_key=idempotency_key,
+        )
+        try:
+            repository = (
+                adapter.prepare(target, context=context)
+                if getattr(adapter, "supports_operation_context", False)
+                else adapter.prepare(target)
+            )
+        except RepositoryGovernanceBlockedError as exc:
+            if exc.human_action_id is not None:
+                raise BootstrapBlockedError(str(exc), exc.human_action_id) from exc
+            self._block_for_repository(project_id, target, at, str(exc))
+        except RepositoryUnavailableError as exc:
+            if target.provisioning != "AUTOMATABLE":
+                self._block_for_repository(project_id, target, at, str(exc))
+            raise
+        return repository
+
     def _block_for_repository(
         self,
         project_id: str,
