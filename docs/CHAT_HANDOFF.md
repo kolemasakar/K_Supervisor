@@ -1,21 +1,21 @@
 # CHAT_HANDOFF
-Canonical continuation context after ROADMAP v0.4 Phase 6 completion.
+Canonical continuation context after ROADMAP v0.4 Phase 7 pre-implementation audit.
 
-Version: 6.3
+Version: 6.4
 Status: ACTIVE
 Date: 2026-09-23
 
 ## Start Here
 
+- docs/V0_4_PHASE7_PREIMPLEMENTATION_AUDIT.md
 - docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md
 - docs/PROJECT_STATE.md
 - docs/ROADMAP.md
 - docs/TEST_MATRIX.md
-- docs/SUPPLY_CHAIN_SECURITY.md
-- docs/OBSERVABILITY_AND_RELIABILITY.md
+- docs/SERVICE_API.md
+- docs/PLATFORM_INTERFACES.md
+- docs/RELEASE_MANAGER.md
 - docs/OPERATIONS_RUNBOOK.md
-- docs/V0_4_PHASE6_PREIMPLEMENTATION_AUDIT.md
-- docs/PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_ACTIVATED.md
 - docs/DEVELOPMENT_RESOURCE_POLICY.md
 
 ## Current Roadmap State
@@ -30,67 +30,62 @@ v0.4 Phase 2: COMPLETE
 v0.4 Phase 3: COMPLETE
 v0.4 Phase 4: COMPLETE
 v0.4 Phase 5: COMPLETE
-v0.4 Phase 6: COMPLETE — effective on protected completion merge
-v0.4 Phase 7: PLANNED / INACTIVE
+v0.4 Phase 6: COMPLETE
+v0.4 Phase 7 pre-implementation audit: COMPLETE
+v0.4 Phase 7 activation: NO
 Current runtime implementation authorization: NONE
 ```
 
-## Phase 6 Qualification Baseline
+## Phase 6 Frozen Baseline
 
 ```text
-Qualification PR: #59
-Qualification code/test head: 79024500a0e0dd03f898c3677683bf1e5a4dc60a
-Protected Core Validation: 35811716736 — PASS
-Python 3.13.15: 362 passed / 80.74% coverage
-Python 3.14.7: 362 passed / 80.09% coverage
-coverage gate >=80%: PASS on both supported minors
-installed-wheel Phase 6 observability/supply-chain smoke: PASS
-SPDX 2.3 + vulnerability evidence: PASS
-immutable Action SHA policy: PASS
-trusted-main attestation contract: PASS
-Zero-cost development policy: PASS
+Canonical main at audit start: bbf74fb68690a4f9b802d03fad50071eb50b6aec
+Merged-main Core Validation: 35812514286 — PASS
+Merged-main Supply Chain Attestation: 35812514276 — PASS
+Python 3.13/3.14 qualification: PASS
+Phase 6 completion authority: PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md
 ```
 
-Completion authority: `PROJECT_CHECKPOINT_ROADMAP_V0_4_PHASE_6_COMPLETE.md`.
+## Phase 7 Audit Conclusion
 
-## Delivered Phase 6 Surface
+Most required Phase 7 properties already exist and are tested separately. The audit found two production-composition gaps that prevent a canonical owner/operator end-to-end proof:
 
-Phase 6 now provides:
+- the Phase 1 governed MODEL provider/ModelBackedAgent stack is not assembled in standard `build_service_runtime()`;
+- ReleaseManager is not assembled/passed to production ServiceApiV1, and there is no explicit owner/operator release-preparation operation that invokes `handle_first_working()`.
 
-- schema-driven production telemetry attributes and deterministic structured JSON logging;
-- fixed low-cardinality service/auth/provider/repository/release metrics;
-- bounded exporter queue/retry/timeout/drop semantics with non-authoritative failure isolation;
-- optional OTLP/HTTP and Prometheus-compatible surfaces;
-- service/auth/provider/repository/release boundary instrumentation;
-- Python support bounded to `>=3.13,<3.15` with protected 3.13 + 3.14 validation;
-- exact per-minor CI dependency locks;
-- deterministic SPDX 2.3 SBOM and wheel SHA-256 evidence;
-- machine-readable OSV vulnerability evidence with fail-closed unavailable/malformed states;
-- immutable full-SHA external GitHub Actions;
-- trusted-main wheel build-provenance and SBOM attestations with isolated OIDC/write permissions;
-- operations/security/release documentation and installed-wheel Phase 6 qualification smoke.
+Phase 7 may close only these and directly related repository-context/composition gaps before performing final qualification.
 
-Remote collectors/SaaS remain optional. Package/Plugin publication remains owner-controlled.
+## Frozen Implementation Shape After Activation
 
-## Qualification Correction
-
-The first Phase 6 qualification pass exposed that pytest-cov could print a threshold failure for Python 3.14 (79.91%) while the job still continued. The protected workflow was hardened to run an explicit `coverage report --fail-under=80` command. Additional Phase 6 SPDX/vulnerability failure-path tests raised authoritative Python 3.14 coverage to 80.09%.
-
-Only the corrected qualification run `35811716736` is completion evidence.
-
-## Governance Boundary
+Preferred waves:
 
 ```text
-Required check: Core Validation
-Protected Python minors: 3.13 + 3.14
-Pull-request permissions: read-only/minimal
-Trusted-main attestation permissions: contents:read + id-token:write + attestations:write
-Automatic external publication: NO
-Phase 7 activation: NO
+P7-A production composition gap closure
+P7-B deterministic API/CLI owner/operator E2E
+P7-C restart + backup/restore/upgrade + concurrency/failure qualification
+P7-D installed-wheel + cumulative Python 3.13/3.14 qualification
+P7-E ROADMAP v0.4 closure docs/checkpoint
 ```
+
+Key invariants:
+
+- operations after service startup traverse API/CLI;
+- production OpenAI/GitHub provider classes are used with deterministic transport injection in protected CI;
+- no test-only business control plane;
+- publication stops at PUBLICATION_REQUIRED;
+- no paid live provider evidence is required;
+- no distributed/multi-tenant scope;
+- `config_version=1` remains compatible;
+- runtime implementation does not begin before separate owner activation.
 
 ## Immediate Continuation
 
-Phase 6 is complete after protected merge of PR #59. Do not begin Phase 7 runtime/source/test/workflow implementation.
+The audit document itself authorizes no runtime/source/test/workflow work.
 
-Next permitted work: **ROADMAP v0.4 Phase 7 pre-implementation audit only**.
+Next required decision:
+
+```text
+1-APPROVE PHASE 7 ACTIVATION
+2-REVIEW PHASE 7 AUDIT
+3-STOP
+```
