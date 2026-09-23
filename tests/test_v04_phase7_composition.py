@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from access import AccessReference, EnvironmentSecretBackend, environment_key
 from factory.contracts import BootstrapFile, RepositoryOperationContext, RepositoryTarget
-from factory.repository import RoutedRepositoryAdapter
+from factory.repository import FilesystemRepositoryAdapter, RoutedRepositoryAdapter
 from ksupervisor.cli import build_parser
 from ksupervisor.config import PlatformConfig
 from models.enums import (
@@ -410,3 +410,181 @@ def test_release_prepare_scope_and_cli_surface(tmp_path):
     assert args.command == "releases"
     assert args.releases_command == "prepare"
     assert args.project_id == "P7_RELEASE"
+
+
+
+def test_routed_repository_adapter_validates_and_routes(tmp_path):
+    filesystem = FilesystemRepositoryAdapter(tmp_path / "routed")
+    routed = RoutedRepositoryAdapter((filesystem,))
+    target = RepositoryTarget(
+        provider="FILESYSTEM",
+        owner=None,
+        name="routed-demo",
+        visibility="PRIVATE",
+        url=None,
+        default_branch="main",
+        ci_required=True,
+        provisioning="AUTOMATABLE",
+    )
+    context = RepositoryOperationContext(
+        project_id="P_ROUTED",
+        project_spec_id="PS_ROUTED",
+        idempotency_key="routed-1",
+    )
+    repository = routed.prepare(target, context=context)
+    routed.apply_files(
+        repository,
+        (BootstrapFile("README.md", "# Routed\n"),),
+        context=context,
+    )
+    assert routed.list_files(repository, context=context) == ("README.md",)
+    assert routed.read_text_file(repository, "README.md", context=context) == "# Routed\n"
+
+    with pytest.raises(ValueError, match="at least one"):
+        RoutedRepositoryAdapter(())
+    with pytest.raises(ValueError, match="duplicate"):
+        RoutedRepositoryAdapter((filesystem, filesystem))
+    missing = repository.__class__(
+        provider="MISSING",
+        repository_id="missing:demo",
+        locator=repository.locator,
+        default_branch="main",
+        created=False,
+    )
+    with pytest.raises(Exception, match="adapter is unavailable"):
+        routed.list_files(missing, context=context)
+
+
+def test_model_provider_config_additional_fail_closed_paths():
+    with pytest.raises(ValidationError, match="model_id values must be unique"):
+        PlatformConfig(
+            model_provider={
+                "credential_ref": MODEL_REF.model_dump(mode="json"),
+                "models": [
+                    {"model_id": "same-model"},
+                    {"model_id": "same-model"},
+                ],
+            }
+        )
+    with pytest.raises(ValidationError, match="features must be unique"):
+        PlatformConfig(
+            model_provider={
+                "credential_ref": MODEL_REF.model_dump(mode="json"),
+                "models": [
+                    {"model_id": "model-a", "features": ["text", "text"]},
+                ],
+            }
+        )
+    with pytest.raises(ValidationError, match="default_max_output_tokens"):
+        PlatformConfig(
+            model_provider={
+                "credential_ref": MODEL_REF.model_dump(mode="json"),
+                "models": [{"model_id": "model-a"}],
+                "default_max_output_tokens": 20,
+                "max_output_tokens_limit": 10,
+            }
+        )
+
+
+def test_service_runtime_without_model_provider_keeps_model_unregistered(tmp_path):
+    runtime = build_service_runtime(
+        _config(tmp_path),
+        secret_backend=_backend(),
+    )
+    try:
+        assert runtime.capabilities.get(MODEL_CAPABILITY_ID, "1.0.0") is None
+        assert runtime.agents.get(MODEL_AGENT_ID) is None
+    finally:
+        runtime.close()
+
+
+def test_project_factory_resolve_repository_fails_closed_for_invalid_state(tmp_path):
+    runtime = build_service_runtime(
+        _config(tmp_path),
+        secret_backend=_backend(),
+    )
+    try:
+        with pytest.raises(KeyError):
+            runtime.project_factory.resolve_repository(
+                "MISSING",
+                NOW,
+                idempotency_key="missing",
+            )
+
+        spec = _release_spec()
+        runtime.projects.register(
+            Project(
+                project_id=spec.project_id,
+                name=spec.name,
+                active_project_spec_id=spec.project_spec_id,
+                lifecycle_state=ProjectLifecycleState.FIRST_WORKING,
+                operational_state=ProjectOperationalState.PAUSED,
+                created_at=NOW,
+                updated_at=NOW,
+            ),
+            spec,
+        )
+        with pytest.raises(Exception, match="not operationally available"):
+            runtime.project_factory.resolve_repository(
+                spec.project_id,
+                NOW,
+                idempotency_key="paused",
+            )
+    finally:
+        runtime.close()
+
+
+def test_release_prepare_invalid_state_and_idempotency_conflict(tmp_path):
+    runtime = build_service_runtime(
+        _config(tmp_path),
+        secret_backend=_backend(),
+    )
+    try:
+        spec = _release_spec()
+        runtime.projects.register(
+            Project(
+                project_id=spec.project_id,
+                name=spec.name,
+                active_project_spec_id=spec.project_spec_id,
+                lifecycle_state=ProjectLifecycleState.BUILDING,
+                operational_state=ProjectOperationalState.ACTIVE,
+                created_at=NOW,
+                updated_at=NOW,
+            ),
+            spec,
+        )
+        principal = ServicePrincipal(
+            principal_id="owner",
+            scopes=frozenset({"releases:prepare"}),
+        )
+
+        invalid = runtime.api.dispatch(
+            "POST",
+            "/api/v1/projects/P7_RELEASE/releases",
+            principal=principal,
+            body={"version": "0.1.0"},
+            idempotency_key="release-invalid-state",
+        )
+        assert invalid.status_code == 409
+        assert invalid.body["error"]["code"] == "RELEASE_STATE_CONFLICT"
+
+        first = runtime.api.dispatch(
+            "POST",
+            "/api/v1/projects/P7_RELEASE/releases",
+            principal=principal,
+            body={"version": "0.2.0"},
+            idempotency_key="release-conflict-key",
+        )
+        assert first.status_code == 409
+
+        conflict = runtime.api.dispatch(
+            "POST",
+            "/api/v1/projects/P7_RELEASE/releases",
+            principal=principal,
+            body={"version": "0.3.0"},
+            idempotency_key="release-conflict-key",
+        )
+        assert conflict.status_code == 409
+        assert conflict.body["error"]["code"] == "IDEMPOTENCY_CONFLICT"
+    finally:
+        runtime.close()
