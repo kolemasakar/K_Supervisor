@@ -140,6 +140,15 @@ jobs:
               for item in document["packages"]
           )
           PY
+      - name: Scan runtime dependencies for known vulnerabilities
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          python -m tools.vulnerability_scan \
+            --sbom "dist/k-supervisor-py${PYTHON_VERSION}.spdx.json" \
+            --allowlist security/vulnerability_allowlist.json \
+            --output "dist/k-supervisor-py${PYTHON_VERSION}.vulnerabilities.json"
+
       - name: Installed wheel Phase 3 service and CLI smoke
         run: |
           cd /tmp
